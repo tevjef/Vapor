@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="blue">#1e475e</color>
+    <color name="light_blue">#3c8dc5</color>
+    <color name="text_white">#FFF</color>
+    <color name="text_hint">#b2b2b2</color>
+    <color name="vapor_color">#ffffff</color>
+</resources>

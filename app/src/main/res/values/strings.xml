@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Vapor</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="sign_in">SIGN IN</string>
+    <string name="register">REGISTER</string>
+    <string name="createAcc"><u>Don\'t have an account?</u></string>
+    <string name="loginAcc"><u>Already have an account?</u></string>
+    <string name="tos">By registering you accept <b>Cloud</b>App’s <b>Terms of Service.</b></string>
+    <string name="title_activity_main">Vapor</string>
+    <string name="title_section1">Recent Drops</string>
+    <string name="title_section2">Popular</string>
+    <string name="title_section3">Images</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+
+</resources>
