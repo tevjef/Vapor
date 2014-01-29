@@ -17,29 +17,4 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
 
-    <!-- Nav Drawer Menu Items -->
-    <string-array name="nav_drawer_items">
-        <item >Recent Files</item>
-        <item >Images</item>
-        <item >Videos</item>
-        <item >Audio</item>
-        <item >Text</item>
-        <item >Archives</item>
-        <item >Bookmarks</item>
-        <item >Other</item>
-        <item >Trash</item>
-    </string-array>
-
-    <!-- Nav Drawer List Item Icons -->
-    <!-- Keep them in order as the titles are in -->
-    <array name="nav_drawer_icons">
-
-    </array>
-
-    <string name="drawer_open">Slider Menu Opened</string>
-    <string name="drawer_close">Slider Menu Closed</string>
-
-    <!-- Content Description -->
-    <string name="desc_list_item_icon">Item Icon</string>
-
 </resources>
