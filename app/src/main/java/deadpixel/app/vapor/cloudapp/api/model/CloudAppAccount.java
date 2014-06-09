@@ -1,5 +1,6 @@
 package deadpixel.app.vapor.cloudapp.api.model;
 
+import java.text.ParseException;
 import java.util.Date;
 
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
@@ -45,21 +46,21 @@ public interface CloudAppAccount {
     /**
      * @return the date you signed up
      */
-    public Date getCreatedAt() throws CloudAppException;
+    public Date getCreatedAt() throws CloudAppException, ParseException;
 
     /**
      * @return The date you last updated your account.
      */
-    public Date getUpdatedAt() throws CloudAppException;
+    public Date getUpdatedAt() throws CloudAppException, ParseException;
 
     /**
      * @return The date you activated your account.
      */
-    public Date ActivatedAt() throws CloudAppException;
+    public Date getActivatedAt() throws CloudAppException, ParseException;
 
     /**
      * @return The date you subscription expires if any
      */
-    public Date SubscriptionExpiresAt() throws CloudAppException;
+    public Date getSubscriptionExpiresAt() throws CloudAppException, ParseException;
 
 }

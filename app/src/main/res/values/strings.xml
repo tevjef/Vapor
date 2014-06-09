@@ -16,5 +16,42 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
+    <string name="library">Library</string>
+
+    <string-array name="nav_drawer_items">
+        <item >Recent Files</item>
+        <item >Images</item>
+        <item >Videos</item>
+        <item >Audio</item>
+        <item >Text</item>
+        <item >Archives</item>
+        <item >Bookmarks</item>
+        <item >Other</item>
+        <item >Trash</item>
+    </string-array>
+
+    <array name="nav_drawer_icons_blue">
+        <item>@drawable/nav_recent_blue</item>
+        <item>@drawable/nav_images_blue</item>
+        <item>@drawable/nav_video_blue</item>
+        <item>@drawable/nav_audio_blue</item>
+        <item>@drawable/nav_text_blue</item>
+        <item>@drawable/nav_archive_blue</item>
+        <item>@drawable/nav_bookmark_blue</item>
+        <item>@drawable/nav_other_blue</item>
+        <item>@drawable/nav_trash_blue</item>
+    </array>
+
+    <array name="nav_drawer_icons_white">
+        <item>@drawable/nav_recent_white</item>
+        <item>@drawable/nav_images_white</item>
+        <item>@drawable/nav_video_white</item>
+        <item>@drawable/nav_audio_white</item>
+        <item>@drawable/nav_text_white</item>
+        <item>@drawable/nav_archive_white</item>
+        <item>@drawable/nav_bookmark_white</item>
+        <item>@drawable/nav_other_white</item>
+        <item>@drawable/nav_trash_white</item>
+    </array>
 
 </resources>

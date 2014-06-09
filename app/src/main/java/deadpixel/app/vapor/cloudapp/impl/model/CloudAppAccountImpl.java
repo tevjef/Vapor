@@ -8,9 +8,10 @@ import java.util.Date;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 
-public class CloudAppAccountImpl extends CloudAppModel implements CloudAppAccount {
 
-    public CloudAppAccountImpl(JSONObject json) {
+public class CloudAppAccountImpl extends CloudAppModel/* implements CloudAppAccount*/ {
+
+   /* public CloudAppAccountImpl(JSONObject json) {
         this.json = json;
     }
 
@@ -82,5 +83,5 @@ public class CloudAppAccountImpl extends CloudAppModel implements CloudAppAccoun
             throw new CloudAppException(500, "Could not parse the date.", e);
         }
     }
-
+*/
 }

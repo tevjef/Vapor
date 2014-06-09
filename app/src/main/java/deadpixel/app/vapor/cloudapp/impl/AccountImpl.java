@@ -2,6 +2,11 @@ package deadpixel.app.vapor.cloudapp.impl;
 
 import android.util.Log;
 
+import com.android.volley.VolleyError;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -9,10 +14,13 @@ import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount.DefaultSecurity;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
+import deadpixel.app.vapor.cloudapp.impl.model.AccountResponseModel;
+import deadpixel.app.vapor.cloudapp.impl.model.AccountStatsResponseModel;
 import deadpixel.app.vapor.cloudapp.impl.model.CloudAppAccountImpl;
 import deadpixel.app.vapor.cloudapp.impl.model.CloudAppAccountStatsImpl;
+import deadpixel.app.vapor.networkOp.RequestExecuters;
 
-public class AccountImpl extends CloudAppBase {
+public class AccountImpl extends CloudAppBase implements RequestExecuters.ResponseCallbacks {
 
     public static final String REGISTER_URL = MY_CL_LY + "/register";
     public static final String ACCOUNT_URL = MY_CL_LY + "/account";
@@ -26,6 +34,13 @@ public class AccountImpl extends CloudAppBase {
         super();
 
     }
+
+    Gson gson = new GsonBuilder()
+            .serializeNulls()
+            .setPrettyPrinting()
+            .create();
+
+    String response;
 
     /**
      *
@@ -41,8 +56,8 @@ public class AccountImpl extends CloudAppBase {
             user.put("private_items", (security == DefaultSecurity.PRIVATE));
             json.put("user", user);
 
-            json = (JSONObject) executePut(ACCOUNT_URL, json, 200);
-            return new CloudAppAccountImpl(json);
+            executePut(ACCOUNT_URL, json, 200);
+            return gson.fromJson(response, AccountResponseModel.class);
 
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
@@ -65,8 +80,8 @@ public class AccountImpl extends CloudAppBase {
             user.put("current_password", currentPassword);
             json.put("user", user);
 
-            json = (JSONObject) executePut(ACCOUNT_URL, json, 200);
-            return new CloudAppAccountImpl(json);
+            executePut(ACCOUNT_URL, json, 200);
+            return gson.fromJson(response, AccountResponseModel.class);
 
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
@@ -89,8 +104,8 @@ public class AccountImpl extends CloudAppBase {
             user.put("current_password", currentPassword);
             json.put("user", user);
 
-            json = (JSONObject) executePut(ACCOUNT_URL, json, 200);
-            return new CloudAppAccountImpl(json);
+            executePut(ACCOUNT_URL, json, 200);
+            return gson.fromJson(response, AccountResponseModel.class);
 
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
@@ -135,8 +150,10 @@ public class AccountImpl extends CloudAppBase {
             user.put("password", password);
             user.put("accept_tos", acceptTOS);
             json.put("user", user);
-            json = (JSONObject) executePost(REGISTER_URL, json, 201);
-            return new CloudAppAccountImpl(json);
+
+            executePost(REGISTER_URL, json, 201);
+
+            return gson.fromJson(response, AccountResponseModel.class);
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
             throw new CloudAppException(500, "Something went wrong trying to handle JSON.", e);
@@ -159,8 +176,8 @@ public class AccountImpl extends CloudAppBase {
             user.put("domain_home_page", domainHomePage);
             json.put("user", user);
 
-            json = (JSONObject) executePut(ACCOUNT_URL, json, 200);
-            return new CloudAppAccountImpl(json);
+            executePut(ACCOUNT_URL, json, 200);
+            return gson.fromJson(response, AccountResponseModel.class);
 
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
@@ -175,8 +192,8 @@ public class AccountImpl extends CloudAppBase {
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount getAccountDetails()
      */
     public CloudAppAccount getAccountDetails() throws CloudAppException {
-        JSONObject json = (JSONObject) executeGet(ACCOUNT_URL);
-        return new CloudAppAccountImpl(json);
+        executeGet(ACCOUNT_URL);
+        return gson.fromJson(response, AccountResponseModel.class);
     }
 
     /**
@@ -186,12 +203,17 @@ public class AccountImpl extends CloudAppBase {
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount getAccountStats()
      */
     public CloudAppAccountStats getAccountStats() throws CloudAppException {
-        try {
-            JSONObject json = (JSONObject) executeGet(ACCOUNT_STATS_URL);
-            return new CloudAppAccountStatsImpl(json.getLong("items"), json.getLong("views"));
-        } catch (JSONException e) {
-            Log.e(TAG, "Something went wrong trying to handle JSON.", e);
-            throw new CloudAppException(500, "Something went wrong trying to handle JSON.", e);
-        }
+            executeGet(ACCOUNT_STATS_URL);
+            return gson.fromJson(response, AccountStatsResponseModel.class);
+    }
+
+    @Override
+    public void serverResponse(String response) {
+        this.response = response;
+    }
+
+    @Override
+    public void serverErrorResponse(VolleyError error) {
+
     }
 }

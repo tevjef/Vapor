@@ -34,13 +34,6 @@ public class RequestHandler extends Application {
         RequestHandler.context = getApplicationContext();
     }
 
-    /**
-     * @return RequestHandler singleton instance
-     */
-    public static synchronized RequestHandler getInstance() {
-        return sInstance;
-    }
-
     public RequestHandler() {
 
     }
@@ -87,4 +80,5 @@ public class RequestHandler extends Application {
         req.setTag(TAG);
         getRequestQueue().add(req);
     }
+
 }

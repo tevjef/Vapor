@@ -14,10 +14,19 @@ public class CloudAppException extends Exception {
      * @param cause
      *          an optional cause for this exception.
      */
+
+    public CloudAppException(int code, String message) {
+        super(message);
+        this.code = code;
+    }
+
     public CloudAppException(int code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;
     }
+
+
+
 
     /**
      * @return An HTTP status code that explains what went wrong. This doesn't always have
@@ -26,4 +35,5 @@ public class CloudAppException extends Exception {
     public int getCode() {
         return code;
     }
+
 }

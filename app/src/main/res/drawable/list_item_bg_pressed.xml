@@ -1,0 +1,8 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <gradient
+        android:startColor="@color/nav_listview_pressed"
+        android:endColor="@color/nav_listview_pressed"
+        android:angle="90" />
+</shape>

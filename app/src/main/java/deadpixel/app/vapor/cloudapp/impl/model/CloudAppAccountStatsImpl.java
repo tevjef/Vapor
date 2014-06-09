@@ -2,8 +2,9 @@ package deadpixel.app.vapor.cloudapp.impl.model;
 
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 
-public class CloudAppAccountStatsImpl implements CloudAppAccountStats {
+public class CloudAppAccountStatsImpl /*implements CloudAppAccountStats*/ {
 
+/*
     private long items;
     private long views;
 
@@ -19,5 +20,6 @@ public class CloudAppAccountStatsImpl implements CloudAppAccountStats {
     public long getViews() {
         return views;
     }
+*/
 
 }

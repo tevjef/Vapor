@@ -7,10 +7,10 @@ import java.util.Date;
 
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
+//undo abstract
+public abstract class CloudAppItemImpl extends CloudAppModel implements CloudAppItem {
 
-public class CloudAppItemImpl extends CloudAppModel implements CloudAppItem {
-
-    public CloudAppItemImpl(JSONObject json) {
+  /*  public CloudAppItemImpl(JSONObject json) {
         this.json = json;
     }
 
@@ -106,6 +106,6 @@ public class CloudAppItemImpl extends CloudAppModel implements CloudAppItem {
         } catch (ParseException e) {
             throw new CloudAppException(500, "Could not parse the date.", e);
         }
-    }
+    }*/
 
 }

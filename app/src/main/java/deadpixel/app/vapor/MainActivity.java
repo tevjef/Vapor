@@ -1,9 +1,11 @@
 package deadpixel.app.vapor;
 
 import android.app.Activity;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -27,6 +30,9 @@ public class MainActivity extends ActionBarActivity
      */
     private CharSequence mTitle;
 
+    private String[] actionBarTitles;
+    private TypedArray titleIcons;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,45 +40,139 @@ public class MainActivity extends ActionBarActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
 
+        mTitle = getTitle();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+
+        configureActionBar(position);
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        switch (position) {
+            case 0:
+                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                        ft.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+                // calling onPrepareOptionsMenu() to show action bar icons
+                supportInvalidateOptionsMenu();
+                break;
+            case 1:
+                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                ft.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+
+
+                supportInvalidateOptionsMenu();
+                break;
+            case 2:
+                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                ft.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+
+                supportInvalidateOptionsMenu();
+                break;
+            case 3:
+                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                ft.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+
+                supportInvalidateOptionsMenu();
+                break;
+            case 4:
+                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                ft.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+
+                supportInvalidateOptionsMenu();
+                break;
+            case 5:
+                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                ft.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+
+                supportInvalidateOptionsMenu();
+                break;
+            case 6:
+                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                ft.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+
+                supportInvalidateOptionsMenu();
+                break;
+            case 7:
+                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                ft.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+
+                supportInvalidateOptionsMenu();
+                break;
+            case 8:
+                ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                ft.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .commit();
+
+                supportInvalidateOptionsMenu();
+                break;
+
+            default:
+                break;
+        }
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
-        }
+
     }
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+        //actionBar.setTitle(mTitle);
     }
 
+    /**
+     * An implemented callback function to handle the action bar title and
+     * icon when the drawer is closed
+     */
+    @Override
+    public void restoreActionBarTitle(int position) {
+        configureActionBar(position);
+    }
+
+    public void configureActionBar(int position){
+
+        // load titles from resources
+        actionBarTitles = getResources().getStringArray(R.array.nav_drawer_items);
+
+        // load icons from resources
+        titleIcons = getResources()
+                .obtainTypedArray(R.array.nav_drawer_icons_white);
+
+        ActionBar ab = getSupportActionBar();
+
+        if (position > -1) {
+            mTitle = actionBarTitles[position];
+            ab.setTitle(mTitle);
+            ab.setIcon(titleIcons.getResourceId(position, -1));
+
+        } else {
+            ab.setIcon(R.drawable.ic_launcher);
+            ab.setTitle(R.string.library);
+        }
+
+        titleIcons.recycle();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -139,6 +239,8 @@ public class MainActivity extends ActionBarActivity
             super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
+
+            
         }
     }
 

@@ -1,4 +1,4 @@
-package deadpixel.app.vapor.authentication;
+package deadpixel.app.vapor.networkOp.authentication;
 
 import android.util.Log;
 
@@ -24,7 +24,9 @@ import deadpixel.app.vapor.networkOp.RequestHandler;
  */
 public class Authenticate extends AuthenticationActivity {
 
-    public static void isValid() {
+    public static AuthenticationCallbacks authCallbacks;
+
+    public static void isAccountValid() {
         startProgress();
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, AccountImpl.ACCOUNT_URL, null,
@@ -33,6 +35,8 @@ public class Authenticate extends AuthenticationActivity {
                     public void onResponse(JSONObject serverResponse) {
                         try {
                             progress.dismiss();
+
+                            authCallbacks.serverOkResponse();
                             Log.i("Response: Email: ", serverResponse.getString("email"));
 
                             Log.i("Response: ", serverResponse.toString(4));
@@ -43,9 +47,9 @@ public class Authenticate extends AuthenticationActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("Error: ", error.getMessage());
-                Log.i("Printing stack trace",".....");
-                error.printStackTrace();
+                progress.dismiss();
+
+
             }
         }) {
             @Override
@@ -62,7 +66,7 @@ public class Authenticate extends AuthenticationActivity {
 
         RequestHandler.addToRequestQueue(req);
     }
-    public static void createAcc() {
+    public static void createAccount() {
         startProgress();
 
         JSONObject json = new JSONObject();
@@ -113,5 +117,10 @@ public class Authenticate extends AuthenticationActivity {
         } catch (JSONException e) {
             Log.e("JSONException", "Something went wrong creating new account JSON");
         }
+    }
+
+    public static interface AuthenticationCallbacks {
+        void serverErrorResponse(JSONObject serverResponse);
+        void serverOkResponse(JSONObject serverResponse);
     }
 }

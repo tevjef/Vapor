@@ -27,6 +27,7 @@ dependencies {
     compile files('C:/Users/Tevin/Desktop/Development/Vapor/libs/httpmime-4.3.1.jar')
     compile files('C:/Users/Tevin/Desktop/Development/Vapor/libs/commons-lang3-3.1.jar')
     compile files('C:/Users/Tevin/Desktop/Development/Vapor/libs/httpcore-4.3.jar')
+    compile 'com.google.code.gson:gson:2.2.+'
 }
 android {
     packagingOptions {

@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="blue">#1e475e</color>
+    <color name="dark_grey">#505255</color>
     <color name="light_blue">#3c8dc5</color>
-    <color name="text_white">#FFF</color>
+    <color name="nav_listview_pressed">#bbd7eb</color>
+    <color name="nav_listview_divider">#d9d9d9</color>
+    <color name="white">#FFF</color>
+    <color name="drawer_bg">#FFF</color>
     <color name="text_hint">#b2b2b2</color>
     <color name="vapor_color">#ffffff</color>
+
 </resources>

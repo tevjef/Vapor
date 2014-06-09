@@ -1,11 +1,14 @@
 package deadpixel.app.vapor;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -22,8 +25,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import deadpixel.app.vapor.authentication.Authenticate;
-import deadpixel.app.vapor.authentication.ObscuredSharedPreferences;
+import deadpixel.app.vapor.networkOp.authentication.Authenticate;
+import deadpixel.app.vapor.networkOp.authentication.ObscuredSharedPreferences;
 import deadpixel.app.vapor.cloudapp.api.CloudApp;
 import deadpixel.app.vapor.cloudapp.impl.CloudAppImpl;
 import deadpixel.app.vapor.networkOp.RequestHandler;
@@ -34,9 +37,9 @@ public class AuthenticationActivity extends ActionBarActivity {
     String PREF_NAME = "deadpixel.app.vapor";
     public static SharedPreferences prefs;
     protected Context context;
-    protected EditText emailField;
+    protected static EditText emailField;
     protected String userEmail;
-    protected EditText passField;
+    protected static EditText passField;
     protected String userPass;
     protected Button btn_toggle;
     protected CloudApp api = new CloudAppImpl();
@@ -102,23 +105,33 @@ public class AuthenticationActivity extends ActionBarActivity {
             if (activityLoginState) {
                 RequestHandler.setHttpAuthentication(getEmail() ,getPass());
                 Log.i("Checking credentials:  ", "Authenticate.isValid called");
-                Authenticate.isValid();
+                Authenticate.isAccountValid();
             }
             else {
                 RequestHandler.setHttpAuthentication();
                 Log.i("Checking credentials:  ", "Authenticate.createAcc called");
-                Authenticate.createAcc();
+                Authenticate.createAccount();
             }
         }
     }
 
     public void tosDialog(View v) {
-        String url = "http://support.getcloudapp.com/customer/portal/articles/208750-terms-of-service";
+        String url = "https://github.com/cloudapp/policy/blob/master/terms-of-service.md";
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public void toggleBoxError() {
+        Drawable noStroke = getResources().getDrawable(R.drawable.edittext);
+        Drawable stroke = getResources().getDrawable(R.drawable.edittext_error);
+        if (emailField.getBackground() == noStroke) {
+            emailField.setBackground(stroke);
+        } else {
+            emailField.setBackground(stroke);
+        }
+    }
 
     public static void startProgress(){
         progress.setMessage("Checking credentials...");
@@ -163,7 +176,7 @@ public class AuthenticationActivity extends ActionBarActivity {
                 if(activityLoginState) {
                     activityLoginState = false;
                     btn_toggle.setText(R.string.register);
-                    invalidateOptionsMenu();
+                    supportInvalidateOptionsMenu();
                 }
                 return true;
 
@@ -171,7 +184,7 @@ public class AuthenticationActivity extends ActionBarActivity {
                 if(!activityLoginState) {
                     activityLoginState = true;
                     btn_toggle.setText(R.string.sign_in);
-                    invalidateOptionsMenu();
+                    supportInvalidateOptionsMenu();
                 }
                 return true;
             default:

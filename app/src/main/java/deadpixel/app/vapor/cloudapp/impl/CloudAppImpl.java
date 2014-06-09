@@ -17,7 +17,7 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
     //private static final Logger LOGGER = LoggerFactory.getLogger(CloudAppImpl.class);
 
     private String TAG = "deadpixel.app.vapor.cloudapp.impl.CloudAppImpl";
-    private AccountImpl account;
+    private static AccountImpl account;
     private CloudAppItemsImpl items;
 
     public CloudAppImpl() {

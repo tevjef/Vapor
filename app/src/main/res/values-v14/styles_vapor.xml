@@ -72,7 +72,7 @@
         <item name="android:background">@drawable/ab_transparent_vapor</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Vapor</item>
         <item name="android:showDividers">beginning</item>
-        <item name="android:divider">@color/text_white</item>
+        <item name="android:divider">@color/white</item>
     </style>
 
     <style name="CheckBoxVapor" parent="android:Widget.CompoundButton.CheckBox">

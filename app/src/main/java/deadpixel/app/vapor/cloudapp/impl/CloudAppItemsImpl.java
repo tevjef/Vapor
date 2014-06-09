@@ -28,9 +28,10 @@ import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener;
 import deadpixel.app.vapor.cloudapp.impl.model.CloudAppItemImpl;
+import deadpixel.app.vapor.networkOp.RequestExecuters;
 import deadpixel.app.vapor.networkOp.RequestHandler;
 
-public class CloudAppItemsImpl extends CloudAppBase {
+public class CloudAppItemsImpl extends RequestExecuters {
 
     private static final String TAG = "CLOUDAPPIMPL";
     private static final String ITEMS_URL = MY_CL_LY + "/items";

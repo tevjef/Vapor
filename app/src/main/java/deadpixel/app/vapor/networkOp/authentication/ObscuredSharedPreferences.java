@@ -1,4 +1,4 @@
-package deadpixel.app.vapor.authentication;
+package deadpixel.app.vapor.networkOp.authentication;
 
 import android.content.Context;
 import android.content.SharedPreferences;
