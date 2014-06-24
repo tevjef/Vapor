@@ -7,5 +7,7 @@
     android:dividerHeight="1px"
     android:background="@color/drawer_bg"
     tools:context="deadpixel.app.vapor.NavigationDrawerFragment"
+    android:name="deadpixel.app.vapor.NavigationDrawerFragment"
     android:fitsSystemWindows="true"
+    android:id="@+id/drawer_listview"
 />

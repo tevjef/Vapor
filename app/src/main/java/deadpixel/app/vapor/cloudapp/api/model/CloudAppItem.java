@@ -88,11 +88,11 @@ public interface CloudAppItem {
     String getRedirectUrl() throws CloudAppException;
 
     /**
-     * @return A url that points to a thumbnail of this item if one is available,
+     * @return A url that points to a icon of this item if one is available,
      *         null otherwise. ie: "http://thumbs.cl.ly/2wr4"
      * @throws CloudAppException
      */
-    String getThumbnailUrl() throws CloudAppException;
+    String getIcon() throws CloudAppException;
 
     /**
      * @return Identifies the app that uploaded this item. ie:

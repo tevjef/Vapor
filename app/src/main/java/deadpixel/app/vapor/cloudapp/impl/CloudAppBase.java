@@ -22,7 +22,7 @@ import deadpixel.app.vapor.networkOp.RequestHandler;
 
 public class CloudAppBase extends RequestHandler{
 
-    private final String TAG = "deadpixel.app.vapor.cloudapp.impl.CloudAppBase";
+    /*private final String TAG = "deadpixel.app.vapor.cloudapp.impl.CloudAppBase";
 
     protected static final String MY_CL_LY = "http://my.cl.ly";
     public static JSONObject response;
@@ -34,13 +34,13 @@ public class CloudAppBase extends RequestHandler{
         response = object;
     }
 
-    /**
+    *//**
      * Executes a GET to a url with a certain body.
      *
      * @param url
      * @return
      * @throws CloudAppException
-     */
+     *//*
     protected Object executeGet(String URL) throws CloudAppException {
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, URL, null,
@@ -99,13 +99,13 @@ public class CloudAppBase extends RequestHandler{
         return response;
     }
 
-    /**
+    *//**
      * Executes a DELETE to a url.
      *
      * @param url
      * @return
      * @throws CloudAppException
-     */
+     *//*
     protected Object executeDelete(String URL) throws CloudAppException {
 
         final JSONObject[] response = new JSONObject[1];
@@ -132,14 +132,14 @@ public class CloudAppBase extends RequestHandler{
     }
 
 
-    /**
+    *//**
      * Executes a POST to a url with a certain body.
      *
      *
      * @param body
      * @return
      * @throws CloudAppException
-     */
+     *//*
     protected Object executePost(String URL, JSONObject body, int expectedCode)
             throws CloudAppException {
 
@@ -166,7 +166,7 @@ public class CloudAppBase extends RequestHandler{
         return response[0];
     }
 
-    /**
+    *//**
      * Executes a PUT request to a URL for a given body.
      *
      *
@@ -177,7 +177,7 @@ public class CloudAppBase extends RequestHandler{
      * @return A JSONObject or JSONArray constructed from the body of the CloudApp API's
      *         response.
      * @throws CloudAppException
-     */
+     *//*
     protected Object executePut(String URL, JSONObject body, int expectedCode)
             throws CloudAppException {
         final JSONObject[] response = new JSONObject[1];
@@ -201,5 +201,5 @@ public class CloudAppBase extends RequestHandler{
         });
 
         return response[0];
-    }
+    }*/
 }

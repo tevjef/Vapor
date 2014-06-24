@@ -101,6 +101,7 @@ public class AccountResponseModel extends CloudAppModel implements CloudAppAccou
     public void setUpdatedAt(String updated_at) {
         this.updated_at = updated_at;
     }
+
     public Date getActivatedAt() throws CloudAppException {
         try {
             return format.parse(activated_at);

@@ -2,13 +2,12 @@ apply plugin: 'android'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '17.0.0'
-
+    buildToolsVersion '19.1.0'
     defaultConfig {
-        minSdkVersion 8
-        targetSdkVersion 19
+        minSdkVersion 11
+        targetSdkVersion 18
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
     }
     buildTypes {
         release {
@@ -16,18 +15,26 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    productFlavors {
+    }
 }
 dependencies {
-    compile 'com.mcxiaoke.volley:library-aar:1.0.+'
-    compile 'com.android.support:appcompat-v7:+'
+    compile files('libs/volley20140618.jar')
+    compile files('libs/apache-mime4j-core-0.7.2.jar')
+    compile files('libs/httpclient-4.3.1.jar')
+    compile files('libs/httpmime-4.3.1.jar')
+    compile files('libs/commons-lang3-3.1.jar')
+    compile files('libs/httpcore-4.3.jar')
+    compile files('libs/ion-1.2.7.jar')
+    compile files('libs/androidasync-1.2.6.jar')
+    //compile 'com.mcxiaoke.volley:library-aar:1.0.+'
+    compile 'de.greenrobot:eventbus:2.2.1'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.0@jar'
     compile 'com.squareup.okhttp:okhttp:1.3.0@jar'
-    compile files('C:/Users/Tevin/Desktop/Development/Vapor/libs/apache-mime4j-core-0.7.2.jar')
-    compile files('C:/Users/Tevin/Desktop/Development/Vapor/libs/httpclient-4.3.1.jar')
-    compile files('C:/Users/Tevin/Desktop/Development/Vapor/libs/httpmime-4.3.1.jar')
-    compile files('C:/Users/Tevin/Desktop/Development/Vapor/libs/commons-lang3-3.1.jar')
-    compile files('C:/Users/Tevin/Desktop/Development/Vapor/libs/httpcore-4.3.jar')
     compile 'com.google.code.gson:gson:2.2.+'
+    compile 'com.android.support:support-v4:19.+'
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    compile 'com.android.support:support-v4:18.0.+'
 }
 android {
     packagingOptions {
