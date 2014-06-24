@@ -1,44 +1,62 @@
 package deadpixel.app.vapor.cloudapp.impl;
 
+import android.app.Activity;
 import android.util.Log;
 
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import deadpixel.app.vapor.AuthenticationActivity;
+import deadpixel.app.vapor.callbacks.AccountUpdateCallback;
+import deadpixel.app.vapor.callbacks.ResponseCallback;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount.DefaultSecurity;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.impl.model.AccountResponseModel;
 import deadpixel.app.vapor.cloudapp.impl.model.AccountStatsResponseModel;
-import deadpixel.app.vapor.cloudapp.impl.model.CloudAppAccountImpl;
-import deadpixel.app.vapor.cloudapp.impl.model.CloudAppAccountStatsImpl;
-import deadpixel.app.vapor.networkOp.RequestExecuters;
+import deadpixel.app.vapor.networkOp.RequestExecutors;
 
-public class AccountImpl extends CloudAppBase implements RequestExecuters.ResponseCallbacks {
-
-    public static final String REGISTER_URL = MY_CL_LY + "/register";
-    public static final String ACCOUNT_URL = MY_CL_LY + "/account";
-    public static final String ACCOUNT_STATS_URL = ACCOUNT_URL + "/stats";
-    public static final String RESET_URL = MY_CL_LY + "/reset";
+public class AccountImpl extends RequestExecutors {
 
     private final String TAG = "deadpixel.app.vapor.cloudapp.impl.AccountImpl";
     //private static final Logger LOGGER = LoggerFactory.getLogger(AccountImpl.class);
 
-    protected AccountImpl() {
-        super();
+    private List<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
 
+    AccountResponseModel accountResponseModel;
+
+    Activity activity;
+    protected AccountImpl(Activity activity) {
+        super();
+        this.activity = activity;
     }
+
+    private AccountUpdateCallback aCallback;
 
     Gson gson = new GsonBuilder()
             .serializeNulls()
             .setPrettyPrinting()
             .create();
+
+
+    public String getResponse() {
+        return response;
+    }
+
+    public void setResponse(String response) {
+        this.response = response;
+    }
 
     String response;
 
@@ -48,7 +66,7 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount setDefaultSecurity(deadpixel.app.vapor.cloudapp.api.CloudAppAccount.DefaultSecurity)
      */
-    public CloudAppAccount setDefaultSecurity(DefaultSecurity security)
+    public void setDefaultSecurity(DefaultSecurity security)
             throws CloudAppException {
         try {
             JSONObject json = new JSONObject();
@@ -56,8 +74,7 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
             user.put("private_items", (security == DefaultSecurity.PRIVATE));
             json.put("user", user);
 
-            executePut(ACCOUNT_URL, json, 200);
-            return gson.fromJson(response, AccountResponseModel.class);
+            executePut(ACCOUNT_URL, json.toString(), 200);
 
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
@@ -71,7 +88,7 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount setEmail(java.lang.String, java.lang.String)
      */
-    public CloudAppAccount setEmail(String newEmail, String currentPassword)
+    public void setEmail(String newEmail, String currentPassword)
             throws CloudAppException {
         try {
             JSONObject json = new JSONObject();
@@ -80,8 +97,7 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
             user.put("current_password", currentPassword);
             json.put("user", user);
 
-            executePut(ACCOUNT_URL, json, 200);
-            return gson.fromJson(response, AccountResponseModel.class);
+            executePut(ACCOUNT_URL, json.toString(), 200);
 
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
@@ -95,7 +111,7 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount setPassword(java.lang.String, java.lang.String)
      */
-    public CloudAppAccount setPassword(String newPassword, String currentPassword)
+    public void setPassword(String newPassword, String currentPassword)
             throws CloudAppException {
         try {
             JSONObject json = new JSONObject();
@@ -104,8 +120,7 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
             user.put("current_password", currentPassword);
             json.put("user", user);
 
-            executePut(ACCOUNT_URL, json, 200);
-            return gson.fromJson(response, AccountResponseModel.class);
+            executePut(ACCOUNT_URL, json.toString() , 200);
 
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
@@ -126,7 +141,7 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
             user.put("email", email);
             json.put("user", user);
 
-            executePost(RESET_URL, json, 200);
+            executePost(RESET_URL, json.toString(), 200);
 
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
@@ -141,7 +156,7 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount createAccount(java.lang.String,
      *      java.lang.String, boolean)
      */
-    public CloudAppAccount createAccount(String email, String password, boolean acceptTOS)
+    public void createAccount(String email, String password, boolean acceptTOS)
             throws CloudAppException {
         try {
             JSONObject json = new JSONObject();
@@ -151,9 +166,8 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
             user.put("accept_tos", acceptTOS);
             json.put("user", user);
 
-            executePost(REGISTER_URL, json, 201);
+            executePost(REGISTER_URL, json.toString() , 201);
 
-            return gson.fromJson(response, AccountResponseModel.class);
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
             throw new CloudAppException(500, "Something went wrong trying to handle JSON.", e);
@@ -167,7 +181,7 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount setCustomDomain(java.lang.String,
      *      java.lang.String)
      */
-    public CloudAppAccount setCustomDomain(String domain, String domainHomePage)
+    public void setCustomDomain(String domain, String domainHomePage)
             throws CloudAppException {
         try {
             JSONObject json = new JSONObject();
@@ -176,8 +190,7 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
             user.put("domain_home_page", domainHomePage);
             json.put("user", user);
 
-            executePut(ACCOUNT_URL, json, 200);
-            return gson.fromJson(response, AccountResponseModel.class);
+            executePut(ACCOUNT_URL, json.toString() , 200);
 
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
@@ -191,9 +204,12 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount getAccountDetails()
      */
-    public CloudAppAccount getAccountDetails() throws CloudAppException {
-        executeGet(ACCOUNT_URL);
-        return gson.fromJson(response, AccountResponseModel.class);
+    public CloudAppAccount getAccountDetails()  {
+        return accountResponseModel;
+    }
+
+    public void requestAccountDetails() throws CloudAppException {
+        executeGet(ACCOUNT_URL, 200);
     }
 
     /**
@@ -202,18 +218,10 @@ public class AccountImpl extends CloudAppBase implements RequestExecuters.Respon
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount getAccountStats()
      */
-    public CloudAppAccountStats getAccountStats() throws CloudAppException {
-            executeGet(ACCOUNT_STATS_URL);
-            return gson.fromJson(response, AccountStatsResponseModel.class);
-    }
 
-    @Override
-    public void serverResponse(String response) {
+    public void updateAccountDetails(String response) {
+
         this.response = response;
-    }
-
-    @Override
-    public void serverErrorResponse(VolleyError error) {
-
+        accountResponseModel = gson.fromJson(response, AccountResponseModel.class);
     }
 }

@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="deadpixel.app.vapor.AuthenticationActivity">
 
-    <item android:id="@+id/register"
-        android:title="CREATE ACCOUNT"
-        app:showAsAction="withText|ifRoom" />
+    <item android:id="@+id/menu_register"
+        android:title="Create Account"
+        android:showAsAction="withText|ifRoom" />
+
 
 </menu>

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="deadpixel.app.vapor.AuthenticationActivity">
 
-    <item android:id="@+id/sign_in"
-        android:title="SIGN IN"
-        app:showAsAction="withText|ifRoom" />
+    <item android:id="@+id/menu_sign_in"
+        android:title="Sign In"
+        android:showAsAction="withText|ifRoom" />
 </menu>

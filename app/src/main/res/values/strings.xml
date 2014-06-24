@@ -2,13 +2,19 @@
 <resources>
 
     <string name="app_name">Vapor</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="success">SUCCESS</string>
     <string name="action_settings">Settings</string>
     <string name="sign_in">SIGN IN</string>
-    <string name="register">REGISTER</string>
-    <string name="createAcc"><u>Don\'t have an account?</u></string>
-    <string name="loginAcc"><u>Already have an account?</u></string>
-    <string name="tos">By registering you accept <b>Cloud</b>App’s <b>Terms of Service.</b></string>
+    <string name="create_account">CREATE ACCOUNT</string>
+    <string name="signing_in">SIGNING IN...</string>
+    <string name="creating_account">CREATING ACCOUNT...</string>
+    <string name="recover_pass">RECOVER PASSWORD</string>
+    <string name="recovering_pass">SENDING EMAIL...</string>
+    <string name="forgot_password">Recover Password</string>
+    <string name="about">About</string>
+    <string name="register">Register</string>
+    <string name="login">Sign in</string>
+    <string name="tos">By registering you accept <b>Cloud</b>App’s <u><b>Terms of Service.</b></u></string>
     <string name="title_activity_main">Vapor</string>
     <string name="title_section1">Recent Drops</string>
     <string name="title_section2">Popular</string>
@@ -17,6 +23,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="library">Library</string>
+    <string name="my_account">My Account</string>
 
     <string-array name="nav_drawer_items">
         <item >Recent Files</item>

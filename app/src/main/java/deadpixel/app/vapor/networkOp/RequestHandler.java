@@ -15,6 +15,8 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import deadpixel.app.vapor.AuthenticationActivity;
+
 /**
  * Created by Tevin on 1/18/14.
  */
@@ -45,14 +47,7 @@ public class RequestHandler extends Application {
         AuthScope scope = new AuthScope("my.cl.ly", 80);
         client.getCredentialsProvider().setCredentials(scope,
                 new UsernamePasswordCredentials(mail, pw));
-        Log.i(TAG, "Authentication set.");
-    }
-
-    public static void setHttpAuthentication() {
-        if (client == null) {
-            client = new DefaultHttpClient();
-        }
-        Log.i(TAG, "No Authentication set.");
+        Log.i("Setting Authentication of client", AuthenticationActivity.getEmail() + "  " + AuthenticationActivity.getPass());
     }
 
     public static RequestQueue getRequestQueue() {

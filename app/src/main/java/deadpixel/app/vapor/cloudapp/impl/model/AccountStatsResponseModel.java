@@ -6,7 +6,7 @@ import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
 /**
  * Created by Tevin on 6/8/14.
  */
-public class AccountStatsResponseModel implements CloudAppAccountStats{
+public class AccountStatsResponseModel implements CloudAppAccountStats {
 
     private long items;
     private long views;

@@ -21,7 +21,7 @@ public interface CloudApp {
      *           will be set on the exception.
      * @return
      */
-    public CloudAppAccount setDefaultSecurity(CloudAppAccount.DefaultSecurity security)
+    public void setDefaultSecurity(CloudAppAccount.DefaultSecurity security)
             throws CloudAppException;
 
     /**
@@ -38,7 +38,7 @@ public interface CloudApp {
      *          Your current password (as a confirmation mechanism.)
      * @return
      */
-    public CloudAppAccount setEmail(String newEmail, String currentPassword)
+    public void setEmail(String newEmail, String currentPassword)
             throws CloudAppException;
 
     /**
@@ -55,7 +55,7 @@ public interface CloudApp {
      *          Your old password.
      * @return
      */
-    public CloudAppAccount setPassword(String newPassword, String currentPassword)
+    public void setPassword(String newPassword, String currentPassword)
             throws CloudAppException;
 
     /**
@@ -90,7 +90,7 @@ public interface CloudApp {
      *           will be set on the exception.
      * @return
      */
-    public CloudAppAccount createAccount(String email, String password, boolean acceptTOS)
+    public void createAccount(String email, String password, boolean acceptTOS)
             throws CloudAppException;
 
     /**
@@ -106,7 +106,7 @@ public interface CloudApp {
      *           will be set on the exception.
      * @return
      */
-    public CloudAppAccount setCustomDomain(String domain, String domainHomePage)
+    public void setCustomDomain(String domain, String domainHomePage)
             throws CloudAppException;
 
     /**
@@ -262,4 +262,9 @@ public interface CloudApp {
      */
     public CloudAppItem rename(CloudAppItem item, String name) throws CloudAppException;
 
+    public void requestAccountDetails() throws CloudAppException;
+
+    public void requestAccountStats() throws CloudAppException;
+
+    public void updateAccountDetails(String response);
 }

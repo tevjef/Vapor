@@ -32,12 +32,14 @@
         <!-- The drawer is given a fixed width in dp and extends the full height of
              the container. -->
 
-        <fragment
+        <fragment android:name="deadpixel.app.vapor.NavigationDrawerFragment"
             android:id="@+id/navigation_drawer"
             android:layout_width="@dimen/navigation_drawer_width"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:name="deadpixel.app.vapor.NavigationDrawerFragment"/>
+
+            tools:context="deadpixel.app.vapor.NavigationDrawerFragment"
+            />
 
     </android.support.v4.widget.DrawerLayout>
 </FrameLayout>

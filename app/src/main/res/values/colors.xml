@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="blue">#1e475e</color>
+    <color name="dark_blue">#1e475e</color>
+    <color name="dark_gray_blue">#6b747e</color>
     <color name="dark_grey">#505255</color>
-    <color name="light_blue">#3c8dc5</color>
+    <color name="light_blue">#4fa8e6</color>
     <color name="nav_listview_pressed">#bbd7eb</color>
     <color name="nav_listview_divider">#d9d9d9</color>
     <color name="white">#FFF</color>
     <color name="drawer_bg">#FFF</color>
     <color name="text_hint">#b2b2b2</color>
     <color name="vapor_color">#ffffff</color>
+
+    <color name="blue">#4c97cb</color>
+    <color name="activity_bg">#e9ecf2</color>
+    <color name="disabled">#f0f2f7</color>
+    <color name="success">#68A54F</color>
 
 </resources>
