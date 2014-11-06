@@ -1,14 +1,42 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="deadpixel.app.vapor.MainActivity" >
 
-    <item android:id="@+id/my_account"
-    android:title="@string/my_account"
-    android:showAsAction="never" />
 
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
+    <item android:id="@+id/main_upload"
+        android:title="@string/upload"
+        android:icon="@drawable/ic_action_new"
+        android:showAsAction="ifRoom"
+        />
+
+    <item android:id="@+id/main_search"
+        android:title="@string/search"
+        android:showAsAction="collapseActionView|ifRoom"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/ic_search_white"
+        />
+
+    <item android:id="@+id/main_refresh"
+        android:title="@string/refresh"
+        android:showAsAction="ifRoom"
+
+        android:icon="@drawable/cloud_refresh"/>
+<!--
+    <item android:id="@+id/main_view_as_list"
+        android:title="@string/view_as_list"
+        android:showAsAction="ifRoom"
+
+        android:icon="@drawable/ab_action_view_as_list"/>
+
+    <item android:id="@+id/main_view_as_grid"
+        android:title="@string/view_as_grid"
+        android:showAsAction="ifRoom"
+
+        android:icon="@drawable/ab_action_view_as_grid"/>
+
+    <item android:id="@+id/main_upload"
+        android:title="Upload"
+        android:showAsAction="ifRoom"
+
+        android:icon="@drawable/ab_action_upload"/>-->
 </menu>
