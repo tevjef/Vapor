@@ -1,0 +1,4 @@
+<!-- From: file:/Users/chris/Development/ActionBar-PullToRefresh/extras/actionbarsherlock/src/main/AndroidManifest.xml --><manifest xmlns:android="http://schemas.android.com/apk/res/android" package="uk.co.senab.actionbarpulltorefresh.extras.actionbarsherlock">
+    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="19"/>
+    <application/>
+</manifest>

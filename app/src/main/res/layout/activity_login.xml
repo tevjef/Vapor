@@ -5,6 +5,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
+    android:fitsSystemWindows="false"
     tools:context="deadpixel.app.vapor.AuthenticationActivity"
     android:background="@color/activity_bg">
 
@@ -15,51 +16,61 @@
         android:layout_alignParentLeft="false"
         android:layout_alignParentStart="false"
         android:id="@+id/contain_layout"
-        android:weightSum="2"
-        android:background="@drawable/glow"
-        android:layout_alignParentBottom="false"
+        android:weightSum="10"
         android:orientation="vertical"
-        android:gravity="bottom"
-        android:focusableInTouchMode="false">
+        android:gravity="center_vertical">
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="250dp"
-            android:id="@+id/contain_layout"
-            android:weightSum="1"
-            android:layout_marginTop="20dp"
-            android:layout_weight="1">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/Login_logo"
+                android:id="@+id/login_logo"
                 android:src="@drawable/logo_image"
                 android:adjustViewBounds="true"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10dp"
+                android:visibility="visible"
+                android:layout_gravity="center" />
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/Login_logo_text"
+                android:id="@+id/login_logo_text"
                 android:src="@drawable/logo_text"
-                android:adjustViewBounds="true" />
+                android:adjustViewBounds="true"
+                android:visibility="visible"
+                android:layout_gravity="center" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/contain_layout"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
+            android:id="@+id/fields_contain_layout"
             android:orientation="vertical"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_weight="1">
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:minHeight="200dp"
+            android:measureWithLargestChild="false"
+            android:visibility="gone">
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/field_group"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:minWidth="450dp"
+                android:gravity="center_vertical">
 
-
-            <EditText
+                <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
@@ -70,20 +81,28 @@
                     android:layout_gravity="center"
                     android:hint="E-mail address"
                     android:imeOptions="actionNext"
-                    android:textColor="@color/dark_gray_blue"
-                    android:textColorHighlight="@color/light_blue"
+                    android:textColor="@color/primary_text_color"
+                    android:textColorHighlight="@color/text_highlight_color"
                     android:textColorHint="@color/text_hint"
                     android:singleLine="true"
                     android:nextFocusDown="@id/pass_field"
                     android:shadowColor="@color/white"
-                    android:background="@drawable/field_selector"
-                    android:padding="9dp"
+                    android:background="@drawable/edittext_selector"
+                    android:padding="10dp"
+                    android:drawablePadding="10dp"
                     android:layout_marginBottom="7dp"
                     android:textSize="15dp"
                     android:autoText="true"
-                    android:fontFamily="sans-serif-light"/>
+                    android:fontFamily="sans-serif-light"
+
+                    android:drawableLeft="@drawable/envelope"
+                    android:visibility="invisible"
+                    android:layout_marginRight="17dp"
+                    android:layout_marginLeft="17dp"
+                    android:gravity="start|top" />
 
                 <EditText
+                    android:drawableLeft="@drawable/key"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
@@ -94,25 +113,51 @@
                     android:layout_gravity="center"
                     android:hint="Password"
                     android:imeOptions="actionDone"
-                    android:textColor="@color/dark_gray_blue"
+                    android:textColor="@color/primary_text_color"
                     android:textColorHint="@color/text_hint"
                     android:singleLine="true"
                     android:shadowColor="@color/white"
-                    android:textColorHighlight="@color/light_blue"
+                    android:textColorHighlight="@color/text_highlight_color"
                     android:textColorLink="@color/white"
-                    android:background="@drawable/field_selector"
-                    android:padding="9dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:layout_marginBottom="7dp"
+                    android:background="@drawable/edittext_selector"
+                    android:padding="10dp"
+                    android:drawablePadding="10dp"
                     android:textSize="15dp"
-                    android:fontFamily="sans-serif-light"/>
+                    android:fontFamily="sans-serif-light"
+                    android:visibility="invisible"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginRight="17dp"
+                    android:layout_marginLeft="17dp" />
 
-                <RelativeLayout
+                <EditText
+                    android:drawableLeft="@drawable/key"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:ems="10"
+                    android:id="@+id/confirm_pass_field"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:hint="@string/aa_confirm_password"
+                    android:imeOptions="actionDone"
+                    android:textColor="@color/primary_text_color"
+                    android:textColorHint="@color/text_hint"
+                    android:singleLine="true"
+                    android:shadowColor="@color/white"
+                    android:textColorHighlight="@color/text_highlight_color"
+                    android:textColorLink="@color/white"
+                    android:background="@drawable/edittext_selector"
+                    android:padding="10dp"
+                    android:drawablePadding="10dp"
+                    android:textSize="15dp"
+                    android:fontFamily="sans-serif-light"
+                    android:visibility="gone"
+                    android:layout_marginBottom="7dp"
+                    android:layout_marginRight="17dp"
+                    android:layout_marginLeft="17dp" />
 
-                    <Button
+                    <deadpixel.app.vapor.libs.TransitionButton
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/sign_in"
@@ -122,32 +167,32 @@
                         android:background="@drawable/btn_toggle_selector"
                         android:textColor="@color/white"
                         android:textSize="15dp"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:singleLine="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="false"
-                        android:layout_alignParentEnd="true"
+                        android:textStyle="bold"
+                        android:visibility="invisible"
                         android:fontFamily="sans-serif-light"
-                        android:textStyle="bold" />
+                        android:layout_marginLeft="17dp"
+                        android:layout_marginRight="17dp"/>
 
+            </LinearLayout>
 
-
-                </RelativeLayout>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/tos"
-            android:id="@+id/tos"
-            android:textColor="@color/dark_gray_blue"
-            android:textSize="10dp"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:onClick="tosDialog" />
+
 
     </LinearLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/tos"
+        android:id="@+id/tos"
+        android:textColor="@color/primary_text_color"
+        android:textSize="10dp"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:onClick="tosDialog"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

@@ -1,18 +1,19 @@
 package deadpixel.app.vapor.networkOp;
 
-import android.util.Log;
+import android.util.JsonWriter;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonRequest;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import org.apache.http.HttpStatus;
-import org.json.JSONObject;
 
-import java.beans.PropertyChangeListener;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,28 +54,22 @@ public class ResponseParser extends JsonRequest<NetworkResponse> {
             e.printStackTrace();
         }
 
-        return jsonString;
+        JsonParser parser = new JsonParser();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement el = parser.parse(jsonString);
+        return gson.toJson(el);
     }
 
     @Override
     public Priority getPriority() {
-        return Priority.IMMEDIATE;
+        return Priority.NORMAL;
     }
 
     public static String getError(NetworkResponse networkResponse) {
-        String errorDescription;
-        switch(networkResponse.statusCode) {
-            case HttpStatus.SC_UNPROCESSABLE_ENTITY:
-                errorDescription = "Invalid email and/or password";
-                break;
-            case HttpStatus.SC_UNAUTHORIZED:
-                errorDescription = "Unauthorized";
-                break;
-            case HttpStatus.SC_NOT_ACCEPTABLE:
-                errorDescription = "Account already exists";
-                break;
-            default:
-                errorDescription = "An error occurred";
+        String errorDescription = "An error occurred";
+
+        if(networkResponse == null) {
+            errorDescription = "Unable to contact CloudApp servers. Try again later";
         }
         return errorDescription;
     }

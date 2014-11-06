@@ -1,0 +1,12 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- A 'parent' preference, which enables/disables child preferences (below)
+         when checked/unchecked. -->
+    <Preference
+        android:key="settings_cloudapp_account"
+        android:title="@string/account_activity_title"
+ />
+
+
+
+</PreferenceScreen>
