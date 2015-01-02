@@ -1,211 +1,551 @@
 package deadpixel.app.vapor;
 
-import android.animation.Animator;
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
-import android.app.ProgressDialog;
+import android.animation.LayoutTransition;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-
-
-import android.text.InputType;
-import android.text.TextUtils;
+import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.KeyEvent;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.android.volley.VolleyError;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 
-import deadpixel.app.vapor.callbacks.AccountUpdateCallback;
-import deadpixel.app.vapor.callbacks.ObserverCollection;
-import deadpixel.app.vapor.callbacks.ResponseCallback;
+import org.apache.http.HttpStatus;
+
+
+import deadpixel.app.vapor.callbacks.ErrorEvent;
+import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
-import deadpixel.app.vapor.cloudapp.impl.AccountImpl;
-import deadpixel.app.vapor.networkOp.authentication.ObscuredSharedPreferences;
-import deadpixel.app.vapor.cloudapp.api.CloudApp;
 import deadpixel.app.vapor.cloudapp.impl.CloudAppImpl;
-import deadpixel.app.vapor.networkOp.RequestHandler;
+import deadpixel.app.vapor.libs.EaseOutQuint;
+import deadpixel.app.vapor.libs.TransitionButton;
+import deadpixel.app.vapor.networkOp.AuthenticationTaskFragment;
 import deadpixel.app.vapor.utils.AppUtils;
+import deadpixel.app.vapor.utils.AppUtils.TextStyle;
 
+public class AuthenticationActivity extends SherlockFragmentActivity implements AuthenticationTaskFragment.TaskCallbacks {
 
-public class AuthenticationActivity extends SherlockActivity implements ResponseCallback {
-
-    String PREF_NAME = "deadpixel.app.vapor";
+    private static final boolean DEBUG = true;
+    String TAG = "AuthenticationActivity";
     public static SharedPreferences prefs;
-    protected Context context;
-    protected static EditText emailField;
-    protected String userEmail;
-    protected static EditText passField;
-    protected String userPass;
-    protected Button btn_toggle;
-    protected static ProgressDialog progress;
-    protected static boolean activityLoginState;
+    private Context context;
+    private static EditText mEmailField;
+    private static String userEmail;
+    private static EditText mPassField;
+    private static EditText mConfirmPassField;
+    private String mConfirmPass;
 
-    CloudApp api;
-    CloudAppAccount account;
-    String response;
-    Drawable noStroke;
-    Drawable stroke;
-    Animation ani1;
-    Animation ani2;
+    private State mState;
+    private SubState mSubState;
 
-    protected ObscuredSharedPreferences.Editor editPref;
+    private String userPass;
+    private TransitionButton mButton;
+    private TextView tos;
+    private Activity mActivty;
+
+    private static final String TAG_TASK_FRAGMENT = "authentication_task_fragment";
+    private AuthenticationTaskFragment mAuthenticationTaskFragment;
+
+    boolean signedIn;
+
+    private TextSwitcher mTextSwitch;
+
+    private SharedPreferences.Editor editPref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
         //sets the XML layout
-        setContentView(R.layout.activity_login);
-        //sets the Actionbar and its properties
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
-        actionBar.setDisplayShowCustomEnabled(true);
+
+        //Instantiates a preference to be acted upon.
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        editPref = prefs.edit();
+
+        boolean startupAnimationRan = prefs.getBoolean(AppUtils.STARTUP_ANIMATION_RAN, false);
+
+        boolean signedIn = AppUtils.isSignedIn();
 
 
-        //stores the application context for future use.
-        context = getApplicationContext();
+        if(!signedIn) {
+            setContentView(R.layout.activity_login);
+            //sets the Actionbar and its properties
+            ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayShowHomeEnabled(false);
+            actionBar.setDisplayShowCustomEnabled(true);
 
-        setUpActivityFields();
-        api = new CloudAppImpl(this);
+            //stores the application context for future use.
+            context = getApplicationContext();
 
+            setUpActivityFields();
+
+            if(!startupAnimationRan) {
+                startUpAnimation();
+            } else {
+                updateStateFromPreferences();
+                final ViewGroup fieldsContainerLayout = (ViewGroup) findViewById(R.id.fields_contain_layout);
+                fieldsContainerLayout.setVisibility(View.VISIBLE);
+                mEmailField.setVisibility(View.VISIBLE);
+                mPassField.setVisibility(View.VISIBLE);
+                mButton.setVisibility(View.VISIBLE);
+                tos.setVisibility(View.VISIBLE);
+
+                ViewGroup containerLayout = (ViewGroup) findViewById(R.id.field_group);
+                LayoutTransition layoutTransition = new LayoutTransition();
+                containerLayout.setLayoutTransition(layoutTransition);
+            }
+
+            FragmentManager fm = getSupportFragmentManager();
+            mAuthenticationTaskFragment = (AuthenticationTaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
+
+            // If the Fragment is non-null, then it is currently being
+            // retained across a configuration change.
+            if (mAuthenticationTaskFragment == null) {
+                mAuthenticationTaskFragment = new AuthenticationTaskFragment();
+                fm.beginTransaction().add(mAuthenticationTaskFragment, TAG_TASK_FRAGMENT).commit();
+            }
+
+        } else {
+            Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    public void updateStateFromPreferences() {
+        final int state = prefs.getInt(AppUtils.AUTH_ACTIVITY_STATE, 2);
+        if(state == -1) {
+            updateState(State.SIGNIN, SubState.NORMAL);
+        } else if(state == 0) {
+            updateState(State.REGISTER, SubState.NORMAL);
+
+        } else if(state == 1) {
+            updateState(State.FORGOTPASS, SubState.NORMAL);
+        } else {
+            updateState(State.SIGNIN, SubState.NORMAL);
+            if(AppUtils.GLOBAL_DEBUG || DEBUG) {
+                Log.e(TAG, "Couldn't updateState from preferences");
+            }
+        }
+    }
+
+    protected void onPostCreate(Bundle savedStateInstance) {
+        super.onPostCreate(savedStateInstance);
     }
 
 
     private void setUpActivityFields() {
 
-        prefs = new ObscuredSharedPreferences(
-                this, this.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE) );
+        //Saves a reference to the current activity to use in anonymous classes.
+        mActivty = this;
 
-        stroke = getResources().getDrawable(R.drawable.edittext);
-        noStroke  = getResources().getDrawable(R.drawable.edittext_error);
-        emailField = (EditText) findViewById(R.id.email_field);
-        passField = (EditText) findViewById(R.id.pass_field);
-        passField.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-       // checkbox = (CheckBox) findViewById(R.id.showpassword);
-        btn_toggle = (Button) findViewById(R.id.btn_toggle);
 
-        emailField.setText("mastermindtj94@gmail.com");
-        passField.setText("master123");
-        emailField.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                emailField.setBackgroundResource(R.drawable.edittext);
-            }
-        });
 
-        passField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        //Holds reference to the various views on screen.
+        tos = (TextView) findViewById(R.id.tos);
+        mEmailField = (EditText) findViewById(R.id.email_field);
+        mPassField = (EditText) findViewById(R.id.pass_field);
+        mConfirmPassField = (EditText) findViewById(R.id.confirm_pass_field);
+        mButton = (TransitionButton) findViewById(R.id.btn_toggle);
+
+        //Sets the typeface for the email field
+        mEmailField.setTypeface(AppUtils.getTextStyle(TextStyle.LIGHT_NORMAL));
+
+        //Sets the typeface for the password field
+        mPassField.setTypeface(AppUtils.getTextStyle(TextStyle.LIGHT_NORMAL));
+
+        //Sets the typeface for the password field
+        mConfirmPassField.setTypeface(AppUtils.getTextStyle(TextStyle.LIGHT_NORMAL));
+
+
+        //Sets up the Transition butt to receive animation events.
+        mButton.with(this)
+                .setNormalSelector(R.drawable.btn_toggle_selector)
+                .setErrorSelector(R.drawable.btn_toggle_error_selector)
+                .setSuccessSelector(R.drawable.btn_toggle_success_selector);
+
+        //performs action when user clicks the 'next' button on their soft keyboard.
+        mPassField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    btn_toggle.performClick();
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    mButton.performClick();
                     handled = true;
                 }
                 return handled;
             }
         });
-        passField.setOnClickListener(new View.OnClickListener() {
+        //For debugging purposes
+        mEmailField.setText("mastermindtj94@gmail.com");
+        mPassField.setText("master123");
+
+        //Special lister to change state to Sign In after user successfully sends and email to a recovery address
+        mButton.setTransitionListener(new TransitionButton.OnTransitionListener() {
             @Override
-            public void onClick(View v) {
-                passField.setBackgroundResource(R.drawable.edittext);
+            public void OnTransitionStart(TransitionButton button) {
+                mButton.setEnabled(false);
+            }
+            @Override
+            public void OnTransitionEnd(TransitionButton button) {
+                mButton.setEnabled(true);
+                supportInvalidateOptionsMenu();
+                if (mState == State.FORGOTPASS && mSubState == SubState.SUCCESS)
+                    updateState(State.SIGNIN, SubState.NORMAL);
             }
         });
 
-        /*checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    passField.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                    passField.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                } else {
-                    passField.setInputType(129);
-                    passField.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                }
-            }
-        });*/
-
-        updateState(State.SIGNIN, SubState.NORAML);
     }
 
+    public void startUpAnimation() {
+
+        editPref.putBoolean(AppUtils.STARTUP_ANIMATION_RAN, true).commit();
+
+        ViewGroup containerLayout = (ViewGroup) findViewById(R.id.contain_layout);
+        final LayoutTransition layoutTransition  = new LayoutTransition();
+        containerLayout.setLayoutTransition(layoutTransition);
+
+        final ViewGroup fieldsContainerLayout = (ViewGroup) findViewById(R.id.fields_contain_layout);
+
+        //Fades in the logo
+        YoYo.with(Techniques.FadeIn).duration(2500).playOn(findViewById(R.id.login_logo));
+
+        //A concerted effort to animated fields on startup
+        YoYo.with(Techniques.FadeInUp).duration(2500).withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
+
+                fieldsContainerLayout.setVisibility(View.VISIBLE);
+
+                YoYo.with(Techniques.FadeInUp).duration(500).withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
+                        mEmailField.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
+
+                        YoYo.with(Techniques.FadeInUp).duration(500).withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
+                                mPassField.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
+
+                                YoYo.with(Techniques.FadeInUp).duration(500).withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
+                                    @Override
+                                    public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
+                                        mButton.setVisibility(View.VISIBLE);
+                                        mButton.setEnabled(false);
+                                    }
+
+                                    @Override
+                                    public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
 
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+                                        YoYo.with(Techniques.FadeInUp).duration(200).withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
+                                            @Override
+                                            public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
+                                                tos.setVisibility(View.VISIBLE);
+
+                                            }
+
+                                            @Override
+                                            public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
+
+                                                ViewGroup containerLayout = (ViewGroup) findViewById(R.id.field_group);
+                                                LayoutTransition layoutTransition = new LayoutTransition();
+                                                containerLayout.setLayoutTransition(layoutTransition);
+                                            }
+
+                                            @Override
+                                            public void onAnimationCancel(com.nineoldandroids.animation.Animator animation) {
+
+                                            }
+
+                                            @Override
+                                            public void onAnimationRepeat(com.nineoldandroids.animation.Animator animation) {
+
+                                            }
+                                        }).playOn(tos);
+
+                                        updateState(State.SIGNIN, SubState.NORMAL);
+                                        mButton.setEnabled(true);
+                                    }
+
+                                    @Override
+                                    public void onAnimationCancel(com.nineoldandroids.animation.Animator animation) {
+
+                                    }
+
+                                    @Override
+                                    public void onAnimationRepeat(com.nineoldandroids.animation.Animator animation) {
+
+                                    }
+                                }).interpolate(new EaseOutQuint()).playOn(mButton);
+                            }
+
+                            @Override
+                            public void onAnimationCancel(com.nineoldandroids.animation.Animator animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(com.nineoldandroids.animation.Animator animation) {
+
+                            }
+                        }).interpolate(new EaseOutQuint()).playOn(mPassField);
+
+                    }
+
+                    @Override
+                    public void onAnimationCancel(com.nineoldandroids.animation.Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(com.nineoldandroids.animation.Animator animation) {
+
+                    }
+                }).interpolate(new EaseOutQuint()).playOn(mEmailField);
+
+
+            }
+
+            @Override
+            public void onAnimationCancel(com.nineoldandroids.animation.Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(com.nineoldandroids.animation.Animator animation) {
+
+            }
+        }).playOn(findViewById(R.id.login_logo_text));
+
+
+    }
+
+    //Provides an easy way to to shake Views
+    private void shake(View v){
+        YoYo.with(Techniques.Shake).duration(1500).playOn(v);
+    }
+
+    private boolean isSignInFieldValid() {
+
+        userEmail = mEmailField.getText().toString();
+        userPass = mPassField.getText().toString();
+
+        //If the email field is empty.
+        if (AppUtils.isEmpty(userEmail)) {
+            shake(mEmailField);
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setTransitionText(mButton.getText(), getResources().getString(R.string.empty_email))
+                    .start();
+
+            updateState(getState(), SubState.ERROR);
+            return false;
+
+            //If the email field has errors
+        } else if (!AppUtils.isValidEmail(userEmail)) {
+            shake(mEmailField);
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setTransitionText(mButton.getText(), getResources().getString(R.string.invalid_email))
+                    .start();
+
+            updateState(getState(), SubState.ERROR);
+            return false;
+            //If password field is empty
+        } else if (AppUtils.isEmpty(userPass)) {
+            YoYo.with(Techniques.Shake).duration(1500).playOn(mPassField);
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setTransitionText(mButton.getText(), getResources().getString(R.string.empty_password))
+                    .start();
+
+            updateState(getState(), SubState.ERROR);
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+    private boolean isRegisterFieldsValid() {
+
+        userEmail = mEmailField.getText().toString();
+        userPass = mPassField.getText().toString();
+        mConfirmPass = mConfirmPassField.getText().toString();
+
+        //If the email field is empty.
+        if (AppUtils.isEmpty(userEmail)) {
+            shake(mEmailField);
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setTransitionText(mButton.getText(), getResources().getString(R.string.empty_email))
+                    .start();
+
+            updateState(getState(), SubState.ERROR);
+            return false;
+
+            //If the email field has errors
+        } else if (!AppUtils.isValidEmail(userEmail)) {
+            shake(mEmailField);
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setTransitionText(mButton.getText(), getResources().getString(R.string.invalid_email))
+                    .start();
+
+            updateState(getState(), SubState.ERROR);
+            return false;
+            //If password field is empty
+        } else if (AppUtils.isEmpty(userPass)) {
+            YoYo.with(Techniques.Shake).duration(1500).playOn(mPassField);
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setTransitionText(mButton.getText(), getResources().getString(R.string.empty_password))
+                    .start();
+
+            updateState(getState(), SubState.ERROR);
+            return false;
+        } else if (AppUtils.isEmpty(mConfirmPass)) {
+            YoYo.with(Techniques.Shake).duration(1500).playOn(mConfirmPassField);
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setTransitionText(mButton.getText(), getResources().getString(R.string.empty_password))
+                    .start();
+
+            updateState(getState(), SubState.ERROR);
+            return false;
+        } else if (!mPassField.getText().toString().equals(mConfirmPassField.getText().toString())) {
+            YoYo.with(Techniques.Shake).duration(1500).playOn(mConfirmPassField);
+            YoYo.with(Techniques.Shake).duration(1500).playOn(mPassField);
+
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setTransitionText(mButton.getText(), getResources().getString(R.string.invalid_pass_no_match))
+                    .start();
+
+            updateState(getState(), SubState.ERROR);
+            return false;
+        }else {
+            return true;
+        }
+    }
+    private boolean isForgotPassFieldsValid() {
+
+        userEmail = mEmailField.getText().toString();
+        userPass = mPassField.getText().toString();
+
+        //If email field is empty
+        if (AppUtils.isEmpty(userEmail)) {
+            shake(mEmailField);
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setTransitionText(mButton.getText(), getResources().getString(R.string.empty_email))
+                    .start();
+
+            updateState(getState(), SubState.ERROR);
+            return false;
+            //If the email field has errors
+        } else if (!AppUtils.isValidEmail(userEmail)) {
+            shake(mEmailField);
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setTransitionText(mButton.getText(), getResources().getString(R.string.invalid_email))
+                    .start();
+
+            updateState(getState(), SubState.ERROR);
+            return false;
+        }
+        return true;
+    }
+    private boolean isValidFields() {
+
+        switch(mState) {
+            case SIGNIN:
+                return isSignInFieldValid();
+            case REGISTER:
+                return isRegisterFieldsValid();
+            case FORGOTPASS:
+                return isForgotPassFieldsValid();
+            default:
+                return false;
+        }
+    }
+
+    private void signIn() {
+
+            AppUtils.addToRequestQueue(AppUtils.api.requestAccountDetails());
+    }
+
+    private void createAccount() {
+
+        try {
+
+         AppUtils.addToRequestQueue(AppUtils.api.createAccount(AppUtils.getEmail(), AppUtils.getPass(), true));
+
+        } catch (CloudAppException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void resetPassword() {
+        try {
+            AppUtils.addToRequestQueue(new CloudAppImpl(this).resetPassword(getEmail()));
+        } catch (CloudAppException e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
     public void btnToggle(View view) {
 
-        updateState(getState(), SubState.PROGRESS);
 
+        if(isValidFields()){
 
-        userEmail = emailField.getText().toString();
-        userPass = passField.getText().toString();
+            //Sets the substate to 'progress' to that the text changes and the fields get disabled
+            updateState(getState(), SubState.PROGRESS);
 
-        if(!AppUtils.isValidEmail(userEmail)) {
-            Toast.makeText(context, "Invalid email address", Toast.LENGTH_SHORT).show();
-            updateState(getState(), SubState.ERROR);
-        }
-        else if(!AppUtils.isValidPass(userPass)) {
-            Toast.makeText(context, "Password field is empty", Toast.LENGTH_SHORT).show();
-            updateState(getState(), SubState.ERROR);
-        }
-        else {
+            //Saves the credentials to the obscured credentials to preferences
             setCredentials(userEmail, userPass);
 
-            //registers an observer for a network event
-            ObserverCollection.getInstance().registerObserver("AuthenticationActivity", this);
+
 
             switch (mState) {
                 case SIGNIN:
 
-                try {
-                    api.requestAccountDetails();
+                    signIn();
 
-                } catch (CloudAppException e) {
-                    e.getMessage();
-                }
                     break;
                 case REGISTER:
-                    try {
-                        api.createAccount(getEmail(), getPass(), true);
-                    } catch (CloudAppException e) {
-                        e.printStackTrace();
-                    }
+
+                    createAccount();
+
                     break;
                 case FORGOTPASS:
 
-                    try {
-                        api.resetPassword(getEmail());
-                    } catch (CloudAppException e) {
-                        e.printStackTrace();
-                    }
+                    resetPassword();
+
+                    break;
             }
         }
 
@@ -218,72 +558,58 @@ public class AuthenticationActivity extends SherlockActivity implements Response
         startActivity(i);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public void toggleBoxError() {
-        if (emailField.getBackground() == noStroke) {
-            emailField.setBackground(stroke);
-            passField.setBackground(stroke);
-        } else {
-            emailField.setBackground(noStroke);
-            passField.setBackground(noStroke);
-        }
-    }
 
-    public static void startProgress(){
-        if (activityLoginState) {
-            progress.setMessage("Signing in...");
-        } else {
-            progress.setMessage("Creating account");
-        }
-
-        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progress.setIndeterminate(true);
-        progress.show();
-    }
-
-
+    //Saves the credentials to the obscured credentials to preferences
     public void setCredentials(String email, String pass) {
-        editPref = (ObscuredSharedPreferences.Editor) prefs.edit();
-        editPref.putString("ZW1haWw=", email);
-        editPref.putString("cGFzcw==", pass);
-        Log.i("Credentials saved to Preferences", email + "  " + pass);
-        editPref.apply();
 
-        //sets authentication of the HTTP client
-        RequestHandler.setHttpAuthentication(getEmail(), getPass());
+        AppUtils.setEmail(email);
+        AppUtils.setPass(pass);
 
     }
 
     public static String getEmail() {
-        return prefs.getString("ZW1haWw=", null);
+        return prefs.getString("email", null);
     }
     public static String getPass() {
-        return prefs.getString("cGFzcw==", null);
+        return prefs.getString("pass", null);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         if(mSubState == SubState.PROGRESS) {
             return false;
-        } else {
+        }
+        else if(mButton.isTransitioning())
+            return false;
+        else {
             if(mState == State.SIGNIN) {
                 menu.clear();
-                menu.add(Menu.NONE, 2, Menu.NONE, getResources().getString(R.string.register));
+                editPref.putInt(AppUtils.AUTH_ACTIVITY_STATE, -1);
+                menu.add(Menu.NONE, 2, Menu.NONE, getResources().getString(R.string.lower_register));
                 menu.add(Menu.NONE, 3, Menu.NONE, getResources().getString(R.string.forgot_password));
 
             } else if(mState == State.REGISTER){
                 menu.clear();
-                menu.add(Menu.NONE, 1, Menu.NONE, getResources().getString(R.string.login));
+                editPref.putInt(AppUtils.AUTH_ACTIVITY_STATE, 0);
+                menu.add(Menu.NONE, 1, Menu.NONE, getResources().getString(R.string.lower_sign_in));
                 menu.add(Menu.NONE, 3, Menu.NONE, getResources().getString(R.string.forgot_password));
 
             } else if(mState == State.FORGOTPASS) {
                 menu.clear();
-                menu.add(Menu.NONE, 1, Menu.NONE, getResources().getString(R.string.login));
-                menu.add(Menu.NONE, 2, Menu.NONE, getResources().getString(R.string.register));
+                editPref.putInt(AppUtils.AUTH_ACTIVITY_STATE, 1);
+                menu.add(Menu.NONE, 1, Menu.NONE, getResources().getString(R.string.lower_sign_in));
+                menu.add(Menu.NONE, 2, Menu.NONE, getResources().getString(R.string.lower_register));
             }
 
             return super.onPrepareOptionsMenu(menu);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        mAuthenticationTaskFragment = null;
     }
 
     @Override
@@ -297,16 +623,19 @@ public class AuthenticationActivity extends SherlockActivity implements Response
 
         switch (item.getItemId()) {
             case 1:
-                updateState(State.SIGNIN, SubState.NORAML);
+
+                updateState(State.SIGNIN, SubState.NORMAL);
 
                 return true;
 
             case 2:
-                updateState(State.REGISTER, SubState.NORAML);
+
+                updateState(State.REGISTER, SubState.NORMAL);
+
                 return true;
 
             case 3:
-                updateState(State.FORGOTPASS, SubState.NORAML);
+                updateState(State.FORGOTPASS, SubState.NORMAL);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -314,64 +643,163 @@ public class AuthenticationActivity extends SherlockActivity implements Response
 
     }
 
+    private void setSignedIn() {
+        editPref.putBoolean(AppUtils.SIGNED_IN, true);
+        editPref.apply();
+    }
 
-    @Override
-    public void onServerResponse(String response) {
-        updateState(getState(), SubState.SUCCESS);
 
-        api.updateAccountDetails(response);
-
-        switch (mState) {
+    private void setNormalButtonStateText() {
+        switch(mState) {
             case SIGNIN:
-                try {
-                    account = api.getAccountDetails();
-
-                  if(account.getEmail().equals(getEmail())) {
-                      Intent intent = new Intent(this, MainActivity.class);
-                      startActivity(intent);
-                  }
-
-                } catch (CloudAppException e) {
-                    e.printStackTrace();
-                }
+                mButton.setFromText(getResources().getString(R.string.sign_in));
                 break;
             case REGISTER:
-                try {
-                    account = api.getAccountDetails();
-
-                    if(account.getEmail().equals(getEmail())) {
-                        Intent intent = new Intent(this, MainActivity.class);
-                        startActivity(intent);
-                    }
-                } catch (CloudAppException e) {
-                    e.printStackTrace();
-                }
+                mButton.setFromText(getResources().getString(R.string.create_account));
                 break;
             case FORGOTPASS:
-
-                updateState(State.SIGNIN, SubState.NORAML);
-
-                break;
-
-            default:
-                mState = State.SIGNIN;
+                mButton.setFromText(getResources().getString(R.string.forgot_password));
         }
+    }
 
-        ObserverCollection.getInstance().unRegisterObserver("AuthenticationActivity", this);
+
+    //Takes a guess as to what error type is given the particular
+    // state of the application, signin, register or forgot password, though not
+    //implemented since it's not needed in this case
+    private String getErrorDescription(ErrorEvent error) {
+        String errorDescription = ErrorEvent.getErrorDescription(error);
+        VolleyError volleyError;
+
+        if(error.getError() instanceof  VolleyError) {
+            volleyError = (VolleyError) error.getError();
+
+            if (volleyError.networkResponse == null) {
+                errorDescription = getResources().getString(R.string.error_contacting_cloudapp);
+            } else {
+                switch (volleyError.networkResponse.statusCode) {
+                    case HttpStatus.SC_UNPROCESSABLE_ENTITY:
+                        errorDescription = getResources().getString(R.string.invalid_email_password);
+                        break;
+                    case HttpStatus.SC_UNAUTHORIZED:
+                        errorDescription = getResources().getString(R.string.incorrect_email_pass);
+                        break;
+                    case HttpStatus.SC_NOT_ACCEPTABLE:
+                        errorDescription = getResources().getString(R.string.account_already_exists);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return errorDescription;
     }
 
     @Override
-    public void onServerError(VolleyError e, String errorDescription) {
-        updateState(getState(), SubState.ERROR);
-        toggleBoxError();
+    public void onAccountUpdate(final CloudAppAccount account) {
+        updateState(getState(), SubState.SUCCESS);
 
-        AppUtils appUtils = new AppUtils(getApplicationContext());
-        if(appUtils.isNetworkConnected()) {
-            Toast toast = Toast.makeText(this, errorDescription, Toast.LENGTH_LONG);
-            toast.show();
+        setNormalButtonStateText();
+
+        if (mSubState== SubState.SUCCESS && mState != State.FORGOTPASS) {
+            mButton.setType(TransitionButton.BtnType.SUCCESS)
+                    .setToText(getResources().getString(R.string.success))
+                    .setDuration(1500)
+                    .setIndefinite(true)
+                    .start();
+
+            setSignedIn();
+
+            mButton.setTransitionListener(new TransitionButton.OnTransitionListener() {
+                @Override
+                public void OnTransitionStart(TransitionButton button) {
+
+                }
+
+                @Override
+                public void OnTransitionEnd(TransitionButton button) {
+                    supportInvalidateOptionsMenu();
+                    switch (mState) {
+                        case SIGNIN:
+
+                            try {
+                                if(account.getEmail().equals(getEmail())) {
+                                    Intent intent = new Intent(mActivty, MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                }
+
+                            } catch (CloudAppException e) {
+                                Log.e(TAG, e.getMessage());
+                            }
+                            break;
+                        case REGISTER:
+                            try {
+
+                                if(account.getEmail().equals(getEmail())) {
+                                    Intent intent = new Intent(mActivty, MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            } catch (CloudAppException e) {
+                                Log.e(TAG, e.getMessage());
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            });
         } else {
-            Toast toast = Toast.makeText(this, "No internet connection" , Toast.LENGTH_LONG);
-            toast.show();
+            mButton.setType(TransitionButton.BtnType.SUCCESS)
+                    .setFromText(getResources().getString(R.string.sign_in))
+                    .setToText(getResources().getString(R.string.instructions))
+                    .setDuration(4000)
+                    .start();
+        }
+    }
+
+    @Override
+    public void onServerResponse(ResponseEvent event) {
+        updateState(getState(), SubState.SUCCESS);
+
+        setNormalButtonStateText();
+
+        if(getState() == State.FORGOTPASS) {
+            mButton.setType(TransitionButton.BtnType.SUCCESS)
+                    .setFromText(getResources().getString(R.string.sign_in))
+                    .setToText(getResources().getString(R.string.instructions))
+                    .setDuration(4000)
+                    .start();
+        }
+    }
+
+    @Override
+    public void onErrorEvent(ErrorEvent errorEvent) {
+        updateState(getState(), SubState.ERROR);
+
+        //Checks to see if there is an internet connection
+        //This is to let the Volley API determine if it cannot establish a connection
+        setNormalButtonStateText();
+
+        if(!errorEvent.getExplicitError().equals(AppUtils.NO_CONNECTION)) {
+
+            String errorDescription = getErrorDescription(errorEvent);
+
+            mButton.setToText(errorDescription)
+                    .setType(TransitionButton.BtnType.ERROR)
+                    .start();
+            //AppUtils.makeCrouton(mActivty, errorDescription, Style.ALERT);
+            YoYo.with(Techniques.Shake).duration(1500).playOn(mEmailField);
+            YoYo.with(Techniques.Shake).duration(1500).playOn(mPassField);
+            YoYo.with(Techniques.Shake).duration(1500).playOn(mConfirmPassField);
+
+        } else {
+            mButton.setType(TransitionButton.BtnType.ERROR)
+                    .setToText(getResources().getString(R.string.check_internet))
+                    .start();
         }
     }
 
@@ -381,75 +809,79 @@ public class AuthenticationActivity extends SherlockActivity implements Response
     }
 
     private enum SubState {
-        NORAML, PROGRESS, ERROR, SUCCESS;
+        NORMAL, PROGRESS, ERROR, SUCCESS;
     }
 
-    public State getState() {
+    private State getState() {
         return mState;
     }
 
-    public void setState(State mState) {
+    private void setState(State mState) {
         this.mState = mState;
     }
 
-    public SubState getSubState() {
+    private SubState getSubState() {
         return mSubState;
     }
 
-    public void setSubState(SubState mSubState) {
+    private void setSubState(SubState mSubState) {
         this.mSubState = mSubState;
     }
-
-    private State mState;
-    private SubState mSubState;
 
     private void updateState(State state, SubState subState) {
         setState(state);
         setSubState(subState);
 
+
         switch (mState) {
             case SIGNIN:
-                switch (subState) {
-                    case NORAML:
-                        btn_toggle.setBackgroundResource(R.drawable.btn_toggle_selector);
-                        emailField.setEnabled(true);
-                        passField.setEnabled(true);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.VISIBLE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(true);
-                        btn_toggle.setText(getResources().getText(R.string.sign_in));
+                switch (mSubState) {
+                    case NORMAL:
+                        mEmailField.setEnabled(true);
+                        mPassField.setEnabled(true);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.VISIBLE);
+                        mConfirmPassField.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(true);
+                        mPassField.setImeActionLabel(getResources().getString(R.string.lower_sign_in), mPassField.getImeActionId());
+                        mButton.setText(getResources().getText(R.string.sign_in));
+
                         supportInvalidateOptionsMenu();
                         break;
                     case PROGRESS:
-                        emailField.setEnabled(false);
-                        passField.setEnabled(false);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.VISIBLE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(false);
-                        btn_toggle.setText(getResources().getText(R.string.signing_in));
+                        mEmailField.setEnabled(false);
+                        mPassField.setEnabled(false);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.VISIBLE);
+                        mConfirmPassField.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(false);
+                        mButton.setText(getResources().getText(R.string.signing_in));
+                        mPassField.setImeActionLabel(getResources().getString(R.string.lower_sign_in), mPassField.getImeActionId());
                         supportInvalidateOptionsMenu();
                         break;
                     case ERROR:
-                        emailField.setEnabled(true);
-                        passField.setEnabled(true);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.VISIBLE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(true);
-                        btn_toggle.setText(getResources().getText(R.string.sign_in));
+
+                        mEmailField.setEnabled(true);
+                        mPassField.setEnabled(true);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.VISIBLE);
+                        mConfirmPassField.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(true);
+                        mPassField.setImeActionLabel(getResources().getString(R.string.lower_sign_in), mPassField.getImeActionId());
                         supportInvalidateOptionsMenu();
                         break;
                     case SUCCESS:
-                        emailField.setEnabled(true);
-                        passField.setEnabled(true);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.VISIBLE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(true);
-                        btn_toggle.setText(getResources().getText(R.string.success));;
-                        btn_toggle.setBackgroundResource(R.drawable.btn_toggle_success);
+                        mEmailField.setEnabled(false);
+                        mPassField.setEnabled(false);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.VISIBLE);
+                        mConfirmPassField.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(true);
+                        mPassField.setImeActionLabel(getResources().getString(R.string.lower_sign_in), mPassField.getImeActionId());
                         supportInvalidateOptionsMenu();
                         break;
                     default:
@@ -458,47 +890,57 @@ public class AuthenticationActivity extends SherlockActivity implements Response
                 }
                 break;
             case REGISTER:
-                switch (subState) {
-                    case NORAML:
-                        btn_toggle.setBackgroundResource(R.drawable.btn_toggle_selector);
-                        emailField.setEnabled(true);
-                        passField.setEnabled(true);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.VISIBLE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(true);
-                        btn_toggle.setText(getResources().getText(R.string.create_account));
+                switch (mSubState) {
+                    case NORMAL:
+                        mEmailField.setEnabled(true);
+                        mPassField.setEnabled(true);
+                        mConfirmPassField.setEnabled(true);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.VISIBLE);
+                        mConfirmPassField.setVisibility(View.VISIBLE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(true);
+                        mPassField.setImeActionLabel(getResources().getString(R.string.lower_register),  mPassField.getImeActionId());
+                        mButton.setText(getResources().getText(R.string.create_account));
                         supportInvalidateOptionsMenu();
                         break;
                     case PROGRESS:
-                        emailField.setEnabled(false);
-                        passField.setEnabled(false);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.VISIBLE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(false);
-                        btn_toggle.setText(getResources().getText(R.string.creating_account));
+                        mEmailField.setEnabled(false);
+                        mPassField.setEnabled(false);
+                        mConfirmPassField.setEnabled(false);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.VISIBLE);
+                        mConfirmPassField.setVisibility(View.VISIBLE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(false);
+                        mPassField.setImeActionLabel(getResources().getString(R.string.lower_register),  mPassField.getImeActionId());
+                        mButton.setText(getResources().getText(R.string.creating_account));
                         supportInvalidateOptionsMenu();
                         break;
                     case ERROR:
-                        emailField.setEnabled(true);
-                        passField.setEnabled(true);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.VISIBLE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(true);
-                        btn_toggle.setText(getResources().getText(R.string.create_account));
+                        mEmailField.setEnabled(true);
+                        mPassField.setEnabled(true);
+                        mConfirmPassField.setEnabled(true);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.VISIBLE);
+                        mConfirmPassField.setVisibility(View.VISIBLE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(true);
+                        mPassField.setImeActionLabel(getResources().getString(R.string.lower_register),  mPassField.getImeActionId());
+
+
                         supportInvalidateOptionsMenu();
                         break;
                     case SUCCESS:
-                        emailField.setEnabled(true);
-                        passField.setEnabled(true);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.VISIBLE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(true);
-                        btn_toggle.setText(getResources().getText(R.string.success));
-                        btn_toggle.setBackgroundResource(R.drawable.btn_toggle_success);
+                        mEmailField.setEnabled(false);
+                        mPassField.setEnabled(false);
+                        mConfirmPassField.setEnabled(false);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.VISIBLE);
+                        mConfirmPassField.setVisibility(View.VISIBLE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(true);
+                        mPassField.setImeActionLabel(getResources().getString(R.string.lower_register),  mPassField.getImeActionId());
                         supportInvalidateOptionsMenu();
                         break;
                     default:
@@ -506,48 +948,52 @@ public class AuthenticationActivity extends SherlockActivity implements Response
                 }
                 break;
             case FORGOTPASS:
-                switch (subState) {
-                    case NORAML:
-                        btn_toggle.setBackgroundResource(R.drawable.btn_toggle_selector);
-                        emailField.setEnabled(true);
-                        passField.setEnabled(false);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.GONE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(true);
-                        btn_toggle.setText(getResources().getText(R.string.recover_pass));
+                switch (mSubState) {
+                    case NORMAL:
+                        mEmailField.setEnabled(true);
+                        mPassField.setEnabled(false);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.GONE);
+                        mConfirmPassField.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(true);
+                        mEmailField.setImeActionLabel(getResources().getString(R.string.send),  mEmailField.getImeActionId());
+                        mButton.setText(getResources().getText(R.string.recover_pass));
                         supportInvalidateOptionsMenu();
                         break;
                     case PROGRESS:
-                        emailField.setEnabled(false);
-                        passField.setEnabled(false);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.GONE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(false);
-                        btn_toggle.setText(getResources().getText(R.string.recovering_pass));
+                        mEmailField.setEnabled(false);
+                        mPassField.setEnabled(false);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.GONE);
+                        mConfirmPassField.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(false);
+                        mPassField.setImeActionLabel(getResources().getString(R.string.send),  mEmailField.getImeActionId());
+                        mButton.setText(getResources().getText(R.string.recovering_pass));
                         supportInvalidateOptionsMenu();
                         break;
                     case ERROR:
-                        emailField.setEnabled(true);
-                        passField.setEnabled(false);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.GONE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(true);
-                        btn_toggle.setText(getResources().getText(R.string.recover_pass));
+                        mEmailField.setEnabled(true);
+                        mPassField.setEnabled(false);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.GONE);
+                        mConfirmPassField.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(true);
+                        mEmailField.setImeActionLabel(getResources().getString(R.string.send),  mEmailField.getImeActionId());
+                        
                         supportInvalidateOptionsMenu();
                         break;
                     case SUCCESS:
-                        emailField.setEnabled(true);
-                        passField.setEnabled(false);
-                        emailField.setVisibility(View.VISIBLE);
-                        passField.setVisibility(View.GONE);
-                        btn_toggle.setVisibility(View.VISIBLE);
-                        btn_toggle.setEnabled(true);
-                        btn_toggle.setText(getResources().getText(R.string.success));
-                        btn_toggle.setBackgroundResource(R.drawable.btn_toggle_success);
-                        Toast.makeText(context, "Check your email for recovery instructions", Toast.LENGTH_SHORT).show();
+                        mEmailField.setEnabled(true);
+                        mPassField.setEnabled(false);
+                        mEmailField.setVisibility(View.VISIBLE);
+                        mPassField.setVisibility(View.GONE);
+                        mConfirmPassField.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+                        mButton.setEnabled(true);
+                        mEmailField.setImeActionLabel(getResources().getString(R.string.send),  mEmailField.getImeActionId());
                         supportInvalidateOptionsMenu();
 
                         break;
@@ -559,5 +1005,10 @@ public class AuthenticationActivity extends SherlockActivity implements Response
                 break;
 
         }
+
+    }
+
+    private void animateError() {
+
     }
 }

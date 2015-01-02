@@ -1,12 +1,14 @@
 package deadpixel.app.vapor.cloudapp.api;
 
+import com.android.volley.Request;
+import com.koushikdutta.ion.ProgressCallback;
+
 import java.io.File;
-import java.util.List;
 
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener;
+import deadpixel.app.vapor.cloudapp.impl.model.CloudAppUpload;
 
 public interface CloudApp {
 
@@ -21,7 +23,7 @@ public interface CloudApp {
      *           will be set on the exception.
      * @return
      */
-    public void setDefaultSecurity(CloudAppAccount.DefaultSecurity security)
+    public Request setDefaultSecurity(CloudAppAccount.DefaultSecurity security)
             throws CloudAppException;
 
     /**
@@ -38,7 +40,7 @@ public interface CloudApp {
      *          Your current password (as a confirmation mechanism.)
      * @return
      */
-    public void setEmail(String newEmail, String currentPassword)
+    public Request setEmail(String newEmail, String currentPassword)
             throws CloudAppException;
 
     /**
@@ -55,7 +57,7 @@ public interface CloudApp {
      *          Your old password.
      * @return
      */
-    public void setPassword(String newPassword, String currentPassword)
+    public Request setPassword(String newPassword, String currentPassword)
             throws CloudAppException;
 
     /**
@@ -70,7 +72,7 @@ public interface CloudApp {
      *           will be set on the exception.
      * @return
      */
-    public void resetPassword(String email) throws CloudAppException;
+    public Request resetPassword(String email) throws CloudAppException;
 
     /**
      * Create a CloudApp account. Obviously there is no need to provide existing credentials
@@ -90,7 +92,7 @@ public interface CloudApp {
      *           will be set on the exception.
      * @return
      */
-    public void createAccount(String email, String password, boolean acceptTOS)
+    public Request createAccount(String email, String password, boolean acceptTOS)
             throws CloudAppException;
 
     /**
@@ -106,7 +108,7 @@ public interface CloudApp {
      *           will be set on the exception.
      * @return
      */
-    public void setCustomDomain(String domain, String domainHomePage)
+    public Request setCustomDomain(String domain, String domainHomePage)
             throws CloudAppException;
 
     /**
@@ -150,7 +152,7 @@ public interface CloudApp {
      * @throws CloudAppException
      * @return
      */
-    public CloudAppItem createBookmark(String name, String url) throws CloudAppException;
+    public Request createBookmark(String name, String url) throws CloudAppException;
 
     /**
      * Create multiple bookmarks in a single request.
@@ -162,7 +164,7 @@ public interface CloudApp {
      * @throws CloudAppException
      * @return
      */
-    public List<CloudAppItem> createBookmarks(String[][] bookmarks)
+    public Request createBookmarks(String[][] bookmarks)
             throws CloudAppException;
 
     /**
@@ -174,7 +176,7 @@ public interface CloudApp {
      * @return
      * @throws CloudAppException
      */
-    public CloudAppItem getItem(String url) throws CloudAppException;
+    public Request getItem(String url) throws CloudAppException;
 
     /**
      * Page through your items.
@@ -197,18 +199,18 @@ public interface CloudApp {
      * @return A list with your items.
      * @throws CloudAppException
      */
-    public List<CloudAppItem> getItems(int page, int perPage, CloudAppItem.Type type,
-                                       boolean showDeleted, String source) throws CloudAppException;
+    public Request getItems(int page, int perPage, CloudAppItem.Type type,
+                                        String source) throws CloudAppException;
 
     /**
      *
      * @see http://developer.getcloudapp.com/upload-file
-     * @param file
+     * @param fileUpload
      *          The file you wish to upload.
      * @throws CloudAppException
      * @return
      */
-    public CloudAppItem upload(File file) throws CloudAppException;
+    public void upload(CloudAppUpload fileUpload) throws CloudAppException;
 
     /**
      *
@@ -220,8 +222,6 @@ public interface CloudApp {
      * @throws CloudAppException
      * @return
      */
-    public CloudAppItem upload(File file, CloudAppProgressListener listener) throws CloudAppException;
-
     /**
      * Deletes an item
      *
@@ -229,7 +229,7 @@ public interface CloudApp {
      *          The item to delete
      * @throws CloudAppException
      */
-    public CloudAppItem delete(CloudAppItem item) throws CloudAppException;
+    public Request delete(CloudAppItem item) throws CloudAppException;
 
     /**
      * Recover an item in the trash
@@ -238,7 +238,7 @@ public interface CloudApp {
      *          The item to recover
      * @throws CloudAppException
      */
-    public CloudAppItem recover(CloudAppItem item) throws CloudAppException;
+    public Request recover(CloudAppItem item) throws CloudAppException;
 
     /**
      * Makes an item either public or private.
@@ -249,7 +249,7 @@ public interface CloudApp {
      * @throws CloudAppException
      * @return
      */
-    public CloudAppItem setSecurity(CloudAppItem item, boolean is_private)
+    public Request setSecurity(CloudAppItem item, boolean is_private)
             throws CloudAppException;
 
     /**
@@ -260,11 +260,10 @@ public interface CloudApp {
      * @throws CloudAppException
      * @return
      */
-    public CloudAppItem rename(CloudAppItem item, String name) throws CloudAppException;
+    public Request rename(CloudAppItem item, String name) throws CloudAppException;
 
-    public void requestAccountDetails() throws CloudAppException;
+    public Request requestAccountDetails();
 
-    public void requestAccountStats() throws CloudAppException;
+    public Request requestAccountStats();
 
-    public void updateAccountDetails(String response);
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge>
+
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/android:list"
+        android:divider="@null"
+        android:dividerHeight="0px"
+        android:background="@android:color/transparent"
+        android:listSelector="@null"/>
+
+<!--    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_text_color"
+        android:text="You don't seem to have any files. Try uploading one."
+        android:textSize="19dp"
+        android:textStyle="italic"
+        android:fontFamily="sans-serif-light"
+        android:id="@+id/android:empty"/>-->
+</merge>

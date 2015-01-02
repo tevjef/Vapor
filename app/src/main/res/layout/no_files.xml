@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_bg"
+    android:gravity="top|center"
+    android:weightSum="1">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_text_color"
+        android:text="No files found. Try uploading some."
+        android:textSize="19dp"
+        android:textStyle="italic"
+        android:fontFamily="sans-serif-light"
+        android:id="@+id/headline"
+        android:layout_marginTop="30dp"
+/>
+    <ImageView
+        android:layout_width="164dp"
+        android:layout_height="113dp"
+        android:background="@drawable/cloud_upload"
+        android:layout_marginTop="20dp"
+
+        android:adjustViewBounds="true"
+        android:id="@+id/image"/>
+
+
+</LinearLayout>
