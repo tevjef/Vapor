@@ -30,7 +30,7 @@ public class RequestExecutor implements  Response.Listener<NetworkResponse>, Res
 
     public RequestExecutor() {
     }
-    private Request executeRequest(int method, String body, String URL, final int expectedCode)  {
+    private Request executeRequest(int method, String body, String URL, final int expectedCode) throws CloudAppException {
 
         this.expectedCode = expectedCode;
 
@@ -40,21 +40,21 @@ public class RequestExecutor implements  Response.Listener<NetworkResponse>, Res
 
     }
 
-    public Request executeGet(String URL, int expectedCode) {
+    public Request executeGet(String URL, int expectedCode) throws CloudAppException {
         return executeRequest(Request.Method.GET, null, URL, expectedCode);
     }
 
-    public Request executeDelete(String URL, int expectedCode) {
+    public Request executeDelete(String URL, int expectedCode) throws CloudAppException {
         return executeRequest(Request.Method.DELETE, null, URL, expectedCode);
     }
 
     public Request executePost(String URL, String body, int expectedCode)
-             {
+            throws CloudAppException {
         return executeRequest(Request.Method.POST, body, URL, expectedCode);
     }
 
     public Request executePut(String URL, String body, int expectedCode)
-             {
+            throws CloudAppException {
 
         return executeRequest(Request.Method.PUT, body, URL, expectedCode);
     }

@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.MenuItem;
-import com.android.volley.VolleyError;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.squareup.otto.Subscribe;
@@ -326,14 +325,11 @@ public class ChangePasswordFragment extends SherlockFragment{
     // state of the application, signin, register or forgot password, though not
     //implemented since it's not needed in this case
     private String getErrorDescription(ErrorEvent error) {
-        String errorDescription = ErrorEvent.getErrorDescription(error);
-        VolleyError volleyError;
+        String errorDescription;
 
-        if(error.getError() instanceof  VolleyError) {
-            volleyError = (VolleyError) error.getError();
-
-            if (volleyError.networkResponse == null) {
-                errorDescription = getResources().getString(R.string.error_contacting_cloudapp);
+        if(!error.getErrorDescription().equals(AppUtils.NO_CONNECTION)) {
+            if (error.getError().networkResponse == null) {
+                errorDescription = "There's a problem contacting CloudApp servers";
             } else {
                 switch (error.getStatusCode()) {
                     case HttpStatus.SC_UNPROCESSABLE_ENTITY:
@@ -349,9 +345,11 @@ public class ChangePasswordFragment extends SherlockFragment{
                         errorDescription = "That email belongs to another user - 204";
                         break;
                     default:
-                        break;
+                        errorDescription = getResources().getString(R.string.error_occurred);
                 }
             }
+        }   else {
+            errorDescription = getResources().getString(R.string.check_internet);
         }
         return errorDescription;
     }
@@ -402,7 +400,7 @@ public class ChangePasswordFragment extends SherlockFragment{
 
                 //Checks to see if there is an internet connection
                 //This is to let the Volley API determine if it cannot establish a connection
-                if (!errorEvent.getExplicitError().equals(AppUtils.NO_CONNECTION)) {
+                if (!errorEvent.getErrorDescription().equals(AppUtils.NO_CONNECTION)) {
 
                     String errorDescription = getErrorDescription(errorEvent);
 

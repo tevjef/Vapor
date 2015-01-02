@@ -20,7 +20,6 @@ import deadpixel.app.vapor.utils.AppUtils;
 public class DatabaseManager  {
 
     private static final String TAG = "DatabaseManager: ";
-    private static final boolean DEBUG = false;
 
     private static ItemsDaoImpl itemsDao;
 
@@ -91,12 +90,14 @@ public class DatabaseManager  {
         DatabaseItem newDbItem = DatabaseItem.toDatabaseItem(item);
         DatabaseItem existingItem = itemsDao.getItem(item);
 
-        if(existingItem == null) {
+        if(existingItem == null && newDbItem.getDeletedAt() == null) {
             newDbItem.setSyncedToDisk(0);
             newDbItem.setUri(null);
             return newDbItem;
         } else if(newDbItem.getDeletedAt() != null) {
+            if(existingItem != null) {
                 deleteItem(existingItem);
+            }
             return null;
         }
         else {
@@ -110,12 +111,8 @@ public class DatabaseManager  {
         startDatabaseConnection();
 
         itemsDao.updateItem(item);
-
-        if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-            Log.i(TAG, "Updating existing item" + item.getName() + " " + item.getItemType()
-                    +" found while preparing List<DatabaseItem> for insertion");
-        }
-
+        Log.e(TAG, "Updating existing item" + item.getName() + " " + item.getItemType()
+                +" found while preparing List<DatabaseItem> for insertion");
         closeDatabaseConnection();
     }
 
@@ -125,11 +122,7 @@ public class DatabaseManager  {
 
         ArrayList<DatabaseItem> dbItems = itemsDao.getItems(type, limit);
 
-        if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-
-            Log.i(TAG, "Got " + dbItems.size() + " from the cursor");
-
-        }
+        Log.i(TAG, "Got " + dbItems.size() + " from the cursor");
 
         closeDatabaseConnection();
         return dbItems;
@@ -141,9 +134,7 @@ public class DatabaseManager  {
 
         ArrayList<DatabaseItem> dbItems = itemsDao.getItemsByName(name);
 
-        if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-            Log.i(TAG, "Got " + dbItems.size() + " from the cursor");
-        }
+        Log.i(TAG, "Got " + dbItems.size() + " from the cursor");
 
         closeDatabaseConnection();
         return dbItems;

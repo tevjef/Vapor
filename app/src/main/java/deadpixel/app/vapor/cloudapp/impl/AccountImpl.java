@@ -44,7 +44,12 @@ public class AccountImpl {
             @Override
             public void OnSuccessResponse(String response) {
 
-                AppUtils.addToRequestQueue(AppUtils.api.requestAccountStats());
+
+                try {
+                    AppUtils.addToRequestQueue(AppUtils.api.requestAccountStats());
+                } catch (CloudAppException e) {
+                    e.printStackTrace();
+                }
 
 
                 CloudAppAccount account =  gson.fromJson(response, AccountModel.class);
@@ -214,7 +219,7 @@ public class AccountImpl {
 
 
     //Puts in a request for for all
-    public Request requestAccountDetails()  {
+    public Request requestAccountDetails() throws CloudAppException {
         return executor.executeGet(ACCOUNT_URL, 200);
     }
 

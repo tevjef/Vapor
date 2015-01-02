@@ -17,7 +17,6 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-import com.android.volley.VolleyError;
 import com.squareup.otto.Subscribe;
 
 import org.apache.http.HttpStatus;
@@ -78,7 +77,11 @@ public class AccountMainFragment  extends SherlockFragment{
 
         setUpFragment(v);
 
-        AppUtils.addToRequestQueue(AppUtils.api.requestAccountDetails());
+        try {
+            AppUtils.addToRequestQueue(AppUtils.api.requestAccountDetails());
+        } catch (CloudAppException e) {
+            Log.e(TAG, "Error requesting account details");
+        }
 
         return v;
     }
@@ -93,12 +96,13 @@ public class AccountMainFragment  extends SherlockFragment{
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         AppUtils.getEventBus().register(ServerEventHandler);
-
+        Log.i(TAG, "Registering " + TAG + "to EventBus.."  );
     }
 
     @Override
     public void onDetach() {
         AppUtils.getEventBus().unregister(ServerEventHandler);
+        Log.i(TAG, "Unregistering " + TAG + "from EventBus.."  );
         super.onDetach();
     }
 
@@ -507,11 +511,13 @@ public class AccountMainFragment  extends SherlockFragment{
         int id = item.getItemId();
 
         if(id == R.id.account_refresh && !isLoading) {
-
+            try {
                 isLoading = true;
                 refreshIcon.start();
                 AppUtils.addToRequestQueue(AppUtils.api.requestAccountDetails());
-
+            } catch (CloudAppException e) {
+                Log.e(TAG, "Error requesting account details");
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -541,14 +547,11 @@ public class AccountMainFragment  extends SherlockFragment{
     // state of the application, signin, register or forgot password, though not
     //implemented since it's not needed in this case
     private String getErrorDescription(ErrorEvent error) {
-        String errorDescription = ErrorEvent.getErrorDescription(error);
-        VolleyError volleyError;
+        String errorDescription;
 
-        if(error.getError() instanceof  VolleyError) {
-            volleyError = (VolleyError) error.getError();
-
-            if (volleyError.networkResponse == null) {
-                errorDescription = getResources().getString(R.string.error_contacting_cloudapp);
+        if(!error.getErrorDescription().equals(AppUtils.NO_CONNECTION)) {
+            if (error.getError().networkResponse == null) {
+                errorDescription = "There's a problem contacting CloudApp servers";
             } else {
                 switch (error.getStatusCode()) {
                     case HttpStatus.SC_UNPROCESSABLE_ENTITY:
@@ -564,11 +567,12 @@ public class AccountMainFragment  extends SherlockFragment{
                         errorDescription = "That email belongs to another user";
                         break;
                     default:
-                        break;
+                        errorDescription = getResources().getString(R.string.error_occurred);
                 }
             }
+        }   else {
+            errorDescription = getResources().getString(R.string.check_internet);
         }
-
         return errorDescription;
     }
 

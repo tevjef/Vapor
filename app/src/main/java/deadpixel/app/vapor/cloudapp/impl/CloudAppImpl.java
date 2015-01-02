@@ -1,11 +1,13 @@
 package deadpixel.app.vapor.cloudapp.impl;
 
+import android.app.Activity;
 import android.content.Context;
 
 import com.android.volley.Request;
 import com.koushikdutta.ion.ProgressCallback;
 
 import java.io.File;
+import java.util.List;
 
 import deadpixel.app.vapor.cloudapp.api.CloudApp;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
@@ -13,7 +15,8 @@ import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount.DefaultSecurity;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.impl.model.CloudAppUpload;
+import deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener;
+import deadpixel.app.vapor.utils.AppUtils;
 
 public class CloudAppImpl implements CloudApp {
 
@@ -109,12 +112,12 @@ public class CloudAppImpl implements CloudApp {
         return mAccount.getAccountDetails();
     }
 
-    public Request requestAccountDetails() {
+    public Request requestAccountDetails() throws CloudAppException {
         return mAccount.requestAccountDetails();
     }
 
     @Override
-    public Request requestAccountStats() {
+    public Request requestAccountStats() throws CloudAppException {
         return mAccountStats.requestAccountStats();
     }
 
@@ -124,7 +127,7 @@ public class CloudAppImpl implements CloudApp {
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount getAccountStats()
      */
-    public CloudAppAccountStats getAccountStats() {
+    public CloudAppAccountStats getAccountStats() throws CloudAppException {
         return mAccountStats.getAccountStats();
     }
 
@@ -178,12 +181,20 @@ public class CloudAppImpl implements CloudApp {
      * {@inheritDoc}
      *
      * @see deadpixel.app.vapor.cloudapp.api.CloudAppItems#upload(java.io.File)
-     * @param fileUpload
      */
-    public void upload(CloudAppUpload fileUpload) throws CloudAppException {
-        mItems.upload(fileUpload);
+    public CloudAppItem upload(File file) throws CloudAppException {
+        return mItems.upload(file);
     }
 
+    /**
+     *
+     * {@inheritDoc}
+     *
+     * @see deadpixel.app.vapor.cloudapp.api.CloudAppItems#upload(java.io.File, deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener)
+     */
+    public void upload(final File file, final ProgressCallback listener) throws CloudAppException {
+        mItems.upload(file, listener);
+    }
 
     /**
      *

@@ -95,7 +95,7 @@ public class AccountActivity extends SherlockFragmentActivity {
             @Override
             public void run() {
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left_mid, R.anim.slide_in_left_mid, R.anim.slide_out_right);
+                ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
                 ft.replace(R.id.ptr_layout, frag);
                 ft.addToBackStack(null);
                 ft.commit();

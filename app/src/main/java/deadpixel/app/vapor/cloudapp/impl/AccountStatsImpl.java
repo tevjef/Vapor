@@ -61,7 +61,7 @@ public class AccountStatsImpl {
 
     }
 
-    public Request requestAccountStats() {
+    public Request requestAccountStats() throws CloudAppException{
         return executor.executeGet(ACCOUNT_STATS_URL, 200);
     }
 

@@ -1,10 +1,7 @@
 package deadpixel.app.vapor;
 
 import android.preference.PreferenceManager;
-import android.util.Log;
 
-import deadpixel.app.vapor.cloudapp.api.CloudApp;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
 import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.utils.AppUtils;
 
@@ -13,11 +10,9 @@ import deadpixel.app.vapor.utils.AppUtils;
  */
 public class MenuHandler {
 
-    private static final String TAG = "MenuHandler";
+    public static String getLink(DatabaseItem item) {
 
-    public static String getLink(CloudAppItem item) {
-
-        final CloudAppItem cloudAppItem = item;
+        final DatabaseItem dbItem = item;
 
         String link;
 
@@ -29,32 +24,20 @@ public class MenuHandler {
 
         switch (i) {
             case 0:
-                link = getWebLink(item);
+                link = dbItem.getContentUrl();
                 break;
             case 1:
-                link = cloudAppItem.getDownloadUrl();
+                link = dbItem.getDownloadUrl();
                 break;
             case 2:
-                link = cloudAppItem.getUrl();
+                link = dbItem.getUrl();
                 break;
             default:
-                link = cloudAppItem.getUrl();
+                link = dbItem.getUrl();
                 break;
         }
 
         return link;
 
-    }
-
-    public static String getWebLink(CloudAppItem item) {
-        if(item.getItemType() == CloudAppItem.Type.BOOKMARK) {
-            return item.getContentUrl();
-        } else {
-            String cleanedLink = new StringBuilder(item.getContentUrl().trim()).reverse().toString();
-            int firstSlashIndex = cleanedLink.indexOf("/");
-            String fileNameSubstring = cleanedLink.subSequence(0, firstSlashIndex).toString();
-
-            return  new StringBuilder(cleanedLink.replace(fileNameSubstring, "")).reverse().toString();
-        }
     }
 }

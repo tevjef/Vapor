@@ -66,7 +66,6 @@ public class SettingsActivity extends SherlockPreferenceActivity {
         TextView tv = (TextView) findViewById(titleId);
         tv.setTypeface(AppUtils.getTextStyle(AppUtils.TextStyle.LIGHT_NORMAL));*/
     }
-/*
 
     private void setPaddingOnHome() {
         ImageView view = (ImageView)findViewById(android.R.id.home);
@@ -74,7 +73,6 @@ public class SettingsActivity extends SherlockPreferenceActivity {
         int padding = (int) (getResources().getDisplayMetrics().density * size);
         view.setPadding(padding , padding, padding, padding);
     }
-*/
 
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.

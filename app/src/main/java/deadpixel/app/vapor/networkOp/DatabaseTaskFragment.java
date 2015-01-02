@@ -119,8 +119,6 @@ public class DatabaseTaskFragment extends SherlockFragment {
         public void onDatabaseUpdate(DatabaseUpdateEvent event) {
             if(mCallbacks != null) {
                 mCallbacks.onDatabaseUpdate(event.getItems());
-                FilesManager.isRequestingUploadedFile = false;
-
             }
         }
         @Subscribe
