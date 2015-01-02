@@ -1,93 +1,60 @@
 package deadpixel.app.vapor.callbacks;
 
-import android.content.Intent;
-
-import com.android.volley.NetworkResponse;
 import com.android.volley.VolleyError;
 
-import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.utils.AppUtils;
 
 /**
  * Created by Tevin on 7/8/2014.
  */
 public class ErrorEvent {
-    public String getExplicitError() {
-        return mExplicitError;
+    String response;
+    int statusCode;
+    VolleyError error;
+
+    public ErrorEvent(String response) {
+        this.response = response;
     }
 
-    public void setExplicitError(String mExplicitError) {
-        this.mExplicitError = mExplicitError;
+    public ErrorEvent(VolleyError e, String response) {
+        this.response = response;
+        error = e;
+        if (e != null && e.networkResponse != null) {
+            this.statusCode = e.networkResponse.statusCode;
+        }
+        if(!AppUtils.getInstance().isNetworkConnected()) {
+            this.response = AppUtils.NO_CONNECTION;
+        }
+
     }
 
-    public Object getImplicitError() {
-        return mImplicitError;
-    }
-
-    public void setImplicitError(Object mImplicitError) {
-        this.mImplicitError = mImplicitError;
-    }
-
-
-    public Exception getError() {
-        return error;
-    }
-
-    public void setError(Exception error) {
-        this.error = error;
-    }
-
-    String mExplicitError;
-    Object mImplicitError;
-
-    public Integer getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(Integer statusCode) {
+    public ErrorEvent(VolleyError e, String response, int statusCode) {
+        this(e, response);
         this.statusCode = statusCode;
     }
 
-    Integer statusCode;
-    Exception error;
-
-    public ErrorEvent(Exception e, String mExplicitError, Object mImplicitError) {
-        this.error = e;
-        this.mExplicitError = mExplicitError;
-        this.mImplicitError = mImplicitError;
-
-        if (e instanceof VolleyError) {
-            VolleyError e1 = (VolleyError) e;
-            if (e1.networkResponse != null) {
-                this.statusCode = e1.networkResponse.statusCode;
-            }
-        }
-
-        if (!AppUtils.getInstance().isNetworkConnected()) {
-            this.mExplicitError = AppUtils.NO_CONNECTION;
-        }
-
+    public int getStatusCode() {
+        return statusCode;
     }
 
-
-    public ErrorEvent(Exception e, String mExplicitError) {
-        this(e, mExplicitError, null);
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
     }
 
-    public ErrorEvent(Exception e) {
-        this(e, null);
+    public String getErrorDescription() {
+        return response;
     }
 
-    public static String getErrorDescription(ErrorEvent error) {
-        String errorDescription = null;
-
-        if (error != null) {
-            if (error.getExplicitError().equals(AppUtils.NO_CONNECTION)) {
-                errorDescription = AppUtils.getInstance().getApplicationContext().getResources().getString(R.string.check_internet);
-            }else {
-                errorDescription = "An error occured";
-            }
-        }
-        return errorDescription;
+    public void setErrorDescription(String response) {
+        this.response = response;
     }
+
+    public VolleyError getError() {
+        return error;
+    }
+
+    public void setError(VolleyError error) {
+        this.error = error;
+    }
+
 }
