@@ -1,0 +1,42 @@
+<resources>
+        <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!--General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_cloudapp_account">CloudApp Account</string>
+    <string name="pref_cloudapp_account_summary">There\'s no email</string>
+
+    <string name="pref_sync_in_background">Sync in Background</string>
+    <string name="pref_sync_in_background_summary">Sync files while app is closed.</string>
+
+    <string name="pref_shareable_link_type">Shareable Link Type</string>
+    <string-array name="pref_shareable_link_type_titles">
+        <item>Default URL</item>
+        <item>Download URL</item>
+        <item>Direct URL</item>
+    </string-array>
+    <string-array name="pref_shareable_link_type_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string name="pref_auto_upload_screenshots">Auto Upload Screenshots</string>
+    <string name="pref_auto_upload_screenshots_summary">Automatically upload screenshots when captured</string>
+
+    <!-- Coming Soon settings -->
+
+    <string name="pref_header_comingsoon">Coming Soon</string>
+
+    <string name="pref_themes">Themes</string>
+    <string name="pref_themes_light">light</string>
+
+    <!-- Other settings -->
+    <string name="pref_other">Other</string>
+
+    <string name="open_source_licenses">Open Source Licences</string>
+
+</resources>

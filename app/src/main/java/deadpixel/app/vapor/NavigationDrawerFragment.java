@@ -1,34 +1,40 @@
 package deadpixel.app.vapor;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.nineoldandroids.animation.Animator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import deadpixel.app.vapor.adapter.NavDrawerListAdapter;
 import deadpixel.app.vapor.model.NavDrawerItem;
+import deadpixel.app.vapor.utils.AppUtils;
 
 ;
 
@@ -69,16 +75,35 @@ public class NavigationDrawerFragment extends SherlockFragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    private ArrayList<NavDrawerItem> navDrawerItems;
 
     private NavDrawerListAdapter adapter;
 
     // slide menu items
     private String[] navMenuTitles;
-    private TypedArray navMenuIcons;
+    private TypedArray navMenuIconsGrey;
+    private TypedArray navMenuIconsBlue;
 
+    private String[] drawerSubMenuTitles;
+    private TypedArray drawerSubMenuIcons;
+
+
+    public Typeface mNormal, mBold;
+    private TextView tempTextView;
+    private ImageView tempImageView;
+    boolean drawerClosed;
+
+    private Runnable mPendingRunnable;
+    private Handler mHandler;
 
     public NavigationDrawerFragment() {
+    }
+
+    @Override
+    public void onDestroy() {
+        navMenuIconsGrey.recycle();
+        navMenuIconsBlue.recycle();
+
+        super.onDestroy();
     }
 
     @Override
@@ -90,8 +115,19 @@ public class NavigationDrawerFragment extends SherlockFragment {
         navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
 
         // nav drawer icons from resources
-        navMenuIcons = getResources()
-                .obtainTypedArray(R.array.nav_drawer_icons_blue);
+        navMenuIconsBlue = getResources()
+                .obtainTypedArray(R.array.file_icons_blue);
+
+        // nav drawer icons from resources
+        navMenuIconsGrey = getResources()
+                .obtainTypedArray(R.array.file_icons_grey);
+
+        // load slide menu items
+        drawerSubMenuTitles = getResources().getStringArray(R.array.drawer_submenu_titles);
+
+        // nav drawer icons from resources
+        drawerSubMenuIcons = getResources()
+                .obtainTypedArray(R.array.drawer_submenu_icons);
 
 
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
@@ -104,6 +140,11 @@ public class NavigationDrawerFragment extends SherlockFragment {
             mFromSavedInstanceState = true;
         }
 
+        mNormal = AppUtils.getTextStyle(AppUtils.TextStyle.LIGHT_NORMAL);
+        mBold = AppUtils.getTextStyle(AppUtils.TextStyle.BOLD);
+
+        drawerClosed = false;
+        mHandler = new Handler();
     }
 
     @Override
@@ -116,61 +157,111 @@ public class NavigationDrawerFragment extends SherlockFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        mDrawerListView = (ListView) inflater.inflate(
+
+        View v = inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        View drawerSettings = v.findViewById(R.id.drawer_settings);
+        drawerSettings.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                View v = parent.getChildAt(mCurrentSelectedPosition);
-                if (v != null) {
-                    TextView tv = (TextView) v.findViewById(R.id.drawer_listview_text);
-                    tv.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                }
-
-                selectItem(position);
-
-                TextView tv = (TextView) view.findViewById(R.id.drawer_listview_text);
-                tv.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-
+            public void onClick(View v) {
+                launchSettings();
             }
         });
+        View drawerAccount = v.findViewById(R.id.drawer_account);
+        drawerAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAccount();
+            }
+        });
+        mDrawerListView = (ListView) v.findViewById(R.id.drawer_listview);
 
-        // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
 
-        navDrawerItems = new ArrayList<NavDrawerItem>();
+        //if onCreate is calling mCurrentSelectedPosition fwith a value from savedInstanceState
+        //it means the activity was recreate from a config change app restart
+        if (!mFromSavedInstanceState) {
+            // Select either the default item (0) or the last selected item.
+            selectItem(mCurrentSelectedPosition);
+        }
+
+        ArrayList<NavDrawerItem> navDrawerItems = new ArrayList<NavDrawerItem>();
 
         // adding nav drawer items to array
         // Recent Files
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIcons.getResourceId(0, -1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIconsGrey.getResourceId(0, -1)));
         // Images
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIcons.getResourceId(1, -1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIconsGrey.getResourceId(1, -1)));
         // Video
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIcons.getResourceId(2, -1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIconsGrey.getResourceId(2, -1)));
         // Audio
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIcons.getResourceId(3, -1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIconsGrey.getResourceId(3, -1)));
         // Text
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIcons.getResourceId(4, -1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIconsGrey.getResourceId(4, -1)));
         // Archives
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIcons.getResourceId(5, -1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIconsGrey.getResourceId(5, -1)));
         // Bookmarks
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[6], navMenuIcons.getResourceId(6, -1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[6], navMenuIconsGrey.getResourceId(6, -1)));
         // Other
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[7], navMenuIcons.getResourceId(7, -1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[7], navMenuIconsGrey.getResourceId(7, -1)));
         // Trash
-        navDrawerItems.add(new NavDrawerItem(navMenuTitles[8], navMenuIcons.getResourceId(8, -1)));
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[8], navMenuIconsGrey.getResourceId(8, -1)));
 
         // Recycle the typed array
-        navMenuIcons.recycle();
+        navMenuIconsGrey.recycle();
 
-        adapter = new NavDrawerListAdapter(getActivity().getApplicationContext(), navDrawerItems);
-
+        adapter = new NavDrawerListAdapter(getActivity().getApplicationContext(), navDrawerItems, 0);
         mDrawerListView.setAdapter(adapter);
 
 
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
-        return mDrawerListView;
+        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                View v = parent.getChildAt(mCurrentSelectedPosition);
+                if (v != null) {
+                    tempTextView = (TextView) v.findViewById(R.id.drawer_listview_text);
+                    tempImageView = (ImageView) v.findViewById(R.id.drawer_listview_icon);
+                    //tempTextView.setTypeface(mNormal);
+                    tempImageView.setImageResource(navMenuIconsGrey.getResourceId(mCurrentSelectedPosition, -1));
+                    tempTextView.setTextColor(getResources().getColor(R.color.primary_text_color));
+
+                }
+
+
+                if(mCurrentSelectedPosition != position)
+                    selectItem(position);
+
+
+                if (mDrawerLayout != null) {
+                    mDrawerLayout.closeDrawer(mFragmentContainerView);
+                }
+
+                mCurrentSelectedPosition = position;
+
+
+
+                tempTextView = (TextView) view.findViewById(R.id.drawer_listview_text);
+
+
+                //tempTextView.setTypeface(mBold);
+
+                tempImageView = (ImageView) parent.getChildAt(mCurrentSelectedPosition).findViewById(R.id.drawer_listview_icon);
+                tempImageView.setImageResource(navMenuIconsBlue.getResourceId(mCurrentSelectedPosition, -1));
+
+                tempTextView.setTextColor(getResources().getColor(R.color.blue));
+
+                parent.invalidate();
+                view.invalidate();
+
+
+            }
+        });
+
+
+
+        return v;
     }
 
     public boolean isDrawerOpen() {
@@ -210,12 +301,13 @@ public class NavigationDrawerFragment extends SherlockFragment {
             public void onDrawerSlide(View drawerView, float offset) {
                 super.onDrawerSlide(drawerView, offset);
 
-                if(!isDrawerOpen()) {
+               // Log.i("Float offset" , Float.toString(offset));
+/*                if(!isDrawerOpen()) {
                     mCallbacks.restoreActionBarTitle(-1);
                 } else {
                     mCallbacks.restoreActionBarTitle(mCurrentSelectedPosition);
-                }
-                getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                }*/
+                //getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 
             @Override
@@ -225,9 +317,13 @@ public class NavigationDrawerFragment extends SherlockFragment {
                     return;
                 }
 
+                if(mCallbacks != null) {
+                    mCallbacks.restoreActionBarTitle(mCurrentSelectedPosition);
+                }
 
+                setBold();
 
-                getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                getActivity().supportInvalidateOptionsMenu();// calls onPrepareOptionsMenu()
             }
 
             @Override
@@ -236,11 +332,12 @@ public class NavigationDrawerFragment extends SherlockFragment {
                 if (!isAdded()) {
                     return;
                 }
+                if(mCallbacks != null) {
+
+                    mCallbacks.restoreActionBarTitle(-1);
+                }
 
                 setBold();
-
-
-
 
                 if (!mUserLearnedDrawer) {
                     // The user manually opened the drawer; store this flag to prevent auto-showing
@@ -251,10 +348,13 @@ public class NavigationDrawerFragment extends SherlockFragment {
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).commit();
                 }
 
-                getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
+                getActivity().supportInvalidateOptionsMenu();//getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
             }
 
         };
+
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
         // per the navigation drawer design guidelines.
@@ -270,58 +370,71 @@ public class NavigationDrawerFragment extends SherlockFragment {
             }
         });
 
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
     }
+
+
 
     public void setBold() {
-/*
-        ArrayList<View> al = new ArrayList<View>();
-
-        //Gets count of all the children of the ListView
-        int i = mDrawerListView.getChildCount();
-
-        //Adds the children to an ArrayList
-        for (int j = 0; j < i; ++j) {
-            al.add(mDrawerListView.getChildAt(j));
-        }
-*/
-
-        if (mPreviousSelectedPosition != -1){
-            TextView tv2 = (TextView) mDrawerListView.getChildAt(mPreviousSelectedPosition).findViewById(R.id.drawer_listview_text);
-            tv2.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-        }
-
        //Sets the currently selected child bold
-        TextView tv = (TextView) mDrawerListView.getChildAt(mCurrentSelectedPosition).findViewById(R.id.drawer_listview_text);
-        tv.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+        tempTextView = (TextView) mDrawerListView.getChildAt(mCurrentSelectedPosition).findViewById(R.id.drawer_listview_text);
+        tempImageView = (ImageView) mDrawerListView.getChildAt(mCurrentSelectedPosition).findViewById(R.id.drawer_listview_icon);
 
+        tempImageView.setImageResource(navMenuIconsBlue.getResourceId(mCurrentSelectedPosition, -1));
 
-
-   /*     //Sets all the children except for the select child, normal.
-        for(View v: al) {
-            if (!v.findViewById(R.id.drawer_listview_text).equals(tv)) {
-                TextView textView = (TextView) v.findViewById(R.id.drawer_listview_text);
-                textView.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-            }
-        }*/
+        //tempTextView.setTypeface(mBold);
+        tempTextView.setTextColor(getResources().getColor(R.color.blue));
 
     }
 
-    private void selectItem(int position) {
+    private void selectItem(final int position) {
 
         if(mPreviousSelectedPosition != mCurrentSelectedPosition)
-        mPreviousSelectedPosition = mCurrentSelectedPosition;
+            mPreviousSelectedPosition = mCurrentSelectedPosition;
 
-        mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
         }
+
+
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mCallbacks != null) {
+                    mCallbacks.onNavigationDrawerItemSelected(mCurrentSelectedPosition);
+                }
+            }
+        }, 300);
+    }
+
+
+
+    private void launchSettings() {
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
+            }
+        }, 300);
+
+    }
+
+    private void launchAccount() {
+        if (mDrawerLayout != null) {
+            mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(getActivity(), AccountActivity.class);
+                startActivity(intent);
+            }
+        }, 300);
+
     }
 
     @Override
@@ -358,7 +471,7 @@ public class NavigationDrawerFragment extends SherlockFragment {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
+            //inflater.inflate(R.menu.global, menu);
             showGlobalContextActionBar();
         }
         super.onCreateOptionsMenu(menu, inflater);
@@ -373,12 +486,6 @@ public class NavigationDrawerFragment extends SherlockFragment {
             } else {
                 mDrawerLayout.openDrawer(mFragmentContainerView);
             }
-            return true;
-        }
-
-
-        if (item.getItemId() == R.id.action_settings) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
             return true;
         }
 

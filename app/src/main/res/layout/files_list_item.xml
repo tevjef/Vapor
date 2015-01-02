@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@null"
+    android:paddingRight="25dp"
+    android:paddingLeft="6dp"
+    android:paddingTop="6dp">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:minHeight="80dp"
+        android:maxHeight="80dp"
+        android:background="@drawable/files_list_item_selector"
+        android:weightSum="1">
+
+
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:background="@color/blue"
+            android:id="@+id/image_container"
+            android:gravity="center"
+            android:weightSum="1">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/files_list_image"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_image_white"
+
+
+                android:adjustViewBounds="false"
+                android:cropToPadding="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:layout_gravity="left"
+            android:id="@+id/files_list_right_container">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Image 2014-08-14 at 1.30.25 PM.png"
+                android:id="@+id/files_list_title"
+                android:textSize="14sp"
+                android:textColor="@color/primary_text_color"
+                android:layout_marginTop="5dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/popup_container"/>
+
+
+            <TextView
+                android:drawableLeft="@drawable/ic_calendar"
+                android:drawablePadding="3dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date: "
+                android:fontFamily="sans-serif-condensed"
+                android:id="@+id/files_list_date"
+                android:textSize="9sp"
+                android:layout_marginBottom="5dp"
+                android:textColor="@color/secondary_text_color"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                />
+            <TextView
+                android:drawableLeft="@drawable/ic_views"
+                android:drawablePadding="3dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Views: "
+                android:fontFamily="sans-serif-condensed"
+                android:id="@+id/files_list_views"
+                android:textSize="9sp"
+                android:textColor="@color/secondary_text_color"
+                android:layout_marginLeft="9dp"
+                android:layout_alignTop="@+id/files_list_date"
+                android:layout_toRightOf="@+id/files_list_date" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/popup_container"
+                android:clickable="true"
+                android:background="@null"
+                android:minWidth="28dp"
+                android:minHeight="45dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/popup_anchor"
+                    android:src="@drawable/ic_overflow_small"
+                    android:background="@null"
+                    android:clickable="true"
+                    android:layout_gravity="top|center"
+                    android:onClick="popup_menu"
+                    android:layout_marginTop="7dp"
+                    />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/copy_link_container"
+                android:clickable="true"
+                android:background="@null"
+                android:minWidth="28dp"
+                android:minHeight="38dp"
+                android:paddingBottom="5dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+               >
+
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:id="@+id/ic_link"
+                    android:src="@drawable/ic_link"
+
+                    android:layout_gravity="center_horizontal|bottom"/>
+            </FrameLayout>
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="4px"
+        android:background="@drawable/files_list_item_shadow"
+        android:adjustViewBounds="false"
+        android:visibility="gone"/>
+
+</LinearLayout>

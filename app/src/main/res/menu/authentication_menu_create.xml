@@ -5,7 +5,8 @@
 
     <item android:id="@+id/menu_register"
         android:title="Create Account"
-        android:showAsAction="withText|ifRoom" />
+        android:showAsAction="withText|ifRoom"
+        />
 
 
 </menu>

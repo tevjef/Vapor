@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Vapor.Solid.Back" parent="@style/Theme.Vapor.Solid">
+        <item name="android:windowAnimationStyle">@style/Animation.Navigation.Back</item>
+        <!-- Support lower versions  -->
+        <item name="windowAnimationStyle">@style/Animation.Navigation.Back</item>
+        <item name="android:textColorPrimary">@color/primary_text_color</item>
+        <item name="android:textColorSecondary">@color/secondary_text_color</item>
+        <item name="android:listSeparatorTextViewStyle">@style/ListViewStyle</item>
+
+    </style>
+
+    <style name="ListViewStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/list_section_divider_holo_light</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">8dip</item>
+        </style>
+
+</resources>

@@ -3,7 +3,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/activity_bg"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
@@ -11,6 +11,12 @@
         tools:context="deadpixel.app.vapor.MainActivity$PlaceholderFragment">
 
         <!--List VIews good here for m recent fragment -->
+
+    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cloud_refresh"/>
+
         <TextView
             android:id="@+id/section_label"
             android:layout_width="wrap_content"

@@ -1,90 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- File created by the Android Action Bar Style Generator
-
-     Copyright (C) 2011 The Android Open Source Project
-     Copyright (C) 2012 readyState Software Ltd
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-  
-          http://www.apache.org/licenses/LICENSE-2.0
-  
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
 <resources>
 
-    <style name="Theme.Vapor.Solid" parent="@style/Theme.Sherlock.Light.DarkActionBar">
-        <item name="android:popupMenuStyle">@style/PopupMenu.Vapor</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Vapor</item>
-        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Vapor</item>
-        <item name="android:actionDropDownStyle">@style/DropDownNav.Vapor</item>
-        <item name="android:actionBarStyle">@style/ActionBar.Solid.Vapor</item>
-        <item name="android:actionModeBackground">@drawable/cab_background_top_vapor</item>
-        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Vapor</item>
-        <item name="android:windowContentOverlay">@null</item>
-
-        <!-- Support lower versions  -->
-        <item name="actionBarItemBackground">@drawable/selectable_background_vapor</item>
-        <item name="popupMenuStyle">@style/PopupMenu.Vapor</item>
-        <item name="dropDownListViewStyle">@style/DropDownListView.Vapor</item>
-        <item name="actionBarTabStyle">@style/ActionBarTabStyle.Vapor</item>
-        <item name="actionDropDownStyle">@style/DropDownNav.Vapor</item>
-        <item name="actionBarStyle">@style/ActionBar.Solid.Vapor</item>
-        <item name="actionModeBackground">@drawable/cab_background_top_vapor</item>
-        <item name="actionModeSplitBackground">@drawable/cab_background_bottom_vapor</item>
-        <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Vapor</item>
-        <item name="windowContentOverlay">@null</item>
-
-
-        <!-- Light.DarkActionBar specific -->
-        <item name="actionBarWidgetTheme">@style/Theme.Vapor.Widget</item>
-
-
-    </style>
-
-    <style name="Theme.Vapor.Transparent" parent="@style/Theme.Sherlock.Light.DarkActionBar">
-        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Vapor</item>
-        <item name="android:popupMenuStyle">@style/PopupMenu.Vapor</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Vapor</item>
-        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Vapor</item>
-        <item name="android:actionDropDownStyle">@style/DropDownNav.Vapor</item>
-        <item name="android:actionModeBackground">@drawable/cab_background_top_vapor</item>
-        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Vapor</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:actionMenuTextColor">@color/blue</item>
-        <item name="android:actionOverflowButtonStyle">@style/Overflow.Blue</item>
-        <item name="android:divider">@color/blue</item>
-
-
-
-        <!-- Support lower versions  -->
-        <item name="actionBarItemBackground">@drawable/selectable_background_vapor</item>
-        <item name="popupMenuStyle">@style/PopupMenu.Vapor</item>
-        <item name="dropDownListViewStyle">@style/DropDownListView.Vapor</item>
-        <item name="actionBarTabStyle">@style/ActionBarTabStyle.Vapor</item>
-        <item name="actionDropDownStyle">@style/DropDownNav.Vapor</item>
-        <item name="actionBarStyle">@style/ActionBar.Transparent.Vapor</item>
-        <item name="actionModeBackground">@drawable/cab_background_top_vapor</item>
-        <item name="actionModeSplitBackground">@drawable/cab_background_bottom_vapor</item>
-        <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Vapor</item>
-        <item name="windowContentOverlay">@null</item>
-        <item name="actionMenuTextColor">@color/blue</item>
-        <item name="actionOverflowButtonStyle">@style/Overflow.Blue</item>
-        <item name="divider">@color/blue</item>
-
-        <!-- Light.DarkActionBar specific -->
-        <item name="actionBarWidgetTheme">@style/Theme.Vapor.Widget</item>
-
-    </style>
 
     <style name="ActionBar.Solid.Vapor" parent="@style/Widget.Sherlock.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@drawable/ab_solid_vapor</item>
+        <item name="android:background">@color/blue</item>
+        <item name="android:height">50dp</item>
         <item name="backgroundStacked">@drawable/ab_stacked_solid_vapor</item>
         <item name="backgroundSplit">@drawable/ab_bottom_solid_vapor</item>
         <item name="progressBarStyle">@style/ProgressBar.Vapor</item>
@@ -94,33 +14,53 @@
 
     </style>
 
-    <style name="ActionBar.Transparent.Vapor" parent="@style/Widget.Sherlock.ActionBar">
-        <item name="android:background">@android:color/transparent</item>
-
+    <style name="ActionBar.Transparent.Full" parent="@style/Widget.Sherlock.ActionBar">
+        <item name="android:background">@null</item>
+        <item name="android:showDividers">beginning</item>
+        <item name="android:divider">@color/white</item>
         <!-- Support lower versions  -->
-        <item name="background">@android:color/transparent</item>
+        <item name="background">@null</item>
+    </style>
+
+    <style name="ActionBar.Transparent.AuthActivity" parent="@style/Widget.Sherlock.ActionBar">
+        <item name="android:background">@color/activity_bg</item>
+        <item name="android:showDividers">beginning</item>
+        <item name="android:divider">@color/white</item>
+        <!-- Support lower versions  -->
+        <item name="background">@color/activity_bg</item>
+    </style>
+
+
+    <style name="ActionBarTitle" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingLeft">12dp</item>   <!-- Can't get this padding to work :( -->
 
     </style>
     <style name="PopupMenu.Vapor" parent="@style/Widget.Sherlock.ListPopupWindow">
         <item name="android:background">@drawable/menu_dropdown_panel_vapor</item>
         <item name="background">@drawable/menu_dropdown_panel_vapor</item>
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_vapor</item>
+        <item name="android:textColor">@color/white</item>
+
     </style>
 
     <style name="DropDownListView.Vapor" parent="@style/Widget.Sherlock.ListView.DropDown">
         <item name="android:listSelector">@drawable/selectable_background_vapor</item>
     </style>
 
+
+
     <style name="ActionBarTabStyle.Vapor" parent="@style/Widget.Sherlock.ActionBar.TabView">
         <item name="android:background">@drawable/tab_indicator_ab_vapor</item>
     </style>
-	
+
     <style name="DropDownNav.Vapor" parent="@style/Widget.Sherlock.Spinner.DropDown.ActionBar">
         <item name="android:background">@drawable/spinner_background_ab_vapor</item>
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_vapor</item>
         <item name="android:dropDownSelector">@drawable/selectable_background_vapor</item>
     </style>
-    
+
     <style name="ProgressBar.Vapor" parent="@style/Widget.Sherlock.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/progress_horizontal_vapor</item>
     </style>
@@ -132,17 +72,62 @@
 
     <style name="Overflow.Blue" parent="@style/Widget.Sherlock.ActionButton.Overflow">
         <item name="android:src">@drawable/overflow_icon_blue</item>
-
     </style>
 
-    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
-    <style name="Theme.Vapor.Widget" parent="@style/Theme.Sherlock">
-        <item name="android:popupMenuStyle">@style/PopupMenu.Vapor</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownListView.Vapor</item>
+    <style name="Overflow.White" parent="@style/Widget.Sherlock.ActionButton.Overflow">
+        <item name="android:src">@drawable/overflow_icon_white</item>
+    </style>
 
-        <!-- Support lower versions  -->
-        <item name="popupMenuStyle">@style/PopupMenu.Vapor</item>
-        <item name="dropDownListViewStyle">@style/DropDownListView.Vapor</item>
+    <style name="Animation.Navigation.Forward" parent="android:style/Animation.Activity">
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_close_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_open_enter</item>
+
+    </style>
+    <style name="Animation.Navigation.Back" parent="android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_close_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_open_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
+
+    </style>
+    <style name="Animation.Fade" parent="android:style/Animation.Activity">
+        <!--        <item name="android:activityOpenEnterAnimation">@anim/fadein</item>
+                <item name="android:activityOpenExitAnimation">@anim/fadeout</item>
+                <item name="android:activityCloseEnterAnimation">@null</item>
+                <item name="android:activityCloseExitAnimation">@null</item>-->
+    </style>
+
+
+
+    <style name="RadioButtonVapor" parent="android:Widget.CompoundButton.RadioButton">
+        <item name="android:button">@drawable/vapor_btn_radio_holo_light</item>
+    </style>
+
+    <style name="SpinnerVapor" parent="android:Widget.Spinner">
+        <item name="android:background">@drawable/vapor_spinner_background_holo_light</item>
+        <item name="android:dropDownSelector">@drawable/vapor_list_selector_holo_light</item>
+    </style>
+
+
+
+
+    <style name="SpinnerDropDownItemVapor" parent="android:Widget.DropDownItem.Spinner">
+        <item name="android:checkMark">@drawable/vapor_btn_radio_holo_light</item>
+    </style>
+    <style name="ToggleVapor" parent="android:Widget.Button.Toggle">
+        <item name="android:background">@drawable/vapor_btn_toggle_holo_light</item>
+        <item name="android:minHeight">48dip</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+
+
+    <style name="PopupMenuTextAppearanceSmall" parent="TextAppearance.Sherlock.Widget.PopupMenu.Small">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="PopupMenuTextAppearanceLarge" parent="TextAppearance.Sherlock.Widget.PopupMenu.Large">
+        <item name="android:textColor">@color/white</item>
     </style>
 
 </resources>

@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="60dp"
-    android:background="@drawable/list_selector">
+    android:layout_width="@dimen/navigation_drawer_width"
+    android:layout_height="52dp"
+    android:background="@drawable/list_selector"
+    android:minHeight="52dp">
 
-
-    <ImageView
-        android:layout_width="35dp"
-        android:layout_height="50dp"
+   <ImageView
+        android:layout_width="22dp"
+        android:layout_height="22dp"
         android:id="@+id/drawer_listview_icon"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/nav_recent_blue"
-        android:fontFamily="sans-serif-light"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentBottom="false"
+        android:src="@drawable/ic_recent_blue"
         android:baselineAlignBottom="false"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:cropToPadding="false"
-        android:longClickable="false"
-        android:layout_marginRight="7dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp" />
+        android:layout_gravity="center"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="22dp"
+       android:layout_centerVertical="true"
+       android:layout_alignParentLeft="true"
+       android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/drawer_listview_text"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/drawer_listview_icon"
-        android:textColor="@color/dark_grey"
-        android:textSize="20dp"
-        android:fontFamily="sans-serif-light"
+        android:textColor="@color/primary_text_color"
+        android:textSize="14sp"
         android:text="Text"
-        android:layout_gravity="center" />
-</LinearLayout>
+        android:layout_gravity="center"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/drawer_listview_icon" />
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@drawable/list_divider"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/drawer_listview_icon"
+        android:layout_toEndOf="@+id/drawer_listview_icon" />
+</RelativeLayout>

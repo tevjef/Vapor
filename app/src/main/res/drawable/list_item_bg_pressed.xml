@@ -2,7 +2,7 @@
     android:shape="rectangle">
 
     <gradient
-        android:startColor="@color/nav_listview_pressed"
-        android:endColor="@color/nav_listview_pressed"
+        android:startColor="@color/list_item_pressed_color"
+        android:endColor="@color/list_item_pressed_color"
         android:angle="90" />
 </shape>

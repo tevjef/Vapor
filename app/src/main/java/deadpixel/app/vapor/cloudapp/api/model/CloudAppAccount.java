@@ -46,21 +46,39 @@ public interface CloudAppAccount {
     /**
      * @return the date you signed up
      */
-    public Date getCreatedAt() throws CloudAppException, ParseException;
+    public String getCreatedAt() throws CloudAppException, ParseException;
 
     /**
      * @return The date you last updated your account.
      */
-    public Date getUpdatedAt() throws CloudAppException, ParseException;
+    public String getUpdatedAt() throws CloudAppException, ParseException;
 
     /**
      * @return The date you activated your account.
      */
-    public Date getActivatedAt() throws CloudAppException, ParseException;
+    public String getActivatedAt() throws CloudAppException, ParseException;
 
     /**
      * @return The date you subscription expires if any
      */
-    public Date getSubscriptionExpiresAt() throws CloudAppException, ParseException;
+    public String getSubscriptionExpiresAt() throws CloudAppException, ParseException;
+
+    public Socket getSocket();
+
+    public interface Socket {
+
+        public String getAuthUrl();
+
+        public String getApiKey();
+
+        public long getAppId();
+
+        public Channels getChannels();
+
+    }
+
+    public interface Channels {
+        public String getItems();
+    }
 
 }

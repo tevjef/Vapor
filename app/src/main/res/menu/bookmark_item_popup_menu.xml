@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Rename"
+        android:id="@+id/popup_rename"
+        />
+    <item
+        android:title="Copy link"
+        android:id="@+id/popup_copy_link"
+        />
+    <item
+        android:title="Share link"
+        android:id="@+id/popup_share_link"/>
+    <item
+        android:title="Delete"
+        android:id="@+id/popup_delete"/>
+</menu>
