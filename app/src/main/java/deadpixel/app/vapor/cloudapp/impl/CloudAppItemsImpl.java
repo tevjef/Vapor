@@ -10,8 +10,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.async.http.Headers;
 import com.koushikdutta.async.http.libcore.RawHeaders;
 import com.koushikdutta.ion.HeadersCallback;
+import com.koushikdutta.ion.HeadersResponse;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.Response;
@@ -236,17 +238,6 @@ public class CloudAppItemsImpl {
 
 
 
-    /**
-     * Uploads a file to S3
-     *
-     * @param json
-     * @param file
-     * @return
-     * @throws JSONException
-     * @throws CloudAppException
-     * @throws ParseException
-     * @throws IOException
-     */
     private void uploadToAmazon(UploadResponseModel uploadResponse, File file, ProgressCallback progressCallback) throws JSONException,
             CloudAppException, ParseException, IOException {
 
@@ -284,8 +275,8 @@ public class CloudAppItemsImpl {
                             if (result != null) {
 
                                 String requestString = result.getRequest().getRequestString();
-                                RawHeaders header = result.getHeaders();
-                                String location = header.get("Location");
+                                HeadersResponse header = result.getHeaders();
+                                String location = header.getHeaders().get("Location");
 
                                 try {
                                     if (location != null) {
