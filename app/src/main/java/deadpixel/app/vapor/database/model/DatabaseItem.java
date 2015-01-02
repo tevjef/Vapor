@@ -67,8 +67,10 @@ public class DatabaseItem extends ItemModel implements CloudAppItem{
         item.setContentUrl(cItem.getContentUrl());
         item.setCreatedAt(cItem.getCreatedAt());
         item.setUpdatedAt(cItem.getUpdatedAt());
-        item.setDeletedAt(cItem.getDeletedAt());
-        item.setLastViewedAt(cItem.getLastViewedAt());
+        if(cItem.getDeletedAt() != null)
+            item.setDeletedAt(cItem.getDeletedAt());
+        if(cItem.getLastViewedAt() != null)
+            item.setLastViewedAt(cItem.getLastViewedAt());
 
 
         return item;

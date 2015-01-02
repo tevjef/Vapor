@@ -4,11 +4,12 @@ import com.android.volley.Request;
 import com.koushikdutta.ion.ProgressCallback;
 
 import java.io.File;
+import java.util.List;
 
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.impl.model.CloudAppUpload;
+import deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener;
 
 public interface CloudApp {
 
@@ -205,12 +206,12 @@ public interface CloudApp {
     /**
      *
      * @see http://developer.getcloudapp.com/upload-file
-     * @param fileUpload
+     * @param file
      *          The file you wish to upload.
      * @throws CloudAppException
      * @return
      */
-    public void upload(CloudAppUpload fileUpload) throws CloudAppException;
+    public CloudAppItem upload(File file) throws CloudAppException;
 
     /**
      *
@@ -222,6 +223,8 @@ public interface CloudApp {
      * @throws CloudAppException
      * @return
      */
+    public void upload(final File file, final ProgressCallback listener) throws CloudAppException;
+
     /**
      * Deletes an item
      *
@@ -262,8 +265,8 @@ public interface CloudApp {
      */
     public Request rename(CloudAppItem item, String name) throws CloudAppException;
 
-    public Request requestAccountDetails();
+    public Request requestAccountDetails() throws CloudAppException;
 
-    public Request requestAccountStats();
+    public Request requestAccountStats() throws CloudAppException;
 
 }

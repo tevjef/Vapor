@@ -179,7 +179,7 @@ public class ItemModel implements CloudAppItem {
     }
 
     public void setEpochUpdatedAt(Long updated_at) {
-        this.updated_at = updated_at == 0?null:String.valueOf(updated_at);
+        this.updated_at = String.valueOf(updated_at);
     }
 
     public void setEpochDeletedAt(Long deleted_at) {

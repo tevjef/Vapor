@@ -23,19 +23,21 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.android.volley.VolleyError;
+import com.android.volley.Request;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
 import org.apache.http.HttpStatus;
 
 
+import java.util.ArrayList;
+
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
+import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.impl.CloudAppImpl;
-import deadpixel.app.vapor.libs.EaseOutQuint;
 import deadpixel.app.vapor.libs.TransitionButton;
 import deadpixel.app.vapor.networkOp.AuthenticationTaskFragment;
 import deadpixel.app.vapor.utils.AppUtils;
@@ -43,7 +45,6 @@ import deadpixel.app.vapor.utils.AppUtils.TextStyle;
 
 public class AuthenticationActivity extends SherlockFragmentActivity implements AuthenticationTaskFragment.TaskCallbacks {
 
-    private static final boolean DEBUG = true;
     String TAG = "AuthenticationActivity";
     public static SharedPreferences prefs;
     private Context context;
@@ -80,8 +81,7 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
         editPref = prefs.edit();
 
         boolean startupAnimationRan = prefs.getBoolean(AppUtils.STARTUP_ANIMATION_RAN, false);
-
-        boolean signedIn = AppUtils.isSignedIn();
+        boolean signedIn = prefs.getBoolean(AppUtils.SIGNED_IN, false);
 
 
         if(!signedIn) {
@@ -107,10 +107,6 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
                 mPassField.setVisibility(View.VISIBLE);
                 mButton.setVisibility(View.VISIBLE);
                 tos.setVisibility(View.VISIBLE);
-
-                ViewGroup containerLayout = (ViewGroup) findViewById(R.id.field_group);
-                LayoutTransition layoutTransition = new LayoutTransition();
-                containerLayout.setLayoutTransition(layoutTransition);
             }
 
             FragmentManager fm = getSupportFragmentManager();
@@ -142,9 +138,7 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
             updateState(State.FORGOTPASS, SubState.NORMAL);
         } else {
             updateState(State.SIGNIN, SubState.NORMAL);
-            if(AppUtils.GLOBAL_DEBUG || DEBUG) {
-                Log.e(TAG, "Couldn't updateState from preferences");
-            }
+            Log.e(TAG, "Couldn't updateState from preferences");
         }
     }
 
@@ -178,7 +172,7 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
 
 
         //Sets up the Transition butt to receive animation events.
-        mButton.with(this)
+        mButton.from(this)
                 .setNormalSelector(R.drawable.btn_toggle_selector)
                 .setErrorSelector(R.drawable.btn_toggle_error_selector)
                 .setSuccessSelector(R.drawable.btn_toggle_success_selector);
@@ -221,7 +215,7 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
         editPref.putBoolean(AppUtils.STARTUP_ANIMATION_RAN, true).commit();
 
         ViewGroup containerLayout = (ViewGroup) findViewById(R.id.contain_layout);
-        final LayoutTransition layoutTransition  = new LayoutTransition();
+        LayoutTransition layoutTransition  = new LayoutTransition();
         containerLayout.setLayoutTransition(layoutTransition);
 
         final ViewGroup fieldsContainerLayout = (ViewGroup) findViewById(R.id.fields_contain_layout);
@@ -238,9 +232,7 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
 
             @Override
             public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
-
                 fieldsContainerLayout.setVisibility(View.VISIBLE);
-
                 YoYo.with(Techniques.FadeInUp).duration(500).withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
@@ -249,7 +241,6 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
 
                     @Override
                     public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
-
                         YoYo.with(Techniques.FadeInUp).duration(500).withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
                             @Override
                             public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
@@ -258,7 +249,6 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
 
                             @Override
                             public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
-
                                 YoYo.with(Techniques.FadeInUp).duration(500).withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
                                     @Override
                                     public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
@@ -269,20 +259,19 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
                                     @Override
                                     public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
 
+                                        tos.setVisibility(View.VISIBLE);
 
                                         YoYo.with(Techniques.FadeInUp).duration(200).withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
                                             @Override
                                             public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
-                                                tos.setVisibility(View.VISIBLE);
 
                                             }
 
                                             @Override
                                             public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
-
-                                                ViewGroup containerLayout = (ViewGroup) findViewById(R.id.field_group);
-                                                LayoutTransition layoutTransition = new LayoutTransition();
-                                                containerLayout.setLayoutTransition(layoutTransition);
+                                                ViewGroup fieldGroup = (ViewGroup) findViewById(R.id.field_group);
+                                                LayoutTransition layoutTransition  = new LayoutTransition();
+                                                fieldGroup.setLayoutTransition(layoutTransition);
                                             }
 
                                             @Override
@@ -494,7 +483,12 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
 
     private void signIn() {
 
+        try {
             AppUtils.addToRequestQueue(AppUtils.api.requestAccountDetails());
+        } catch (CloudAppException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void createAccount() {
@@ -667,28 +661,24 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
     // state of the application, signin, register or forgot password, though not
     //implemented since it's not needed in this case
     private String getErrorDescription(ErrorEvent error) {
-        String errorDescription = ErrorEvent.getErrorDescription(error);
-        VolleyError volleyError;
+        String errorDescription;
 
-        if(error.getError() instanceof  VolleyError) {
-            volleyError = (VolleyError) error.getError();
 
-            if (volleyError.networkResponse == null) {
-                errorDescription = getResources().getString(R.string.error_contacting_cloudapp);
-            } else {
-                switch (volleyError.networkResponse.statusCode) {
-                    case HttpStatus.SC_UNPROCESSABLE_ENTITY:
-                        errorDescription = getResources().getString(R.string.invalid_email_password);
-                        break;
-                    case HttpStatus.SC_UNAUTHORIZED:
-                        errorDescription = getResources().getString(R.string.incorrect_email_pass);
-                        break;
-                    case HttpStatus.SC_NOT_ACCEPTABLE:
-                        errorDescription = getResources().getString(R.string.account_already_exists);
-                        break;
-                    default:
-                        break;
-                }
+        if (error.getError().networkResponse == null) {
+            errorDescription = getResources().getString(R.string.error_contacting_cloudapp);
+        } else {
+            switch (error.getError().networkResponse.statusCode) {
+                case HttpStatus.SC_UNPROCESSABLE_ENTITY:
+                    errorDescription = getResources().getString(R.string.invalid_email_password);
+                    break;
+                case HttpStatus.SC_UNAUTHORIZED:
+                    errorDescription = getResources().getString(R.string.incorrect_email_pass);
+                    break;
+                case HttpStatus.SC_NOT_ACCEPTABLE:
+                    errorDescription = getResources().getString(R.string.account_already_exists);
+                    break;
+                default:
+                    errorDescription = getResources().getString(R.string.error_occurred);
             }
         }
         return errorDescription;
@@ -784,7 +774,7 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
         //This is to let the Volley API determine if it cannot establish a connection
         setNormalButtonStateText();
 
-        if(!errorEvent.getExplicitError().equals(AppUtils.NO_CONNECTION)) {
+        if(!errorEvent.getErrorDescription().equals(AppUtils.NO_CONNECTION)) {
 
             String errorDescription = getErrorDescription(errorEvent);
 

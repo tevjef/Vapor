@@ -27,7 +27,6 @@ import com.squareup.otto.ThreadEnforcer;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HTTP;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,7 +34,6 @@ import java.text.SimpleDateFormat;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import deadpixel.app.vapor.R;
-import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudApp;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
@@ -118,9 +116,6 @@ public class AppUtils extends Application {
     ////////////////////////////////////////
     //General application utilities
     ////////////////////////////////////////
-
-
-    public static final  boolean GLOBAL_DEBUG = true;
     public static final String VAPOR = "Vapor_";
     public static final String APP_FIRST_START = VAPOR + "first_start";
     public static final String SIGNED_IN = VAPOR + "signed_in";
@@ -152,8 +147,6 @@ public class AppUtils extends Application {
         LIGHT_NORMAL, NORMAL,  BOLD
     }
 
-
-
     public static boolean isValidWebAddress(CharSequence target) {
         return !TextUtils.isEmpty(target) && Patterns.DOMAIN_NAME.matcher(target).matches();
     }
@@ -171,12 +164,9 @@ public class AppUtils extends Application {
         if(cm != null) {
             ni = cm.getActiveNetworkInfo();
         }
+
         boolean b = (ni != null)&& ni.isConnectedOrConnecting();
         return b;
-    }
-
-    public static boolean isSignedIn() {
-        return mPref.getBoolean(AppUtils.SIGNED_IN, false);
     }
 
     public static Typeface getTextStyle(TextStyle ts) {
@@ -211,8 +201,7 @@ public class AppUtils extends Application {
         getApplicationContext().startActivity(i);
     }
 
-
-        public final static String AM_ACCOUNT_TYPE = "AM_ACCOUNT_TYPE";
+    public final static String AM_ACCOUNT_TYPE = "AM_ACCOUNT_TYPE";
     public final static String AM_SUBSCRIPTION_END = "AM_SUBSCRIPTION_END";
     public final static String AM_CUSTOM_DOMAIN = "AM_CUSTOM_DOMAIN";
     public final static String AM_MANAGEMENT = "AM_MANAGEMENT";
@@ -263,7 +252,7 @@ public class AppUtils extends Application {
     public final static String PREF_UPLAODS_TODAY = TAG + "uploads_today";
 
 
-    public final static String NO_CONNECTION = "No_connection";
+    public final static String NO_CONNECTION = "No connection";
 
 
     ////////////////////////////////////////
@@ -316,7 +305,7 @@ public class AppUtils extends Application {
         AuthScope scope = new AuthScope("my.cl.ly", 80);
         client.getCredentialsProvider().setCredentials(scope,
                 new UsernamePasswordCredentials(mail, pw));
-        Log.i(TAG, "Setting Authentication of client: " + mPref.getString("email", null) + "  " + mPref.getString("pass", null));
+        Log.i(TAG, "Setting Authentication of client" + mPref.getString("email", null) + "  " + mPref.getString("pass", null));
     }
 
     public static RequestQueue getRequestQueue() {
@@ -336,7 +325,7 @@ public class AppUtils extends Application {
             //req.setShouldCache(false);
             req.setTag(TAG);
 
-           /* req.setRetryPolicy(new RetryPolicy() {
+            req.setRetryPolicy(new RetryPolicy() {
                 @Override
                 public int getCurrentTimeout() {
                     return 15000;
@@ -351,7 +340,7 @@ public class AppUtils extends Application {
                 public void retry(VolleyError volleyError) throws VolleyError {
 
                 }
-            });*/
+            });
             setAuth();
 
             getRequestQueue().add(req);

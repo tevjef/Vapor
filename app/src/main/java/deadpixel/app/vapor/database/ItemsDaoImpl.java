@@ -13,7 +13,6 @@ import java.util.List;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
 import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.database.model.ItemsDaoModel;
-import deadpixel.app.vapor.utils.AppUtils;
 
 /**
  * Created by Tevin on 7/27/2014.
@@ -21,7 +20,6 @@ import deadpixel.app.vapor.utils.AppUtils;
 public class ItemsDaoImpl implements ItemsDaoModel{
 
     private static final String TAG = "ItemsDaoImpl ";
-    private static final boolean DEBUG = true;
 
 
     private SQLiteDatabase database;
@@ -108,9 +106,7 @@ public class ItemsDaoImpl implements ItemsDaoModel{
 
         ArrayList<DatabaseItem> dbItems = new ArrayList<DatabaseItem>();
 
-        if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-            Log.i(TAG, "Inserting " + items.size() + " new items");
-        }
+        Log.i(TAG, "Inserting "+ items.size() + " new items");
         for(DatabaseItem item : items) {
             ContentValues values = putValues(item);
             //insert items then get them by their row Id. Then add it to dbItem and return it.
@@ -136,9 +132,7 @@ public class ItemsDaoImpl implements ItemsDaoModel{
             cursor.moveToFirst();
             item = getItemFromCursor(cursor);
         } else {
-            if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-                Log.i(TAG, "Item does not exist yet");
-            }
+            Log.i(TAG, "Item does not exist yet");
         }
 
         return item == null? null:item;
@@ -161,9 +155,7 @@ public class ItemsDaoImpl implements ItemsDaoModel{
             dbItem = getItemFromCursor(cursor);
 
         } else {
-            if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-                Log.i(TAG, "Item does not exist yet");
-            }
+            Log.i(TAG, "Item does not exist yet");
         }
 
 
@@ -203,9 +195,7 @@ public class ItemsDaoImpl implements ItemsDaoModel{
             }
 
         } else {
-            if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-                Log.e(TAG, "Cursor is empty, no items in database");
-            }
+            Log.e(TAG, "Cursor is empty, no items in database");
             items = new ArrayList<DatabaseItem>();
         }
 
@@ -255,10 +245,7 @@ public class ItemsDaoImpl implements ItemsDaoModel{
             }
 
         } else {
-            if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-
-                Log.e(TAG, "Cursor is empty, no items in database");
-            }
+            Log.e(TAG, "Cursor is empty, no items in database");
             items = new ArrayList<DatabaseItem>();
         }
 
@@ -284,7 +271,7 @@ public class ItemsDaoImpl implements ItemsDaoModel{
 
         String where = ItemsDatabaseHelper.KEY_COL_ITEM_ID + "=" + item.getId();
 
-        int rowsAffected = database.delete(ItemsDatabaseHelper.TABLE_ITEMS, where, null);
+        int rowsAffected = database.update(ItemsDatabaseHelper.TABLE_ITEMS, putValues(item),where, null);
         FilesManager.decreaseDbSize(rowsAffected * -1);
 
         return rowsAffected;

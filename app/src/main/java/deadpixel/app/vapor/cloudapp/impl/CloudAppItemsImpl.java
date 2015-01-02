@@ -11,11 +11,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.async.http.libcore.RawHeaders;
+import com.koushikdutta.ion.HeadersCallback;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,19 +31,22 @@ import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ItemResponseEvent;
+import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.impl.model.CloudAppUpload;
+import deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener;
 import deadpixel.app.vapor.cloudapp.impl.model.ItemModel;
+import deadpixel.app.vapor.cloudapp.impl.model.MultiItemResponseModel;
 import deadpixel.app.vapor.cloudapp.impl.model.UploadResponseModel;
 import deadpixel.app.vapor.database.DatabaseUpdate;
-import deadpixel.app.vapor.database.FilesManager;
-import deadpixel.app.vapor.database.PreferenceHandler;
 import deadpixel.app.vapor.networkOp.RequestExecutor;
 import deadpixel.app.vapor.utils.AppUtils;
 
@@ -48,7 +56,6 @@ public class CloudAppItemsImpl {
     private static final String TAG = "CLOUDAPPIMPL";
     private static final String ITEMS_URL = MY_CL_LY + "/items";
     private static final String NEW_ITEM_URL = ITEMS_URL + "/new?item[private]=false";
-    private static final boolean DEBUG = true;
 
     private RequestExecutor executor = new RequestExecutor();
 
@@ -185,7 +192,7 @@ public class CloudAppItemsImpl {
         return upload(file);
     }
 
-    public void upload(final CloudAppUpload fileUpload) throws CloudAppException {
+    public void upload(final File file, final ProgressCallback progressCallback) throws CloudAppException {
 
         RequestExecutor executor = new RequestExecutor();
 
@@ -195,16 +202,12 @@ public class CloudAppItemsImpl {
             public void OnSuccessResponse(String response) {
                 UploadResponseModel uploadResponse = gson.fromJson(response, UploadResponseModel.class);
 
-                PreferenceHandler.saveUploadDetails(uploadResponse);
-
                 if (uploadResponse.getParams() == null) {
                     // Something went wrong, maybe we crossed the threshold?
                     if (uploadResponse.getUploads_remaining() == 0) {
                         Toast.makeText(AppUtils.getInstance().getApplicationContext(),
                                 "Uploads remaining is 0", Toast.LENGTH_LONG).show();
 
-
-                        fileUpload.getmUploadCallback().onError(new ErrorEvent(null, AppUtils.UPLOAD_TICKETS_ZERO, fileUpload));
                         Log.e(TAG, "Uploads remaining is 0");
 
                     }
@@ -212,7 +215,7 @@ public class CloudAppItemsImpl {
                     Log.e(TAG, "Params is null");
                 }
                 try {
-                    uploadToAmazon(uploadResponse, fileUpload);
+                    uploadToAmazon(uploadResponse, file, progressCallback);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (CloudAppException e) {
@@ -244,19 +247,24 @@ public class CloudAppItemsImpl {
      * @throws ParseException
      * @throws IOException
      */
-    private void uploadToAmazon(UploadResponseModel uploadResponse, final CloudAppUpload fileUpload) throws JSONException,
+    private void uploadToAmazon(UploadResponseModel uploadResponse, File file, ProgressCallback progressCallback) throws JSONException,
             CloudAppException, ParseException, IOException {
 
-        if(fileUpload.getmFile().length() > uploadResponse.getMax_upload_size()) {
-            fileUpload.getmUploadCallback().onError(new ErrorEvent(null, AppUtils.FILE_TOO_LARGE, fileUpload));
+
+        if(file.length() > uploadResponse.getMax_upload_size()) {
+            AppUtils.getEventBus().post(new ErrorEvent(AppUtils.FILE_TOO_LARGE));
+        } else if(uploadResponse.getUploads_remaining() == 0) {
+            AppUtils.getEventBus().post(new ErrorEvent(AppUtils.UPLOAD_TICKETS_ZERO));
         } else {
-            String fileName = makeFileName(fileUpload.getmFile());
+
+            String fileName = makeFileName(file);
 
             Ion.with(AppUtils.getInstance().getApplicationContext())
                     .load(uploadResponse.getUrl())
-                    .uploadProgress(fileUpload.getmProgressCallback())
-                    .setLogging("Ion: ", Log.VERBOSE)
+                    .uploadProgress(progressCallback)
+                    .setLogging("Ion: ", Log.DEBUG)
                     .followRedirect(false)
+                    .proxy("10.0.3.2", 8888)
                     .setHeader("Accept", "application/json")
                     .setMultipartParameter("acl", uploadResponse.getParams().getAcl())
                     .setMultipartParameter("AWSAccessKeyId", uploadResponse.getParams().getAWSAccessKeyId())
@@ -264,7 +272,7 @@ public class CloudAppItemsImpl {
                     .setMultipartParameter("success_action_redirect", uploadResponse.getParams().getSuccess_action_redirect())
                     .setMultipartParameter("policy", uploadResponse.getParams().getPolicy())
                     .setMultipartParameter("signature", uploadResponse.getParams().getSignature())
-                    .setMultipartFile("file", fileUpload.getmFile())
+                    .setMultipartFile("file", file)
                     .asJsonObject()
                     .withResponse()
 
@@ -272,21 +280,20 @@ public class CloudAppItemsImpl {
                         @Override
                         public void onCompleted(Exception e, Response<JsonObject> result) {
 
-                            if (e != null) {
-                                fileUpload.getmUploadCallback().onError(new ErrorEvent(e, null, result));
-                            } else if (result != null) {
+
+                            if (result != null) {
+
                                 String requestString = result.getRequest().getRequestString();
                                 RawHeaders header = result.getHeaders();
                                 String location = header.get("Location");
 
-
+                                try {
                                     if (location != null) {
-                                        if (AppUtils.GLOBAL_DEBUG && DEBUG) {
-                                            Log.i(TAG, " Pinging CloudApp for file at Location: " + location);
-                                        }
-                                        FilesManager.getUploadedFile(executor.executeGet(location, 200));
+                                        AppUtils.addToRequestQueue(executor.executeGet(location, 200));
                                     }
-
+                                } catch (CloudAppException e1) {
+                                    e1.printStackTrace();
+                                }
                             /*if (result.getResult() != null) {
                                 String resultString = result.getResult().toString();
 
