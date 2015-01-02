@@ -1,55 +1,87 @@
 package deadpixel.app.vapor.cloudapp.impl;
 
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.async.http.libcore.RawHeaders;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.Response;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntity;
-import org.apache.http.entity.mime.content.InputStreamBody;
-import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-import deadpixel.app.vapor.callbacks.ResponseCallback;
+import deadpixel.app.vapor.callbacks.ErrorEvent;
+import deadpixel.app.vapor.callbacks.ItemResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener;
-import deadpixel.app.vapor.cloudapp.impl.model.ItemResponseModel;
-import deadpixel.app.vapor.cloudapp.impl.model.MuliItemResponseModel;
+import deadpixel.app.vapor.cloudapp.impl.model.CloudAppUpload;
+import deadpixel.app.vapor.cloudapp.impl.model.ItemModel;
 import deadpixel.app.vapor.cloudapp.impl.model.UploadResponseModel;
-import deadpixel.app.vapor.networkOp.RequestExecutors;
-import deadpixel.app.vapor.networkOp.RequestHandler;
+import deadpixel.app.vapor.database.DatabaseUpdate;
+import deadpixel.app.vapor.database.FilesManager;
+import deadpixel.app.vapor.database.PreferenceHandler;
+import deadpixel.app.vapor.networkOp.RequestExecutor;
+import deadpixel.app.vapor.utils.AppUtils;
 
-public class CloudAppItemsImpl extends RequestExecutors  {
+public class CloudAppItemsImpl {
 
     public static final String MY_CL_LY = "http://my.cl.ly";
     private static final String TAG = "CLOUDAPPIMPL";
     private static final String ITEMS_URL = MY_CL_LY + "/items";
     private static final String NEW_ITEM_URL = ITEMS_URL + "/new?item[private]=false";
+    private static final boolean DEBUG = true;
 
-    DefaultHttpClient client = RequestHandler.client;
+    private RequestExecutor executor = new RequestExecutor();
+
     public CloudAppItemsImpl() {
+
+
+        executor.setListener(new RequestExecutor.RequestResponseListener() {
+            @Override
+            public void OnSuccessResponse(String response) {
+
+                ArrayList<ItemModel> items = new ArrayList<ItemModel>();
+                if (response.startsWith("[")) {
+                    Type listType = new TypeToken<List<ItemModel>>() {
+                    }.getType();
+
+                    items = gson.fromJson(response, listType);
+                    new DatabaseUpdate().start(items);
+                    AppUtils.getEventBus().post(new ItemResponseEvent(items));
+                } else if (response.startsWith("{")) {
+                    ItemModel item = gson.fromJson(response, ItemModel.class);
+                    items.add(item);
+                    new DatabaseUpdate().start(items);
+                    AppUtils.getEventBus().post(new ItemResponseEvent(items));
+                }
+
+
+            }
+
+            @Override
+            public void OnErrorResponse(VolleyError errorResponse) {
+
+            }
+        });
 
     }
 
@@ -62,19 +94,17 @@ public class CloudAppItemsImpl extends RequestExecutors  {
 
 
     /**
-     *
      * {@inheritDoc}
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppItem createBookmark(java.lang.String,
-     *      java.lang.String)
+     * java.lang.String)
      */
-    public CloudAppItem createBookmark(String name, String url) throws CloudAppException {
+    public Request createBookmark(String name, String url) throws CloudAppException {
         try {
-            JSONObject json = createBody(new String[] { "name", "redirect_url" }, new String[] {
-                    name, url });
-            executePost(ITEMS_URL, json.toString(), 200);
+            JSONObject json = createBody(new String[]{"name", "redirect_url"}, new String[]{
+                    name, url});
 
-            return gson.fromJson(response, ItemResponseModel.class);
+            return executor.executePost(ITEMS_URL, json.toString(), 200);
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
             throw new CloudAppException(500, "Something went wrong trying to handle JSON.", e);
@@ -82,12 +112,11 @@ public class CloudAppItemsImpl extends RequestExecutors  {
     }
 
     /**
-     *
      * {@inheritDoc}
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppItem createBookmarks(java.lang.String[][])
      */
-    public List<CloudAppItem> createBookmarks(String[][] bookmarks)
+    public Request createBookmarks(String[][] bookmarks)
             throws CloudAppException {
         try {
             JSONArray arr = new JSONArray();
@@ -97,16 +126,8 @@ public class CloudAppItemsImpl extends RequestExecutors  {
 
             JSONObject json = new JSONObject();
             json.put("items", arr);
-            executePost(ITEMS_URL, json.toString(), 200);
 
-            List<CloudAppItem> items = new ArrayList<CloudAppItem>();
-            for (int i = 0; i < arr.length(); i++) {
-                //This needs a single item but the server responds with an array of objects.
-                //MuliItemResponseModel uses gson to store the ItemReponseModel objects an ArrayList
-                //This gets the items from the Arraylist.
-                items.add( gson.fromJson(response, MuliItemResponseModel.class).getList().get(i));
-            }
-            return items;
+            return executor.executePost(ITEMS_URL, json.toString(), 200);
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
             throw new CloudAppException(500, "Something went wrong trying to handle JSON.", e);
@@ -121,93 +142,96 @@ public class CloudAppItemsImpl extends RequestExecutors  {
     }
 
     /**
-     *
      * {@inheritDoc}
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppItem getItems(int, int,
-     *      deadpixel.app.vapor.cloudapp.api.model.CloudAppItem.Type, boolean, java.lang.String)
+     * deadpixel.app.vapor.cloudapp.api.model.CloudAppItem.Type, boolean, java.lang.String)
      */
-    public List<CloudAppItem> getItems(int page, int perPage, CloudAppItem.Type type,
-                                       boolean showDeleted, String source) throws CloudAppException {
+    public Request getItems(int page, int perPage, CloudAppItem.Type type,
+                            String source) throws CloudAppException {
 
-            if (perPage < 5)
-                perPage = 5;
-            if (page == 0)
-                page = 1;
+        if (perPage < 5)
+            perPage = 5;
+        if (page == 0)
+            page = 1;
 
-            List<String> params = new ArrayList<String>();
-            params.add("page="+page);
-            params.add("per_page="+perPage);
-            params.add("deleted="+ (showDeleted ? "true" : "false"));
+        List<String> params = new ArrayList<String>();
+        params.add("page=" + page);
+        params.add("per_page=" + perPage);
 
-            if (type != null)
-            {
+        params.add("deleted=" + (type == CloudAppItem.Type.DELETED ? "true" : "false"));
+
+        if (type != null) {
+            //If type is not all and  do not add a type parameter
+            if (type != CloudAppItem.Type.ALL && type != CloudAppItem.Type.DELETED)
                 params.add("type=" + type.toString().toLowerCase());
-            }
-            if (source != null)
-            {
-                params.add("source=" + source);
-            }
+        }
+        if (source != null) {
+            params.add("source=" + source);
+        }
 
-            String queryString = StringUtils.join(params.iterator(), "&");
-            executeGet(ITEMS_URL + "?" + queryString, 200);
+        String queryString = StringUtils.join(params.iterator(), "&");
 
-            List<CloudAppItem> items = new ArrayList<CloudAppItem>();
+        return executor.executeGet(ITEMS_URL + "?" + queryString, 200);
 
-            MuliItemResponseModel model = gson.fromJson(response, MuliItemResponseModel.class);
-
-            for (int i = 0; i < model.getList().size(); i++) {
-                items.add(gson.fromJson(response, MuliItemResponseModel.class).getList().get(i));
-            }
-            return items;
     }
 
     /**
-     *
      * {@inheritDoc}
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppItem upload(java.io.File)
      */
     public CloudAppItem upload(File file) throws CloudAppException {
-        return upload( file, CloudAppProgressListener.NO_OP );
+        return upload(file);
     }
 
-    public CloudAppItem upload(File file, CloudAppProgressListener listener) throws CloudAppException {
-        try {
-            // Do a GET request so we have the S3 endpoint
-            HttpGet req = new HttpGet(NEW_ITEM_URL);
-            executeGet(NEW_ITEM_URL, 200);
+    public void upload(final CloudAppUpload fileUpload) throws CloudAppException {
 
-            UploadResponseModel uploadResponse;
+        RequestExecutor executor = new RequestExecutor();
 
-            uploadResponse = gson.fromJson(response, UploadResponseModel.class);
+        AppUtils.addToRequestQueue(executor.executeGet(NEW_ITEM_URL, 200));
+        executor.setListener(new RequestExecutor.RequestResponseListener() {
+            @Override
+            public void OnSuccessResponse(String response) {
+                UploadResponseModel uploadResponse = gson.fromJson(response, UploadResponseModel.class);
 
-            if (uploadResponse.getParams() == null) {
-                // Something went wrong, maybe we crossed the threshold?
-                if (uploadResponse.getUploads_remaining() == 0) {
+                PreferenceHandler.saveUploadDetails(uploadResponse);
 
-                    //TODO: Get message back to UI
-                    throw new CloudAppException(200, "Uploads remaining is 0", null);
+                if (uploadResponse.getParams() == null) {
+                    // Something went wrong, maybe we crossed the threshold?
+                    if (uploadResponse.getUploads_remaining() == 0) {
+                        Toast.makeText(AppUtils.getInstance().getApplicationContext(),
+                                "Uploads remaining is 0", Toast.LENGTH_LONG).show();
+
+
+                        fileUpload.getmUploadCallback().onError(new ErrorEvent(null, AppUtils.UPLOAD_TICKETS_ZERO, fileUpload));
+                        Log.e(TAG, "Uploads remaining is 0");
+
+                    }
+
+                    Log.e(TAG, "Params is null");
                 }
-                throw new CloudAppException(500, "Missing params object from the CloudApp API.",
-                        null);
+                try {
+                    uploadToAmazon(uploadResponse, fileUpload);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (CloudAppException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
-            return uploadToAmazon(uploadResponse, file, listener);
+            @Override
+            public void OnErrorResponse(VolleyError errorResponse) {
 
-        } catch (ClientProtocolException e) {
-            Log.e(TAG, "Something went wrong trying to contact the CloudApp API.", e);
-            throw new CloudAppException(500,
-                    "Something went wrong trying to contact the CloudApp API", e);
-        } catch (IOException e) {
-            Log.e(TAG, "Something went wrong trying to contact the CloudApp API.", e);
-            throw new CloudAppException(500,
-                    "Something went wrong trying to contact the CloudApp API.", e);
-        } catch (JSONException e) {
-            Log.e(TAG, "Something went wrong trying to handle JSON.", e);
-            throw new CloudAppException(500, "Something went wrong trying to handle JSON.", e);
-        }
+            }
+        });
+
+
     }
+
+
 
     /**
      * Uploads a file to S3
@@ -220,27 +244,74 @@ public class CloudAppItemsImpl extends RequestExecutors  {
      * @throws ParseException
      * @throws IOException
      */
-    private CloudAppItem uploadToAmazon(UploadResponseModel uploadResponse, File file, CloudAppProgressListener listener) throws JSONException,
+    private void uploadToAmazon(UploadResponseModel uploadResponse, final CloudAppUpload fileUpload) throws JSONException,
             CloudAppException, ParseException, IOException {
 
+        if(fileUpload.getmFile().length() > uploadResponse.getMax_upload_size()) {
+            fileUpload.getmUploadCallback().onError(new ErrorEvent(null, AppUtils.FILE_TOO_LARGE, fileUpload));
+        } else {
+            String fileName = makeFileName(fileUpload.getmFile());
+
+            Ion.with(AppUtils.getInstance().getApplicationContext())
+                    .load(uploadResponse.getUrl())
+                    .uploadProgress(fileUpload.getmProgressCallback())
+                    .setLogging("Ion: ", Log.VERBOSE)
+                    .followRedirect(false)
+                    .setHeader("Accept", "application/json")
+                    .setMultipartParameter("acl", uploadResponse.getParams().getAcl())
+                    .setMultipartParameter("AWSAccessKeyId", uploadResponse.getParams().getAWSAccessKeyId())
+                    .setMultipartParameter("key", uploadResponse.getParams().getKey())
+                    .setMultipartParameter("success_action_redirect", uploadResponse.getParams().getSuccess_action_redirect())
+                    .setMultipartParameter("policy", uploadResponse.getParams().getPolicy())
+                    .setMultipartParameter("signature", uploadResponse.getParams().getSignature())
+                    .setMultipartFile("file", fileUpload.getmFile())
+                    .asJsonObject()
+                    .withResponse()
+
+                    .setCallback(new FutureCallback<Response<JsonObject>>() {
+                        @Override
+                        public void onCompleted(Exception e, Response<JsonObject> result) {
+
+                            if (e != null) {
+                                fileUpload.getmUploadCallback().onError(new ErrorEvent(e, null, result));
+                            } else if (result != null) {
+                                String requestString = result.getRequest().getRequestString();
+                                RawHeaders header = result.getHeaders();
+                                String location = header.get("Location");
 
 
-        Map<String, Object> paramMap = new LinkedHashMap<String, Object>();
+                                    if (location != null) {
+                                        if (AppUtils.GLOBAL_DEBUG && DEBUG) {
+                                            Log.i(TAG, " Pinging CloudApp for file at Location: " + location);
+                                        }
+                                        FilesManager.getUploadedFile(executor.executeGet(location, 200));
+                                    }
 
-        paramMap.put("acl", uploadResponse.getParams().getAcl());
-        paramMap.put("AWSAccessKeyId", uploadResponse.getParams().getAWSAccessKeyId());
-        paramMap.put("key", uploadResponse.getParams().getKey());
-        paramMap.put("success_action_redirect", uploadResponse.getParams().getSuccess_action_redirect());
-        paramMap.put("policy", uploadResponse.getParams().getPolicy());
-        paramMap.put("signature", uploadResponse.getParams().getSignature());
+                            /*if (result.getResult() != null) {
+                                String resultString = result.getResult().toString();
 
-        // Add the actual file.
-        // We have to use the 'file' parameter for the S3 storage.
-        InputStreamBody stream = new CloudAppInputStream(file, listener);
-        paramMap.put("file", stream);
 
-        executePost(uploadResponse.getUrl(), null, 200);
-       /* HttpPost uploadRequest = new HttpPost(json.getString("url"));
+                                Log.i("Request: ", requestString);
+                                Log.i("Headers: ", headerString);
+                                Log.i("Result: : ", resultString);
+
+                                Log.e(TAG, e.getMessage());
+
+                                ArrayList<ItemModel> items = new ArrayList<ItemModel>();
+                                if (result.getResult().toString().startsWith("{")) {
+                                    ItemModel item = gson.fromJson(response, ItemModel.class);
+                                    items.add(item);
+                                    new DatabaseUpdate().start(items);
+                                    AppUtils.getEventBus().post(new ItemResponseEvent(items));
+                                }
+                            }*/
+                            }
+                        }
+                    });
+        }
+
+
+/*        HttpPost uploadRequest = new HttpPost(json.getString("url"));
         uploadRequest.addHeader("Accept", "application/json");
         uploadRequest.setEntity(entity);
 
@@ -254,21 +325,32 @@ public class CloudAppItemsImpl extends RequestExecutors  {
         }
         throw new CloudAppException(status, "Was unable to upload the file to amazon:\n"
                 + body, null);*/
-        return null;
     }
 
-    public CloudAppItem delete(CloudAppItem item) throws CloudAppException {
-        executeDelete(item.getHref(), 200);
-        return gson.fromJson(response, ItemResponseModel.class);
+
+    private String getCurrentTime() {
+        DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        Date dateobj = new Date();
+        System.out.println(df.format(dateobj));
+        return df.format(dateobj);
     }
 
-    public CloudAppItem recover(CloudAppItem item) throws CloudAppException {
+    private String makeFileName(File file) {
+
+        return file.getName().equals("")? getCurrentTime(): file.getName();
+    }
+
+    public Request delete(CloudAppItem item) throws CloudAppException {
+        return executor.executeDelete(item.getHref(), 200);
+    }
+
+    public Request recover(CloudAppItem item) throws CloudAppException {
         try {
             JSONObject json = createBody(new String[] { "deleted_at" },
                     new Object[] { JSONObject.NULL });
             json.put("deleted", true);
-            executePut(item.getHref(), json.toString(), 200);
-            return gson.fromJson(response, ItemResponseModel.class);
+            executor.executePut(item.getHref(), json.toString(), 200);
+            return executor.executePut(item.getHref(), json.toString(), 200);
 
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
@@ -276,33 +358,32 @@ public class CloudAppItemsImpl extends RequestExecutors  {
         }
     }
 
-    public CloudAppItem setSecurity(CloudAppItem item, boolean is_private)
+    public Request setSecurity(CloudAppItem item, boolean is_private)
             throws CloudAppException {
         try {
             JSONObject json = createBody(new String[] { "private" },
                     new Object[] { is_private });
-            executePut(item.getHref(), json.toString(), 200);
-            return gson.fromJson(response, ItemResponseModel.class);
+
+            return executor.executePut(item.getHref(), json.toString(), 200);
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
             throw new CloudAppException(500, "Something went wrong trying to handle JSON.", e);
         }
     }
 
-    public CloudAppItem rename(CloudAppItem item, String name) throws CloudAppException {
+    public Request rename(CloudAppItem item, String name) throws CloudAppException {
         try {
             JSONObject json = createBody(new String[] { "name" }, new Object[] { name });
-            executePut(item.getHref(), json.toString(), 200);
-            return gson.fromJson(response, ItemResponseModel.class);
+
+            return executor.executePut(item.getHref(), json.toString(), 200);
         } catch (JSONException e) {
             Log.e(TAG, "Something went wrong trying to handle JSON.", e);
             throw new CloudAppException(500, "Something went wrong trying to handle JSON.", e);
         }
     }
 
-    public CloudAppItem getItem(String url) throws CloudAppException {
-        executeGet(url, 200);
-        return gson.fromJson(response, ItemResponseModel.class);
+    public Request getItem(String url) throws CloudAppException {
+        return executor.executeGet(url, 200);
     }
 
     private JSONObject createBody(String[] keys, Object[] values) throws JSONException {

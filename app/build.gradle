@@ -24,7 +24,6 @@ dependencies {
     compile files('libs/httpmime-4.3.1.jar')
     compile files('libs/commons-lang3-3.1.jar')
     compile files('libs/httpcore-4.3.jar')
-    compile files('libs/ion-1.2.7.jar')
     compile files('libs/androidasync-1.2.6.jar')
     //compile 'com.mcxiaoke.volley:library-aar:1.0.+'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
@@ -38,6 +37,7 @@ dependencies {
     compile project(':aFileChooser')
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.koushikdutta.ion:ion:2.0.3'
 }
 android {
     packagingOptions {

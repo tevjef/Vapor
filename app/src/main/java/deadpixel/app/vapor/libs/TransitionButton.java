@@ -74,8 +74,13 @@ public class TransitionButton extends Button {
         return this;
     }
 
+    public TransitionButton setSelectors(int fromSelector, int toSelector) {
+        Drawable[] drawableArray = {mContext.getResources().getDrawable(fromSelector), mContext.getResources().getDrawable(toSelector)};
+        mTransitionDrawable = new TransitionDrawable(drawableArray);
+        return this;
+    }
     
-    public TransitionButton with(Context context) {
+    public TransitionButton from(Context context) {
         mContext = context;
         return this;
     }
@@ -121,7 +126,6 @@ public class TransitionButton extends Button {
         progressDrawable = mContext.getResources().getDrawable(progress);
         return this;
     }
-
     public TransitionButton setTransitionText(CharSequence fromText, CharSequence toText) {
         if(this.fromText == null && this.toText == null)
             buttonText =  new CharSequence[]{fromText, toText};
@@ -142,7 +146,10 @@ public class TransitionButton extends Button {
         setTransitionText(null, null);
         return this;
     }
-
+    public TransitionButton setDuration(int duration) {
+        this.duration = duration;
+        return this;
+    }
 
     public boolean isTransitioning() {
         return transitioning;
@@ -197,14 +204,18 @@ public class TransitionButton extends Button {
     }
     private synchronized void notifyTransitionEnd() {
         for(OnTransitionListener l : listeners){
-            l.OnTransitionEnd(this);
+            l.OnTransitionEnd(getThis());
         }
     }
     private synchronized void notifyTransitionStart() {
         for(OnTransitionListener l : listeners){
-            l.OnTransitionStart(this);
+            l.OnTransitionStart(getThis());
         }
     }
+    private TransitionButton getThis() {
+        return this;
+    }
+
     public synchronized void setTransitionListener(OnTransitionListener l) {
         listeners.add(l);
     }
@@ -224,84 +235,6 @@ public class TransitionButton extends Button {
         public void OnTransitionStart(TransitionButton button);
 
         public void OnTransitionEnd(TransitionButton button);
-    }
-
-    public class Builder {
-
-        int duration;
-        int delay;
-        String fromText;
-        String toText;
-        String backText;
-        BtnType fromType;
-        BtnType toType;
-        BtnType backType;
-
-        public BtnType getFromType() {
-            return fromType;
-        }
-
-        public void setFromType(BtnType fromType) {
-            this.fromType = fromType;
-        }
-
-        public BtnType getToType() {
-            return toType;
-        }
-
-        public void setToType(BtnType toType) {
-            this.toType = toType;
-        }
-
-        public BtnType getBackType() {
-            return backType;
-        }
-
-        public void setBackType(BtnType backType) {
-            this.backType = backType;
-        }
-        public int getDelay() {
-            return delay;
-        }
-
-        public void setDelay(int delay) {
-            this.delay = delay;
-        }
-
-
-        public Builder setDuration(int duration) {
-            this.duration = duration;
-            return this;
-        }
-
-        public Builder build() {
-
-            if(backType == null) {
-                backType = fromType;
-            }
-            if(backText == null) {
-                backText = fromText;
-            }
-
-
-            if(fromType == null) {
-                throw new NullPointerException("fromType is null");
-            }else if(toType == null) {
-                throw new NullPointerException("toType is null");
-            }else if(backType == null) {
-                throw new NullPointerException("backType is null");
-            }else if(fromText == null) {
-                throw new NullPointerException("fromText is null");
-            }else if(toText == null) {
-                throw new NullPointerException("toText is null");
-            }else if(backText == null) {
-                throw new NullPointerException("backText is null");
-            }
-
-            return this;
-        }
-
-
     }
 
 }

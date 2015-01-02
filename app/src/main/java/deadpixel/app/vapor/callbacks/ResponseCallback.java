@@ -2,8 +2,6 @@ package deadpixel.app.vapor.callbacks;
 
 import com.android.volley.VolleyError;
 
-import deadpixel.app.vapor.cloudapp.api.CloudAppException;
-
 /**
  * Created by Tevin on 6/16/2014.
  */
