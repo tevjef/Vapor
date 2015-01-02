@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- From: file:/C:/Users/Tevin/Desktop/Development/Vapor/aFileChooser/build/intermediates/bundles/debug/res/values-v19/values.xml -->
-    <eat-comment/>
-    <bool name="use_activity">false</bool>
-    <bool name="use_provider">true</bool>
-</resources>
