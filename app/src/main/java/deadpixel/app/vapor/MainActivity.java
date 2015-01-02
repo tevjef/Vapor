@@ -5,6 +5,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -14,7 +15,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,20 +29,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.android.volley.VolleyError;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.nineoldandroids.animation.Animator;
 
 import org.apache.http.HttpStatus;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -51,9 +49,7 @@ import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.database.FilesManager;
 import deadpixel.app.vapor.database.model.DatabaseItem;
-import deadpixel.app.vapor.libs.EaseOutQuint;
 import deadpixel.app.vapor.networkOp.DatabaseTaskFragment;
-import deadpixel.app.vapor.services.UploadActivity;
 import deadpixel.app.vapor.utils.AppUtils;
 
 import static deadpixel.app.vapor.cloudapp.api.model.CloudAppItem.*;
@@ -61,20 +57,24 @@ import static deadpixel.app.vapor.cloudapp.api.model.CloudAppItem.*;
 public class MainActivity extends SherlockFragmentActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, DatabaseTaskFragment.TaskCallbacks{
 
-    //Tag for database fragment
-    final private static String TAG_TASK_FRAGMENT = "Database_task_fragment";
+    private static final String TAG_TASK_FRAGMENT = "Database_task_fragment";
+    private static final String TAG_ALL_FRAGMENT = "all_fragment";
+    private static final String TAG_IMAGE_FRAGMENT = "image_fragment";
+    private static final String TAG_VIDEO_FRAGMENT = "video_fragment";
+    private static final String TAG_AUDIO_FRAGMENT = "audio_fragment";
+    private static final String TAG_TEXT_FRAGMENT = "text_fragment";
+    private static final String TAG_ARCHIVE_FRAGMENT = "archive_fragment";
+    private static final String TAG_BOOKMARK_FRAGMENT = "bookmark_fragment";
+    private static final String TAG_OTHER_FRAGMENT = "other_fragment";
+    private static final String TAG_TRASH_FRAGMENT = "trash_fragment";
 
-    //Unique code for file choose activity result
-    final private static int REQUEST_CHOOSER = 1234;
-
-    //Extra intent for child activities title.
     final public static String EXTRA_NAME = "item_name";
-    private static final String TAG = "MainActivity";
-    private static final boolean DEBUG = false;
-
 
     private AnimationDrawable refreshIcon;
     private MenuItem refreshMenuItem;
+
+
+    private DatabaseTaskFragment mDatabaseTaskFragment;
 
 
     /**
@@ -82,28 +82,32 @@ public class MainActivity extends SherlockFragmentActivity
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
-
+    /**
+     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     */
     private CharSequence mTitle;
+    public Typeface mNormal, mBold;
     private String[] actionBarTitles;
     private TypedArray titleIcons;
     private ActionBar ab;
 
     public static boolean isLoading = false;
 
+    private static boolean isSyncing = false;
     static boolean firstStart = true;
 
 
-    private FragmentTransaction ft;
+    FragmentTransaction ft;
 
-    private AllFragment allFragment;
-    private ImageFragment imageFragment;
-    private VideoFragment videoFragment;
-    private AudioFragment audioFragment;
-    private TextFragment textFragment;
-    private ArchiveFragment archiveFragment;
-    private BookmarkFragment bookMarkFragment;
-    private OtherFragment otherFragment;
-    private TrashFragment trashFragment;
+    AllFragment allFragment;
+    ImageFragment imageFragment;
+    VideoFragment videoFragment;
+    AudioFragment audioFragment;
+    TextFragment textFragment;
+    ArchiveFragment archiveFragment;
+    BookmarkFragment bookMarkFragment;
+    OtherFragment otherFragment;
+    TrashFragment trashFragment;
 
     public static FilesFragment currentFragment;
 
@@ -138,7 +142,7 @@ public class MainActivity extends SherlockFragmentActivity
 
         FragmentManager fm = getSupportFragmentManager();
 
-        DatabaseTaskFragment mDatabaseTaskFragment = (DatabaseTaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
+        mDatabaseTaskFragment = (DatabaseTaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
 
         // If the Fragment is non-null, then it is currently being
         // retained across a configuration change.
@@ -151,16 +155,14 @@ public class MainActivity extends SherlockFragmentActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        configureActionBar(0);
     }
-/*
+
     private void setPaddingOnHome() {
         ImageView view = (ImageView)findViewById(android.R.id.home);
         int size = 3;
         int padding = (int) (getResources().getDisplayMetrics().density * size);
         view.setPadding(padding , padding, padding, padding);
-    }*/
+    }
 
 
     @Override
@@ -168,6 +170,8 @@ public class MainActivity extends SherlockFragmentActivity
 
         configureActionBar(position);
         // update the main content by replacing fragments
+
+
 
         switch (position) {
             case 0:
@@ -257,6 +261,12 @@ public class MainActivity extends SherlockFragmentActivity
                 break;
         }
     }
+
+    public void onSectionAttached(int number) {
+
+    }
+
+
 
 
     /**
@@ -417,6 +427,8 @@ public class MainActivity extends SherlockFragmentActivity
 
         if(!isLoading) {
             int id = item.getItemId();
+//TODO add functionality for mainactivity menu items here by getting their ids
+
 
             if (id == R.id.main_refresh) {
                 if (currentFragment != null) {
@@ -425,51 +437,9 @@ public class MainActivity extends SherlockFragmentActivity
                 refreshIcon.start();
                 return true;
             }
-            if (id == R.id.main_upload) {
-
-
-                // Create the ACTION_GET_CONTENT Intent
-                Intent getContentIntent = FileUtils.createGetContentIntent();
-
-                Intent intent = Intent.createChooser(getContentIntent, "Select a file");
-
-                startActivityForResult(intent, REQUEST_CHOOSER);
-
-                return true;
-            }
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_CHOOSER:
-                if (resultCode == RESULT_OK) {
-
-                    Uri uri = data.getData();
-
-                    // Get the File path from the Uri
-                    String path = FileUtils.getPath(this, uri);
-
-                    // Alternatively, use FileUtils.getFile(Context, Uri)
-                    if (path != null) {
-                        File file = new File(path);
-                        uri = FileUtils.getUri(file);
-
-                        Intent uploadIntent = new Intent(Intent.ACTION_SEND, uri,
-                                this.getApplication().getApplicationContext(), UploadActivity.class);
-
-                        String type = FileUtils.getMimeType(this, uri);
-                        uploadIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                        uploadIntent.setDataAndType(uri, type);
-
-                        startActivity(uploadIntent);
-                    }
-                }
-                break;
-        }
     }
 
     @Override
@@ -487,10 +457,7 @@ public class MainActivity extends SherlockFragmentActivity
         AppUtils.mPref.edit().putBoolean(AppUtils.APP_FIRST_START, false).commit();
         //delivers items after a request for new items from server
         if(currentFragment != null) {
-            currentFragment.databaseUpdateEvent(items);
-            if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-                Log.v(TAG, "Current fragment is " + currentFragment.toString());
-            }
+            currentFragment.datebaseUpdateEvent(items);
         }
 
 
@@ -514,14 +481,11 @@ public class MainActivity extends SherlockFragmentActivity
     // state of the application, signin, register or forgot password, though not
     //implemented since it's not needed in this case
     private String getErrorDescription(ErrorEvent error) {
-        String errorDescription = ErrorEvent.getErrorDescription(error);
-        VolleyError volleyError;
+        String errorDescription;
 
-        if(error.getError() instanceof  VolleyError) {
-            volleyError = (VolleyError) error.getError();
-
-            if (volleyError.networkResponse == null) {
-                errorDescription = getResources().getString(R.string.error_contacting_cloudapp);
+        if(!error.getErrorDescription().equals(AppUtils.NO_CONNECTION)) {
+            if (error.getError().networkResponse == null) {
+                errorDescription = "There's a problem contacting CloudApp servers";
             } else {
                 switch (error.getStatusCode()) {
                     case HttpStatus.SC_UNPROCESSABLE_ENTITY:
@@ -540,6 +504,8 @@ public class MainActivity extends SherlockFragmentActivity
                         errorDescription = getResources().getString(R.string.error_occurred);
                 }
             }
+        }   else {
+            errorDescription = getResources().getString(R.string.check_internet);
         }
         return errorDescription;
     }
@@ -552,6 +518,11 @@ public class MainActivity extends SherlockFragmentActivity
 
         FilesListViewAdapter adapter;
 
+        //A flag for when the fragment is in the process of getting more files after an onScroll event
+
+
+        //Fragment optimistically assumes there is more files on startup up. False when a get from database returns 0 files
+        public boolean moreFiles = true;
 
         boolean fullySynced;
 
@@ -565,12 +536,10 @@ public class MainActivity extends SherlockFragmentActivity
         View refreshingFiles;
         //View loadingMoreFiles;
 
-        private FrameLayout footerFrameLayout;
-        private FrameLayout headerFrameLayout;
+        FrameLayout footerFrameLayout;
+        FrameLayout headerFrameLayout;
 
-        private AnimationDrawable anim;
-
-        private Type mType = Type.ALL;
+        AnimationDrawable anim;
 
         public Type getType() {
             return mType;
@@ -579,6 +548,9 @@ public class MainActivity extends SherlockFragmentActivity
         public void setType(Type mType) {
             this.mType = mType;
         }
+
+        Type mType = Type.ALL;
+
 
 
         private State mState;
@@ -624,10 +596,10 @@ public class MainActivity extends SherlockFragmentActivity
         }
 
 
-        private void setFooterVisibility(boolean invisible) {
-            if(invisible) {
+        private void setFooterVisibility(int i) {
+            if(i == 0) {
                 footerFrameLayout.setVisibility(View.GONE);
-            } else {
+            } else if(i == 1) {
                 footerFrameLayout.setVisibility(View.VISIBLE);
             }
         }
@@ -635,7 +607,6 @@ public class MainActivity extends SherlockFragmentActivity
         private void resetFooter() {
 
             footerFrameLayout.setVisibility(View.VISIBLE);
-
             final View textContainer = footerFrameLayout.findViewById(R.id.load_more_text_container);
             final View btnContainer = footerFrameLayout.findViewById(R.id.load_more_button_container);
             final Button loadMoreButton = (Button) footerFrameLayout.findViewById(R.id.load_more_button);
@@ -693,6 +664,8 @@ public class MainActivity extends SherlockFragmentActivity
                         }
                     }).playOn(textContainer);
 
+
+
                     loadMoreButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -724,9 +697,10 @@ public class MainActivity extends SherlockFragmentActivity
                         }
                     });
 
+                    //addFooterView(loadingMoreFiles);
                 }
             } else {
-                setFooterVisibility(false);
+                setFooterVisibility(0);
             }
         }
 
@@ -780,7 +754,7 @@ public class MainActivity extends SherlockFragmentActivity
         }
 
         @Override
-        public void databaseUpdateEvent(ArrayList<DatabaseItem> items) {
+        public void datebaseUpdateEvent(ArrayList<DatabaseItem> items) {
 
             //Gets all items added when runs first even though all items would be in the parameter.
             if(mState == State.REFRESHING) {
@@ -832,20 +806,7 @@ public class MainActivity extends SherlockFragmentActivity
                 updateState(State.NORMAL);
 
                 final ArrayAdapter adapter = (ArrayAdapter) getListAdapter();
-
-                if(FilesManager.isRequestingUploadedFile) {
-                    //Inserts item to the top of the list
-                    adapter.insert(items.get(0), 0);
-                    if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-                        Log.v(TAG, "Inserted item to top of list.");
-                    }
-                } else {
-                    //Appends items to the end of the list
-                    adapter.addAll(items);
-                    if(AppUtils.GLOBAL_DEBUG && DEBUG) {
-                        Log.v(TAG, "Appended items to the end of list. Size: " + items.size());
-                    }
-                }
+                adapter.addAll(items);
                 notifyChangeInAdapter();
 
                 resetFooter();
@@ -858,7 +819,6 @@ public class MainActivity extends SherlockFragmentActivity
             return adapter;
         }
 
-        //Returns an arrarylist fo the type entered in the parameters.
         protected ArrayList<DatabaseItem> sortListByType(Type type, ArrayList<DatabaseItem> items) {
             ArrayList<DatabaseItem> typedList = new ArrayList<DatabaseItem>();
             if(type == Type.ALL) {
@@ -890,6 +850,7 @@ public class MainActivity extends SherlockFragmentActivity
 
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {
+
             switch (scrollState) {
                 case SCROLL_STATE_TOUCH_SCROLL:
                     userScrolled = true;
@@ -926,7 +887,7 @@ public class MainActivity extends SherlockFragmentActivity
             }
         }
 
-        private class GetAllItemsTask extends AsyncTask<Void, Void, ArrayList<DatabaseItem>> {
+        public class GetAllItemsTask extends AsyncTask<Void, Void, ArrayList<DatabaseItem>> {
             @Override
             protected ArrayList<DatabaseItem> doInBackground(Void... params) {
                 return FilesManager.getFiles(getType());
@@ -946,27 +907,26 @@ public class MainActivity extends SherlockFragmentActivity
         @Override
         public void onListItemClick(final ListView l, final View v, int position, long id) {
 
-            //Fixes crash when touching header or footer
-            if(id != -1) {
-                if(l.getAdapter().getCount() != 0) {
-                    DatabaseItem dbItem = (DatabaseItem) l.getAdapter().getItem(position);
-                    String name = dbItem.getName();
+            if(l.getAdapter().getCount() != 0) {
+                DatabaseItem dbItem = (DatabaseItem) l.getAdapter().getItem(position);
+                String name = dbItem.getName();
 
-                    switch (dbItem.getItemType()) {
-                        case IMAGE:
-                            Intent intent = new Intent(getActivity(), ImageViewActivity.class);
-                            intent.putExtra(EXTRA_NAME, name);
-                            startActivity(intent);
+                switch (dbItem.getItemType()) {
+                    case IMAGE:
+                        Intent intent = new Intent(getActivity(), ImageViewActivity.class);
+                        intent.putExtra(EXTRA_NAME, name);
+                        startActivity(intent);
 
-                            break;
-                        default:
-                            Intent i = new Intent(Intent.ACTION_VIEW);
-                            i.setData(Uri.parse(MenuHandler.getWebLink(dbItem)));
-                            startActivity(i);
+                        break;
+                    default:
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(dbItem.getContentUrl()));
+                        startActivity(i);
 
-                    }
                 }
             }
+
+
         }
 
         protected void updateState(State state) {
@@ -1012,6 +972,9 @@ public class MainActivity extends SherlockFragmentActivity
             super.onDetach();
         }
     }
+    /**
+     * A placeholder fragment containing a simple view.
+     */
 
     public static class AllFragment extends RecentFragment implements FilesFragment, AbsListView.OnScrollListener {
 
@@ -1160,7 +1123,7 @@ public class MainActivity extends SherlockFragmentActivity
 
     }
     private interface FilesFragment {
-        public void databaseUpdateEvent(ArrayList<DatabaseItem> items);
+        public void datebaseUpdateEvent(ArrayList<DatabaseItem> items);
         public void errorEvent();
         public void refresh();
     }
