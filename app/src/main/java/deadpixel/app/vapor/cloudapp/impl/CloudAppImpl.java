@@ -1,9 +1,11 @@
 package deadpixel.app.vapor.cloudapp.impl;
 
-import android.app.Activity;
+import android.content.Context;
+
+import com.android.volley.Request;
+import com.koushikdutta.ion.ProgressCallback;
 
 import java.io.File;
-import java.util.List;
 
 import deadpixel.app.vapor.cloudapp.api.CloudApp;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
@@ -11,10 +13,9 @@ import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount.DefaultSecurity;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener;
-import deadpixel.app.vapor.networkOp.RequestHandler;
+import deadpixel.app.vapor.cloudapp.impl.model.CloudAppUpload;
 
-public class CloudAppImpl extends RequestHandler implements CloudApp {
+public class CloudAppImpl implements CloudApp {
 
     //private static final Logger LOGGER = LoggerFactory.getLogger(CloudAppImpl.class);
 
@@ -25,10 +26,10 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
     private static AccountStatsImpl mAccountStats;
 
 
-    public CloudAppImpl(Activity activity) {
-        mAccount = new AccountImpl(activity);
+    public CloudAppImpl(Context context) {
+        mAccount = new AccountImpl(context);
         mItems = new CloudAppItemsImpl();
-        mAccountStats = new AccountStatsImpl(activity);
+        mAccountStats = new AccountStatsImpl();
     }
 
     /**
@@ -37,9 +38,9 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount setDefaultSecurity(deadpixel.app.vapor.cloudapp.api.CloudAppAccount.DefaultSecurity)
      */
-    public void setDefaultSecurity(DefaultSecurity security)
+    public Request setDefaultSecurity(DefaultSecurity security)
             throws CloudAppException {
-        mAccount.setDefaultSecurity(security);
+       return  mAccount.setDefaultSecurity(security);
     }
 
     /**
@@ -48,9 +49,9 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount setEmail(java.lang.String, java.lang.String)
      */
-    public void setEmail(String newEmail, String currentPassword)
+    public Request setEmail(String newEmail, String currentPassword)
             throws CloudAppException {
-        mAccount.setEmail(newEmail, currentPassword);
+        return mAccount.setEmail(newEmail, currentPassword);
     }
 
     /**
@@ -59,9 +60,9 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount setPassword(java.lang.String, java.lang.String)
      */
-    public void setPassword(String newPassword, String currentPassword)
+    public Request setPassword(String newPassword, String currentPassword)
             throws CloudAppException {
-        mAccount.setPassword(newPassword, currentPassword);
+        return mAccount.setPassword(newPassword, currentPassword);
     }
 
     /**
@@ -70,8 +71,8 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount resetPassword(java.lang.String)
      */
-    public void resetPassword(String email) throws CloudAppException {
-        mAccount.resetPassword(email);
+    public Request resetPassword(String email) throws CloudAppException {
+        return mAccount.resetPassword(email);
     }
 
     /**
@@ -81,9 +82,9 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount createAccount(java.lang.String,
      *      java.lang.String, boolean)
      */
-    public void createAccount(String email, String password, boolean acceptTOS)
+    public Request createAccount(String email, String password, boolean acceptTOS)
             throws CloudAppException {
-        mAccount.createAccount(email, password, acceptTOS);
+        return mAccount.createAccount(email, password, acceptTOS);
     }
 
     /**
@@ -93,9 +94,9 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount setCustomDomain(java.lang.String,
      *      java.lang.String)
      */
-    public void setCustomDomain(String domain, String domainHomePage)
+    public Request setCustomDomain(String domain, String domainHomePage)
             throws CloudAppException {
-        mAccount.setCustomDomain(domain, domainHomePage);
+        return mAccount.setCustomDomain(domain, domainHomePage);
     }
 
     /**
@@ -108,18 +109,13 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
         return mAccount.getAccountDetails();
     }
 
-    public void requestAccountDetails() throws CloudAppException {
-        mAccount.requestAccountDetails();
+    public Request requestAccountDetails() {
+        return mAccount.requestAccountDetails();
     }
 
     @Override
-    public void requestAccountStats() throws CloudAppException {
-        mAccountStats.requestAccountStats();
-    }
-
-    @Override
-    public void updateAccountDetails(String response)  {
-        mAccount.updateAccountDetails(response);
+    public Request requestAccountStats() {
+        return mAccountStats.requestAccountStats();
     }
 
     /**
@@ -128,7 +124,7 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      *
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount getAccountStats()
      */
-    public CloudAppAccountStats getAccountStats() throws CloudAppException {
+    public CloudAppAccountStats getAccountStats() {
         return mAccountStats.getAccountStats();
     }
 
@@ -140,7 +136,7 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      * @see deadpixel.app.vapor.cloudapp.api.model.CloudAppItem createBookmark(java.lang.String,
      *      java.lang.String)
      */
-    public CloudAppItem createBookmark(String name, String url) throws CloudAppException {
+    public Request createBookmark(String name, String url) throws CloudAppException {
         return mItems.createBookmark(name, url);
     }
 
@@ -150,7 +146,7 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      *
      * @see deadpixel.app.vapor.cloudapp.api.CloudApp.createBookmarks(java.lang.String[][])
      */
-    public List<CloudAppItem> createBookmarks(String[][] bookmarks)
+    public Request createBookmarks(String[][] bookmarks)
             throws CloudAppException {
         return mItems.createBookmarks(bookmarks);
     }
@@ -161,7 +157,7 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      *
      * @see deadpixel.app.vapor.cloudapp.api.CloudAppItems#getItem(java.lang.String)
      */
-    public CloudAppItem getItem(String url) throws CloudAppException {
+    public Request getItem(String url) throws CloudAppException {
         return mItems.getItem(url);
     }
 
@@ -172,9 +168,9 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      * @see deadpixel.app.vapor.cloudapp.api.CloudAppItems#getItems(int, int,
      *      deadpixel.app.vapor.cloudapp.api.CloudAppItems.Type, boolean, java.lang.String)
      */
-    public List<CloudAppItem> getItems(int page, int perPage, CloudAppItem.Type type,
-                                       boolean showDeleted, String source) throws CloudAppException {
-        return mItems.getItems(page, perPage, type, showDeleted, source);
+    public Request getItems(int page, int perPage, CloudAppItem.Type type,
+                                        String source) throws CloudAppException {
+        return mItems.getItems(page, perPage, type, source);
     }
 
     /**
@@ -182,20 +178,12 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      * {@inheritDoc}
      *
      * @see deadpixel.app.vapor.cloudapp.api.CloudAppItems#upload(java.io.File)
+     * @param fileUpload
      */
-    public CloudAppItem upload(File file) throws CloudAppException {
-        return mItems.upload(file);
+    public void upload(CloudAppUpload fileUpload) throws CloudAppException {
+        mItems.upload(fileUpload);
     }
 
-    /**
-     *
-     * {@inheritDoc}
-     *
-     * @see deadpixel.app.vapor.cloudapp.api.CloudAppItems#upload(java.io.File, deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener)
-     */
-    public CloudAppItem upload(File file, CloudAppProgressListener listener) throws CloudAppException {
-        return mItems.upload(file, listener);
-    }
 
     /**
      *
@@ -203,7 +191,7 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      *
      * @see deadpixel.app.vapor.cloudapp.api.CloudAppItems#delete(deadpixel.app.vapor.cloudapp.api.model.CloudAppItem)
      */
-    public CloudAppItem delete(CloudAppItem item) throws CloudAppException {
+    public Request delete(CloudAppItem item) throws CloudAppException {
         return mItems.delete(item);
     }
 
@@ -213,7 +201,7 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      *
      * @see deadpixel.app.vapor.cloudapp.api.CloudAppItems#recover(deadpixel.app.vapor.cloudapp.api.model.CloudAppItem)
      */
-    public CloudAppItem recover(CloudAppItem item) throws CloudAppException {
+    public Request recover(CloudAppItem item) throws CloudAppException {
         return mItems.recover(item);
     }
 
@@ -224,7 +212,7 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      * @see deadpixel.app.vapor.cloudapp.api.CloudAppItems#setSecurity(deadpixel.app.vapor.cloudapp.api.model.CloudAppItem,
      *      boolean)
      */
-    public CloudAppItem setSecurity(CloudAppItem item, boolean is_private)
+    public Request setSecurity(CloudAppItem item, boolean is_private)
             throws CloudAppException {
         return mItems.setSecurity(item, is_private);
     }
@@ -236,7 +224,7 @@ public class CloudAppImpl extends RequestHandler implements CloudApp {
      * @see deadpixel.app.vapor.cloudapp.api.CloudAppItems#rename(deadpixel.app.vapor.cloudapp.api.model.CloudAppItem,
      *      java.lang.String)
      */
-    public CloudAppItem rename(CloudAppItem item, String name) throws CloudAppException {
+    public Request rename(CloudAppItem item, String name) throws CloudAppException {
         return mItems.rename(item, name);
     }
 
