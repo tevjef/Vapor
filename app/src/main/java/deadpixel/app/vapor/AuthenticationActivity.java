@@ -38,6 +38,7 @@ import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.impl.CloudAppImpl;
+import deadpixel.app.vapor.libs.EaseOutQuint;
 import deadpixel.app.vapor.libs.TransitionButton;
 import deadpixel.app.vapor.networkOp.AuthenticationTaskFragment;
 import deadpixel.app.vapor.utils.AppUtils;
