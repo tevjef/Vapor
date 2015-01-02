@@ -6,11 +6,10 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 
 import deadpixel.app.vapor.callbacks.DatabaseUpdateEvent;
-import deadpixel.app.vapor.callbacks.ErrorEvent;
-import deadpixel.app.vapor.callbacks.ItemResponseEvent;
-import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
+import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
+import deadpixel.app.vapor.database.PreferenceHandler;
 import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.utils.AppUtils;
 
@@ -31,15 +30,19 @@ public class FilesManager {
 
     static int NEW_PAGE;
 
-    public static boolean isRequestingMoreFiles = false;
+    static boolean isNewFilesRequest= false;
 
-    public static boolean isRequestingUploadedFile = false;
+/*
+    public static void initialize() {
+        AppUtils.getEventBus().register(UpdateHandler);
+    }
+*/
 
 
     public static void requestMoreFiles(CloudAppItem.Type type) {
-        isRequestingMoreFiles = true;
         updateMetrics();
             AppUtils.addToRequestQueue(createRequest(type));
+            isNewFilesRequest = true;
     }
 
     private static Request createRequest(CloudAppItem.Type type) {
@@ -106,11 +109,11 @@ public class FilesManager {
     }
 
     private static void databaseSizeHandler(long size) {
-        boolean fullySynced = isFullySynced();
+        boolean fullySynced = AppUtils.mPref.getBoolean(AppUtils.FULLY_SYNCED, false);
         int dbSize = DatabaseManager.getDbSize();
 
-        if(size < AppUtils.DEFAULT_FILE_REQUEST_SIZE && isRequestingMoreFiles && !isRequestingUploadedFile) {
-                isRequestingMoreFiles = false;
+        if(size < AppUtils.DEFAULT_FILE_REQUEST_SIZE && !isNewFilesRequest) {
+                isNewFilesRequest = false;
                 AppUtils.mPref.edit()
                         .putBoolean(AppUtils.FULLY_SYNCED, true)
                         .putLong(AppUtils.CALCULATED_TOTAL_ITEMS, dbSize)
@@ -126,9 +129,6 @@ public class FilesManager {
     }
 
     public static void refreshFiles() {
-        isRequestingMoreFiles = false;
-        isRequestingUploadedFile = false;
-
         updateMetrics();
         try {
             AppUtils.addToRequestQueue(AppUtils.api.getItems(
@@ -156,38 +156,5 @@ public class FilesManager {
 
     public static void decreaseDbSize(long size) {
         databaseSizeHandler(size);
-    }
-
-    public  void initialize() {
-        AppUtils.getEventBus().register(ItemResponseHandler);
-    }
-
-    private static Object ItemResponseHandler = new Object() {
-        @Subscribe
-        public void onItemResponse(ItemResponseEvent event) {
-
-        }
-        @Subscribe
-        public void onDatabaseUpdate(DatabaseUpdateEvent event) {
-        }
-        @Subscribe
-        public void onErrorEvent(ErrorEvent event) {
-            isRequestingMoreFiles = false;
-            isRequestingUploadedFile = false;
-
-        }
-        @Subscribe
-        public void onResponseEvent(ResponseEvent event) {
-
-        }
-    };
-
-    public static boolean isFullySynced() {
-        return  AppUtils.mPref.getBoolean(AppUtils.FULLY_SYNCED, false);
-    }
-    public static void getUploadedFile(Request request) {
-        updateMetrics();
-        AppUtils.addToRequestQueue(request);
-        isRequestingUploadedFile = true;
     }
 }
