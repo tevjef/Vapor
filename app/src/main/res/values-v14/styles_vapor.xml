@@ -19,25 +19,23 @@
 
 <resources>
 
-
+<!--
     <style name="Theme.Vapor.Solid.Back" parent="@style/Theme.Vapor.Solid">
-        <item name="android:windowAnimationStyle">@style/Animation.Navigation.Back</item>
-        <!-- Support lower versions  -->
+        &lt;!&ndash; Support lower versions  &ndash;&gt;
         <item name="windowAnimationStyle">@style/Animation.Navigation.Back</item>
-        <!--<item name="android:listSeparatorTextViewStyle">@style/ListViewStyle</item>-->
+        &lt;!&ndash;<item name="android:listSeparatorTextViewStyle">@style/ListViewStyle</item>&ndash;&gt;
     </style>
 
-<!--    <style name="ListViewStyle" parent="android:Widget.TextView">
+&lt;!&ndash;    <style name="ListViewStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/list_section_divider_holo_light</item>
-    </style>-->
+    </style>&ndash;&gt;
 
 
     <style name="Theme.Vapor.Solid.Forward" parent="@style/Theme.Vapor.Solid">
-        <item name="android:windowAnimationStyle">@style/Animation.Navigation.Forward</item>
-        <!-- Support lower versions  -->
+        &lt;!&ndash; Support lower versions  &ndash;&gt;
         <item name="windowAnimationStyle">@style/Animation.Navigation.Forward</item>
 
-    </style>
+    </style>-->
 
     <style name="Theme.Vapor.Solid" parent="@style/Theme.Vapor">
         <item name="android:actionBarStyle">@style/ActionBar.Solid.Vapor</item>
@@ -88,9 +86,7 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_vapor</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_vapor</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Vapor</item>
-        <item name="android:windowContentOverlay">@null</item>
         <item name="android:actionMenuTextAppearance">@style/Roboto_light.Menu</item>
-        <item name="android:windowNoTitle">false</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowTitleSize">0dp</item>
         <item name="android:windowBackground">@null</item>
@@ -131,9 +127,7 @@
         <item name="actionModeBackground">@drawable/cab_background_top_vapor</item>
         <item name="actionModeSplitBackground">@drawable/cab_background_bottom_vapor</item>
         <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Vapor</item>
-        <item name="windowContentOverlay">@null</item>
         <item name="actionMenuTextAppearance">@style/Roboto_light.Menu</item>
-        <item name="windowNoTitle">false</item>
         <item name="windowActionBar">false</item>
 
 

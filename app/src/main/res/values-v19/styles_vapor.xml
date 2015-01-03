@@ -2,9 +2,7 @@
 <resources>
 
     <style name="Theme.Vapor.Solid.Back" parent="@style/Theme.Vapor.Solid">
-        <item name="android:windowAnimationStyle">@style/Animation.Navigation.Back</item>
         <!-- Support lower versions  -->
-        <item name="windowAnimationStyle">@style/Animation.Navigation.Back</item>
         <item name="android:textColorPrimary">@color/primary_text_color</item>
         <item name="android:textColorSecondary">@color/secondary_text_color</item>
         <item name="android:listSeparatorTextViewStyle">@style/ListViewStyle</item>

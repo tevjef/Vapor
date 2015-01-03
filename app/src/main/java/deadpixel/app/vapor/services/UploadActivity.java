@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.actionbarsherlock.app.SherlockActivity;
-
 import java.io.File;
 
 import deadpixel.app.vapor.utils.AppUtils;

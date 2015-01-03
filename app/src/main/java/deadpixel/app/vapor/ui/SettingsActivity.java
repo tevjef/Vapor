@@ -13,13 +13,14 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ImageView;
 
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-import com.actionbarsherlock.view.MenuItem;
 
 import java.util.List;
+
+import deadpixel.app.vapor.R;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -54,7 +55,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         mPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-        getSupportActionBar().setIcon(R.drawable.ic_settings_white);
+        getActionBar().setIcon(R.drawable.ic_settings_white);
 
 
 /*        int titleId = getResources().getIdentifier("action_bar_title", "id",
@@ -77,10 +78,10 @@ public class SettingsActivity extends PreferenceActivity {
     private void setupActionBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             // Show the Up button in the action bar.
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(true);
-            getSupportActionBar().setDisplayUseLogoEnabled(true);
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setDisplayShowHomeEnabled(true);
+            getActionBar().setDisplayShowTitleEnabled(true);
+            getActionBar().setDisplayUseLogoEnabled(true);
 
         }
     }

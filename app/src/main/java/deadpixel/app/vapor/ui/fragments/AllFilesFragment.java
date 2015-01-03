@@ -12,7 +12,7 @@ public class AllFilesFragment extends RecentFragment implements FilesFragment, A
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.mAutoLoad = true;
+        super.autoLoadFiles = true;
         super.setType(CloudAppItem.Type.ALL);
         super.onCreate(savedInstanceState);
     }

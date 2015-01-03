@@ -13,6 +13,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -26,6 +28,7 @@ import com.daimajia.androidanimations.library.YoYo;
 
 import org.apache.http.HttpStatus;
 
+import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;

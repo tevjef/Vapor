@@ -1,18 +1,19 @@
 package deadpixel.app.vapor.ui;
 
+import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockListActivity;
-import com.actionbarsherlock.view.MenuItem;
 
 import java.util.ArrayList;
 
+import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.adapter.FilesListViewAdapter;
 import deadpixel.app.vapor.database.DatabaseManager;
 import deadpixel.app.vapor.database.model.DatabaseItem;
@@ -20,7 +21,7 @@ import deadpixel.app.vapor.database.model.DatabaseItem;
 /**
  * Created by Tevin on 8/26/2014.
  */
-public class SearchActivity extends ActionBarActivity {
+public class SearchActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +35,8 @@ public class SearchActivity extends ActionBarActivity {
 
 
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayShowHomeEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         handleIntent(getIntent());
 
@@ -47,8 +48,8 @@ public class SearchActivity extends ActionBarActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
 
             ArrayList<DatabaseItem> dbItems =  DatabaseManager.getItemsByName(query);
-            getSupportActionBar().setTitle("Results for: " + query);
-            getSupportActionBar().setIcon(getResources().getDrawable(R.drawable.ic_search_white));
+            getActionBar().setTitle("Results for: " + query);
+            getActionBar().setIcon(getResources().getDrawable(R.drawable.ic_search_white));
             setListAdapter(new FilesListViewAdapter(getApplicationContext(), dbItems));
 
         }

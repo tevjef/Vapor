@@ -13,7 +13,7 @@ public class VideoFragment extends RecentFragment implements FilesFragment, AbsL
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.mAutoLoad = false;
+        super.autoLoadFiles = false;
         super.setType(CloudAppItem.Type.VIDEO);
         super.onCreate(savedInstanceState);
     }

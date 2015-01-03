@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 
 import deadpixel.app.vapor.MenuHandler;
+import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.database.DatabaseManager;
