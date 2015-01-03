@@ -4,7 +4,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         tools:context="deadpixel.app.vapor.ui.MainActivity">
@@ -35,6 +34,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             tools:context="deadpixel.app.vapor.ui.NavigationDrawerFragment"
-            />
+            tools:layout="@layout/fragment_navigation_drawer" />
 
     </android.support.v4.widget.DrawerLayout>

@@ -5,5 +5,5 @@
 
     <item android:id="@+id/menu_forgot_password"
         android:title="@string/forgot_password"
-        android:showAsAction="never" />
+        app:showAsAction="never" />
 </menu>
