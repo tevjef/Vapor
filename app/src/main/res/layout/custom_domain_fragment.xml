@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@null"
-    tools:context="deadpixel.app.vapor.fragments.CustomDomainFragment">
+    tools:context="deadpixel.app.vapor.ui.fragments.CustomDomainFragment">
 
         <include layout="@layout/preference"
             android:id="@+id/layout_pref_custom_domain"

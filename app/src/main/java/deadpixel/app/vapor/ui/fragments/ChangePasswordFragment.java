@@ -1,9 +1,10 @@
-package deadpixel.app.vapor.fragments;
+package deadpixel.app.vapor.ui.fragments;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,7 +36,7 @@ import deadpixel.app.vapor.utils.AppUtils;
 /**
  * Created by Tevin on 7/7/2014.
  */
-public class ChangePasswordFragment extends ActionBarActivity {
+public class ChangePasswordFragment extends Fragment {
 
     private static String TAG = "ChangeEmailFragment";
     private static State mState;

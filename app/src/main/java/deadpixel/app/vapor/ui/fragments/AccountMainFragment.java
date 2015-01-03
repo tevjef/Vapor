@@ -1,4 +1,4 @@
-package deadpixel.app.vapor.fragments;
+package deadpixel.app.vapor.ui.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,7 +38,7 @@ import deadpixel.app.vapor.utils.AppUtils;
 /**
  * Created by Tevin on 7/7/2014.
  */
-public class AccountMainFragment  extends ActionBarActivity {
+public class AccountMainFragment  extends Fragment {
     private final String TAG = "AccountMainFragment";
 
     private ViewGroup mViewGroup;
