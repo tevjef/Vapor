@@ -18,7 +18,7 @@
     <style name="Text.Light.Medium" parent="Text.Light">
         <item name="android:textSize">18sp</item>
     </style>
-    <style name="Roboto_light.Menu" parent="TextAppearance.Sherlock.Widget.ActionBar.Menu">
+    <style name="Roboto_light.Menu" parent="TextAppearance.AppCompat.Widget.ActionBar.Menu">
         <item name="android:fontFamily">"sans-serif-light"</item>
     </style>
 </resources>

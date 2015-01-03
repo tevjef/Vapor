@@ -1,25 +1,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="deadpixel.app.vapor.ui.MainActivity" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="deadpixel.app.vapor.ui.MainActivity">
 
 
     <item android:id="@+id/main_upload"
         android:title="@string/upload"
         android:icon="@drawable/ic_action_new"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         />
 
     <item android:id="@+id/main_search"
         android:title="@string/search"
-        android:showAsAction="collapseActionView|ifRoom"
-        android:actionViewClass="android.widget.SearchView"
+        app:showAsAction="collapseActionView|ifRoom"
+        android:actionViewClass="android.support.v7.widget.SearchView"
         android:icon="@drawable/ic_search_white"
         />
 
     <item android:id="@+id/main_refresh"
         android:title="@string/refresh"
-        android:showAsAction="ifRoom"
-
+        app:showAsAction="ifRoom"
         android:icon="@drawable/cloud_refresh"/>
 <!--
     <item android:id="@+id/main_view_as_list"
