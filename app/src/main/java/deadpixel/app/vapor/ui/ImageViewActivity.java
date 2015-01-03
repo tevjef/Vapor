@@ -1,27 +1,23 @@
-package deadpixel.app.vapor;
+package deadpixel.app.vapor.ui;
 
 import android.app.AlertDialog;
-import android.app.SearchManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockListActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-
-import deadpixel.app.vapor.adapter.FilesListViewAdapter;
+import deadpixel.app.vapor.MenuHandler;
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.database.DatabaseManager;
@@ -33,7 +29,7 @@ import deadpixel.app.vapor.utils.AppUtils;
 /**
  * Created by Tevin on 8/26/2014.
  */
-public class ImageViewActivity extends SherlockActivity {
+public class ImageViewActivity extends ActionBarActivity {
 
     private DatabaseItem dbItem;
     ActionBar ab;
@@ -84,7 +80,7 @@ public class ImageViewActivity extends SherlockActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.normal_item_popup_menu, menu);
+        getMenuInflater().inflate(R.menu.normal_item_popup_menu, menu);
 
         return super.onCreateOptionsMenu(menu);
     }

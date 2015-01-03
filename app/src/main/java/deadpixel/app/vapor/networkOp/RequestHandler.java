@@ -15,7 +15,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import deadpixel.app.vapor.AuthenticationActivity;
+import deadpixel.app.vapor.ui.AuthenticationActivity;
 
 /**
  * Created by Tevin on 1/18/14.

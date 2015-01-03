@@ -2,6 +2,7 @@ package deadpixel.app.vapor.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,7 @@ import deadpixel.app.vapor.utils.AppUtils;
 /**
  * Created by Tevin on 7/7/2014.
  */
-public class ChangeEmailFragment extends SherlockFragment{
+public class ChangeEmailFragment extends ActionBarActivity {
 
     private static String TAG = "ChangeEmailFragment";
     private static State mState;

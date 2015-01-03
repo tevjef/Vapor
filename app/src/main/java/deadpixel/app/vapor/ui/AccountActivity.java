@@ -1,26 +1,21 @@
-package deadpixel.app.vapor;
+package deadpixel.app.vapor.ui;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 
 import deadpixel.app.vapor.fragments.AccountMainFragment;
 import deadpixel.app.vapor.utils.AppUtils;
 
 
-public class AccountActivity extends SherlockFragmentActivity {
+public class AccountActivity extends ActionBarActivity {
 
     protected ActionBar ab;
 
@@ -83,12 +78,12 @@ public class AccountActivity extends SherlockFragmentActivity {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getSupportMenuInflater().inflate(R.menu.global, menu);
+            getMenuInflater().inflate(R.menu.global, menu);
 
         return true;
     }
 
-    public void performTransaction(final SherlockFragment frag) {
+    public void performTransaction(final Fragment frag) {
         new Thread(new Runnable() {
 
 

@@ -1,12 +1,8 @@
 package deadpixel.app.vapor.cloudapp.impl.model;
 
-import android.util.Log;
-
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.Date;
 
-import deadpixel.app.vapor.cloudapp.api.CloudApp;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 

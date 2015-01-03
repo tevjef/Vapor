@@ -1,12 +1,11 @@
-package deadpixel.app.vapor;
+package deadpixel.app.vapor.ui;
 
-import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.view.Window;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListActivity;
@@ -21,11 +20,10 @@ import deadpixel.app.vapor.database.model.DatabaseItem;
 /**
  * Created by Tevin on 8/26/2014.
  */
-public class SearchActivity extends SherlockListActivity {
+public class SearchActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
 
         getListView().setBackgroundResource(R.color.activity_bg);

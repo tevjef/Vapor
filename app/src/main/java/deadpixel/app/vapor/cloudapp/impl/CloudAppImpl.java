@@ -1,13 +1,11 @@
 package deadpixel.app.vapor.cloudapp.impl;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.android.volley.Request;
 import com.koushikdutta.ion.ProgressCallback;
 
 import java.io.File;
-import java.util.List;
 
 import deadpixel.app.vapor.cloudapp.api.CloudApp;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
@@ -15,8 +13,6 @@ import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount.DefaultSecurity;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener;
-import deadpixel.app.vapor.utils.AppUtils;
 
 public class CloudAppImpl implements CloudApp {
 

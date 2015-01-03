@@ -1,17 +1,15 @@
 package deadpixel.app.vapor.database;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.List;
 
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
+import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
+import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.utils.AppUtils;
 
 /**

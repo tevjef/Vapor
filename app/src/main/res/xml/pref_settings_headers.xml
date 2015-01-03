@@ -3,15 +3,15 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="deadpixel.app.vapor.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="deadpixel.app.vapor.ui.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
 
     <header
-        android:fragment="deadpixel.app.vapor.SettingsActivity$OtherPreferenceFragment"
+        android:fragment="deadpixel.app.vapor.ui.SettingsActivity$OtherPreferenceFragment"
         android:title="@string/pref_other" />
 
     <header
-        android:fragment="deadpixel.app.vapor.SettingsActivity$AccountPreferenceFragment"
+        android:fragment="deadpixel.app.vapor.ui.SettingsActivity$AccountPreferenceFragment"
         android:title="@string/account_activity_title" />
 
 </preference-headers>

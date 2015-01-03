@@ -6,17 +6,12 @@ import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
 
-
-import deadpixel.app.vapor.callbacks.AccountStatsResponseEvent;
-import deadpixel.app.vapor.callbacks.AccountStatsUpdateEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.impl.model.AccountStatsModel;
 import deadpixel.app.vapor.database.DatabaseManager;
 import deadpixel.app.vapor.networkOp.RequestExecutor;
-import deadpixel.app.vapor.utils.AppUtils;
 
 /**
  * Created by Tevin on 6/16/2014.

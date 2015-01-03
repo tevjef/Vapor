@@ -1,9 +1,7 @@
 package deadpixel.app.vapor.callbacks;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.database.model.DatabaseItem;
 
 /**

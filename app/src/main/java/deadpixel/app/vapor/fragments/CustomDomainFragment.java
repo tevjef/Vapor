@@ -2,6 +2,7 @@ package deadpixel.app.vapor.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,6 @@ import org.apache.http.HttpStatus;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
@@ -33,7 +33,7 @@ import deadpixel.app.vapor.utils.AppUtils;
 /**
  * Created by Tevin on 7/7/2014.
  */
-public class CustomDomainFragment extends SherlockFragment {
+public class CustomDomainFragment extends ActionBarActivity {
 
     private final String TAG = "CustomDomainFragment";
     private State mState;

@@ -1,35 +1,31 @@
 package deadpixel.app.vapor.services;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.koushikdutta.ion.ProgressCallback;
 import com.squareup.otto.Subscribe;
 
-import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
-import android.util.Log;
-import android.widget.Toast;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import deadpixel.app.vapor.MenuHandler;
 import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.callbacks.DatabaseUpdateEvent;
-import deadpixel.app.vapor.callbacks.UploadCallback;
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ItemResponseEvent;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
+import deadpixel.app.vapor.callbacks.UploadCallback;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
 import deadpixel.app.vapor.cloudapp.impl.model.CloudAppUpload;

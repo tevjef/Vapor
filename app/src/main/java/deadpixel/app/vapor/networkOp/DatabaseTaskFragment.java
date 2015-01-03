@@ -1,40 +1,28 @@
 package deadpixel.app.vapor.networkOp;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.android.volley.Request;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import deadpixel.app.vapor.MainActivity;
-import deadpixel.app.vapor.callbacks.AccountResponseEvent;
-import deadpixel.app.vapor.callbacks.AccountStatsResponseEvent;
-import deadpixel.app.vapor.callbacks.AccountStatsUpdateEvent;
-import deadpixel.app.vapor.callbacks.AccountUpdateEvent;
+import deadpixel.app.vapor.ui.MainActivity;
 import deadpixel.app.vapor.callbacks.DatabaseUpdateEvent;
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ItemResponseEvent;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
-import deadpixel.app.vapor.cloudapp.api.CloudAppException;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
 import deadpixel.app.vapor.database.DatabaseManager;
-import deadpixel.app.vapor.database.DatabaseUpdate;
-import deadpixel.app.vapor.database.FilesManager;
 import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.utils.AppUtils;
 
 /**
  * Created by Tevin on 7/27/2014.
  */
-public class DatabaseTaskFragment extends SherlockFragment {
+public class DatabaseTaskFragment extends Fragment {
 
     /**
      * Callback interface through which the fragment will report the

@@ -1,4 +1,4 @@
-package deadpixel.app.vapor;
+package deadpixel.app.vapor.ui;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -15,15 +15,11 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 import java.util.List;
-
-import deadpixel.app.vapor.networkOp.authentication.ObscuredSharedPreferences;
-import deadpixel.app.vapor.utils.AppUtils;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -36,7 +32,7 @@ import deadpixel.app.vapor.utils.AppUtils;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends SherlockPreferenceActivity {
+public class SettingsActivity extends PreferenceActivity {
     /**
      * Determines whether to always show the simplified settings UI, where
      * settings are presented in a single list. When false, settings are shown

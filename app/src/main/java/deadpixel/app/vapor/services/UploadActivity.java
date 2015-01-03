@@ -1,10 +1,9 @@
 package deadpixel.app.vapor.services;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.util.Log;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -17,7 +16,7 @@ import deadpixel.app.vapor.utils.AppUtils;
 /**
  * Created by Tevin on 8/29/2014.
  */
-public class UploadActivity extends SherlockActivity{
+public class UploadActivity extends Activity {
 
     private static final String TAG = "UploadActivity ";
     Intent mIntent;
