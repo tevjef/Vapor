@@ -33,6 +33,7 @@ import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
 import deadpixel.app.vapor.cloudapp.impl.model.CloudAppUpload;
+import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.utils.AppUtils;
 
 
@@ -117,13 +118,7 @@ public class UploadService extends Service {
                 public void onError(ErrorEvent event) {
                     Log.e(TAG, "Error: " + event.getError().getMessage());
 
-                    if(event.getImplicitError() != null) {
-                        Object extras = event.getImplicitError();
-                        if(extras instanceof CloudAppUpload) {
-                            CloudAppUpload cloudAppUpload = (CloudAppUpload) extras;
-                            makeErrorNotification(cloudAppUpload, event);
-                        }
-                    }
+
                     stopSelf();
                 }
             };
@@ -135,7 +130,7 @@ public class UploadService extends Service {
                 File file = FileUtils.getFile(this, uri);
                 CloudAppUpload fileUpload = new CloudAppUpload(file, progressCallback, uploadCallback, uploadNum);
                 uploads.add(fileUpload);
-                AppUtils.api.upload(fileUpload);
+                AppUtils.api.upload(fileUpload.getmFile());
             } catch (CloudAppException e) {
                 e.printStackTrace();
             }
@@ -167,7 +162,7 @@ public class UploadService extends Service {
                     NotificationCompat.Builder uploadedNotification =
                             new NotificationCompat.Builder(UploadService.this);
 
-                    String link  = MenuHandler.getLink(item);
+                    String link  = MenuHandler.getLink(DatabaseItem.toDatabaseItem(item));
 
                     uploadedNotification.setContentTitle(itemName);
                     uploadedNotification.setSmallIcon(R.drawable.ic_logo_notification);
@@ -207,7 +202,7 @@ public class UploadService extends Service {
         notification.setWhen(System.currentTimeMillis());
 
 
-        String explicitError = errorEvent.getExplicitError();
+        String explicitError = errorEvent.getErrorDescription();
 
         if(explicitError.equals(AppUtils.NO_CONNECTION)) {
             notification.setContentText("No internet connection");

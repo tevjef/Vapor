@@ -49,6 +49,7 @@ import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.database.FilesManager;
 import deadpixel.app.vapor.database.model.DatabaseItem;
+import deadpixel.app.vapor.libs.EaseOutQuint;
 import deadpixel.app.vapor.networkOp.DatabaseTaskFragment;
 import deadpixel.app.vapor.utils.AppUtils;
 
