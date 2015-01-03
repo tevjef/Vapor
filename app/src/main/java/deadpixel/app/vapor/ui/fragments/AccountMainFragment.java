@@ -35,9 +35,7 @@ import deadpixel.app.vapor.cloudapp.impl.model.AccountStatsModel;
 import deadpixel.app.vapor.database.DatabaseManager;
 import deadpixel.app.vapor.utils.AppUtils;
 
-/**
- * Created by Tevin on 7/7/2014.
- */
+
 public class AccountMainFragment  extends Fragment {
     private final String TAG = "AccountMainFragment";
 
