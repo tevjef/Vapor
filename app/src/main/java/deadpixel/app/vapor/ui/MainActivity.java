@@ -17,6 +17,7 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,12 +51,25 @@ import deadpixel.app.vapor.database.FilesManager;
 import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.libs.EaseOutQuint;
 import deadpixel.app.vapor.networkOp.DatabaseTaskFragment;
+import deadpixel.app.vapor.ui.factory.FilesFragmentFactory;
+import deadpixel.app.vapor.ui.fragments.AllFilesFragment;
+import deadpixel.app.vapor.ui.fragments.ArchiveFragment;
+import deadpixel.app.vapor.ui.fragments.AudioFragment;
+import deadpixel.app.vapor.ui.fragments.BookmarkFragment;
+import deadpixel.app.vapor.ui.fragments.ImageFragment;
+import deadpixel.app.vapor.ui.fragments.OtherFragment;
+import deadpixel.app.vapor.ui.fragments.TextFragment;
+import deadpixel.app.vapor.ui.fragments.TrashFragment;
+import deadpixel.app.vapor.ui.fragments.VideoFragment;
+import deadpixel.app.vapor.ui.intefaces.FilesFragment;
 import deadpixel.app.vapor.utils.AppUtils;
 
 import static deadpixel.app.vapor.cloudapp.api.model.CloudAppItem.Type;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, DatabaseTaskFragment.TaskCallbacks{
+
+    private static final String TAG = "MainActivity";
 
     private static final String TAG_TASK_FRAGMENT = "Database_task_fragment";
     private static final String TAG_ALL_FRAGMENT = "all_fragment";
@@ -90,7 +104,7 @@ public class MainActivity extends ActionBarActivity
     private String[] actionBarTitles;
     private TypedArray titleIcons;
     private ActionBar ab;
-
+    private FilesFragmentFactory filesFragmentFactory;
     public static boolean isLoading = false;
 
     private static boolean isSyncing = false;
@@ -99,15 +113,6 @@ public class MainActivity extends ActionBarActivity
 
     FragmentTransaction ft;
 
-    AllFragment allFragment;
-    ImageFragment imageFragment;
-    VideoFragment videoFragment;
-    AudioFragment audioFragment;
-    TextFragment textFragment;
-    ArchiveFragment archiveFragment;
-    BookmarkFragment bookMarkFragment;
-    OtherFragment otherFragment;
-    TrashFragment trashFragment;
 
     public static FilesFragment currentFragment;
 
@@ -129,16 +134,9 @@ public class MainActivity extends ActionBarActivity
                 .obtainTypedArray(R.array.file_icons_white);
 
 
+        createFilesFragmentFactory();
 
-        allFragment = new AllFragment();
-        imageFragment = new ImageFragment();
-        videoFragment = new VideoFragment();
-        audioFragment = new AudioFragment();
-        textFragment = new TextFragment();
-        archiveFragment = new ArchiveFragment();
-        bookMarkFragment = new BookmarkFragment();
-        otherFragment = new OtherFragment();
-        trashFragment = new TrashFragment();
+
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -157,104 +155,46 @@ public class MainActivity extends ActionBarActivity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
-    private void setPaddingOnHome() {
-        ImageView view = (ImageView)findViewById(android.R.id.home);
-        int size = 3;
-        int padding = (int) (getResources().getDisplayMetrics().density * size);
-        view.setPadding(padding , padding, padding, padding);
+    private void createFilesFragmentFactory() {
+        filesFragmentFactory = new FilesFragmentFactory();
     }
 
-
+    private void logError(Exception e) {
+        Log.e(TAG, e.getMessage());
+    }
     @Override
     public void onNavigationDrawerItemSelected(int position) {
 
         configureActionBar(position);
         // update the main content by replacing fragments
 
-
-
         switch (position) {
             case 0:
-                ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.fade_in_up, R.anim.activity_close_exit);
-                ft.replace(R.id.container, allFragment)
-                        .commit();
-
-
-                // calling onPrepareOptionsMenu() to show action bar icons
-                supportInvalidateOptionsMenu();
+               replaceFragment(FilesFragment.ALL_FRAGMENT);
                 break;
             case 1:
-                ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.fade_in_up, R.anim.activity_close_exit);
-                ft.replace(R.id.container, imageFragment)
-                        .commit();
-
-                // calling onPrepareOptionsMenu() to show action bar icons
-                supportInvalidateOptionsMenu();
+                replaceFragment(FilesFragment.IMAGE_FRAGMENT);
                 break;
             case 2:
-                ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.fade_in_up, R.anim.activity_close_exit);
-                ft.replace(R.id.container, videoFragment)
-                        .commit();
-
-                // calling onPrepareOptionsMenu() to show action bar icons
-                supportInvalidateOptionsMenu();
-                break;
+                replaceFragment(FilesFragment.VIDEO_FRAGMENT);
+                break
             case 3:
-                ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.fade_in_up, R.anim.activity_close_exit);
-                ft.replace(R.id.container, audioFragment)
-                        .commit();
-
-                // calling onPrepareOptionsMenu() to show action bar icons
-                supportInvalidateOptionsMenu();
+                replaceFragment(FilesFragment.AUDIO_FRAGMENT);
                 break;
             case 4:
-                ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.fade_in_up, R.anim.activity_close_exit);
-                ft.replace(R.id.container, textFragment)
-                        .commit();
-
-                // calling onPrepareOptionsMenu() to show action bar icons
-                supportInvalidateOptionsMenu();
+                replaceFragment(FilesFragment.TEXT_FRAGMENT);
                 break;
             case 5:
-                ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.fade_in_up, R.anim.activity_close_exit);
-                ft.replace(R.id.container, archiveFragment)
-                        .commit();
-
-                // calling onPrepareOptionsMenu() to show action bar icons
-                supportInvalidateOptionsMenu();
+                replaceFragment(FilesFragment.ARCHIVE_FRAGMENT);
                 break;
             case 6:
-                ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.fade_in_up, R.anim.activity_close_exit);
-                ft.replace(R.id.container, bookMarkFragment)
-                        .commit();
-
-                // calling onPrepareOptionsMenu() to show action bar icons
-                supportInvalidateOptionsMenu();
+                replaceFragment(FilesFragment.BOOKMARK_FRAGMENT);
                 break;
             case 7:
-                ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.fade_in_up, R.anim.activity_close_exit);
-                ft.replace(R.id.container, otherFragment)
-                        .commit();
-
-                // calling onPrepareOptionsMenu() to show action bar icons
-                supportInvalidateOptionsMenu();
+                replaceFragment(FilesFragment.OTHER_FRAGMENT);
                 break;
             case 8:
-                ft = getSupportFragmentManager().beginTransaction();
-                ft.setCustomAnimations(R.anim.fade_in_up, R.anim.activity_close_exit);
-                ft.replace(R.id.container, trashFragment)
-                        .commit();
-
-                // calling onPrepareOptionsMenu() to show action bar icons
-                supportInvalidateOptionsMenu();
+                replaceFragment(FilesFragment.TRASH_FRAGMENT);
                 break;
 
             default:
@@ -262,12 +202,17 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    public void onSectionAttached(int number) {
-
+    private void replaceFragment(String fragmentType) {
+        try {
+            ft = getSupportFragmentManager().beginTransaction();
+            ft.setCustomAnimations(R.anim.fade_in_up, R.anim.activity_close_exit);
+            ft.replace(R.id.container, filesFragmentFactory.makeFragment(fragmentType), fragmentType)
+                    .commit();
+            supportInvalidateOptionsMenu();
+        } catch (Exception e) {
+            logError(e);
+        }
     }
-
-
-
 
     /**
      * An implemented callback function to handle the action bar title and
@@ -427,7 +372,7 @@ public class MainActivity extends ActionBarActivity
 
         if(!isLoading) {
             int id = item.getItemId();
-//TODO add functionality for mainactivity menu items here by getting their ids
+    //TODO add functionality for mainactivity menu items here by getting their ids
 
 
             if (id == R.id.main_refresh) {
@@ -514,578 +459,7 @@ public class MainActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class RecentFragment extends ListFragment implements FilesFragment, AbsListView.OnScrollListener{
 
-        FilesListViewAdapter adapter;
-
-        //A flag for when the fragment is in the process of getting more files after an onScroll event
-
-
-        //Fragment optimistically assumes there is more files on startup up. False when a get from database returns 0 files
-        public boolean moreFiles = true;
-
-        boolean fullySynced;
-
-        boolean userScrolled = false;
-        final int AUTOLOAD_THRESHOLD = 4;
-        public boolean mAutoLoad;
-
-        ArrayList<DatabaseItem> items;
-
-        View noFiles;
-        View refreshingFiles;
-        //View loadingMoreFiles;
-
-        FrameLayout footerFrameLayout;
-        FrameLayout headerFrameLayout;
-
-        AnimationDrawable anim;
-
-        public Type getType() {
-            return mType;
-        }
-
-        public void setType(Type mType) {
-            this.mType = mType;
-        }
-
-        Type mType = Type.ALL;
-
-
-
-        private State mState;
-
-
-        public RecentFragment() {
-        }
-
-        private enum State {
-            NO_FILES, REFRESHING, NORMAL, LOADING_MORE
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            firstStart = AppUtils.mPref.getBoolean(AppUtils.APP_FIRST_START, true);
-
-            if(firstStart && !isLoading) {
-                isLoading = true;
-                FilesManager.requestMoreFiles(Type.ALL);
-            }
-
-            footerFrameLayout = new FrameLayout(getActivity());
-            headerFrameLayout = new FrameLayout(getActivity());
-
-            AbsListView.LayoutParams paramsMatchParent = new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-            footerFrameLayout.setLayoutParams(paramsMatchParent);
-            footerFrameLayout.setForegroundGravity(Gravity.CENTER);
-            headerFrameLayout.setLayoutParams(paramsMatchParent);
-            headerFrameLayout.setForegroundGravity(Gravity.CENTER);
-
-            noFiles = getActivity().getLayoutInflater().inflate(R.layout.no_files, null);
-            refreshingFiles = getActivity().getLayoutInflater().inflate(R.layout.refreshing, null);
-            footerFrameLayout = (FrameLayout) getActivity().getLayoutInflater().inflate(R.layout.loading_more, null);
-
-            anim = (AnimationDrawable) footerFrameLayout.findViewById(R.id.image).getBackground();
-            anim.start();
-            anim = (AnimationDrawable) refreshingFiles.findViewById(R.id.image).getBackground();
-            anim.start();
-
-        }
-
-
-        private void setFooterVisibility(int i) {
-            if(i == 0) {
-                footerFrameLayout.setVisibility(View.GONE);
-            } else if(i == 1) {
-                footerFrameLayout.setVisibility(View.VISIBLE);
-            }
-        }
-
-        private void resetFooter() {
-
-            footerFrameLayout.setVisibility(View.VISIBLE);
-            final View textContainer = footerFrameLayout.findViewById(R.id.load_more_text_container);
-            final View btnContainer = footerFrameLayout.findViewById(R.id.load_more_button_container);
-            final Button loadMoreButton = (Button) footerFrameLayout.findViewById(R.id.load_more_button);
-
-
-            if(!fullySynced) {
-
-                if (mAutoLoad) {
-                    textContainer.setVisibility(View.VISIBLE);
-                    btnContainer.setVisibility(View.GONE);
-                } else {
-
-                    YoYo.with(Techniques.FadeOutDown).duration(250).withListener(new Animator.AnimatorListener() {
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            textContainer.setVisibility(View.GONE);
-
-                            btnContainer.setVisibility(View.VISIBLE);
-                            YoYo.with(Techniques.FadeInUp).duration(250).withListener(new Animator.AnimatorListener() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-                                    btnContainer.setEnabled(false);
-
-                                }
-
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    btnContainer.setEnabled(true);
-                                }
-
-                                @Override
-                                public void onAnimationCancel(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationRepeat(Animator animation) {
-
-                                }
-                            }).playOn(btnContainer);
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    }).playOn(textContainer);
-
-
-
-                    loadMoreButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            YoYo.with(Techniques.FadeOutDown).duration(250).interpolate(new EaseOutQuint()).withListener(new Animator.AnimatorListener() {
-                                @Override
-                                public void onAnimationStart(Animator animation) {
-                                    textContainer.setVisibility(View.VISIBLE);
-                                    YoYo.with(Techniques.FadeInUp).duration(250).interpolate(new EaseOutQuint()).playOn(textContainer);
-
-                                    loadMoreFiles();
-                                }
-                                @Override
-                                public void onAnimationEnd(Animator animation) {
-                                    btnContainer.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onAnimationCancel(Animator animation) {
-
-                                }
-
-                                @Override
-                                public void onAnimationRepeat(Animator animation) {
-
-                                }
-                            }).playOn(btnContainer);
-
-                        }
-                    });
-
-                    //addFooterView(loadingMoreFiles);
-                }
-            } else {
-                setFooterVisibility(0);
-            }
-        }
-
-
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-
-            getListView().setBackgroundResource(0);
-            getListView().setDivider(null);
-            getListView().setDividerHeight(0);
-            getListView().setFastScrollEnabled(true);
-
-            items = new ArrayList<DatabaseItem>();
-            //FilesManager.getFiles(CloudAppItem.Type.ALL);
-
-
-            adapter = new FilesListViewAdapter(getActivity(),items);
-            getListView().setOnScrollListener(this);
-
-
-            getListView().setAdapter(null);
-            getListView().addHeaderView(headerFrameLayout);
-            getListView().addFooterView(footerFrameLayout);
-            //addFooterView(loadingMoreFiles);
-            resetFooter();
-            //The initial files get is handled by the parent activity of this fragment.
-            //adds the refreshing view's View on app first load to tell users the app is doing work.
-            if (AppUtils.mPref.getBoolean(AppUtils.APP_FIRST_START, true) || isLoading ) {
-                updateState(State.REFRESHING);
-            } else {
-                //Get all items in the database for this fragment.
-                new GetAllItemsTask().execute();
-                updateState(State.NORMAL);
-            }
-
-            setListAdapter(adapter);
-
-            getListView().setSelector(android.R.color.transparent);
-
-        }
-
-
-        protected void addHeaderView(View v) {
-            headerFrameLayout.removeAllViews();
-            headerFrameLayout.addView(v);
-        }
-
-        protected void removeHeaderViews() {
-            headerFrameLayout.removeAllViews();
-        }
-
-        @Override
-        public void datebaseUpdateEvent(ArrayList<DatabaseItem> items) {
-
-            //Gets all items added when runs first even though all items would be in the parameter.
-            if(mState == State.REFRESHING) {
-                new GetAllItemsTask().execute();
-            } else {
-                //Appends items to list when users scrolls to the bottom.
-                this.addItemsToAdapter(sortListByType(getType(), items));
-            }
-
-        }
-
-        @Override
-        public void errorEvent() {
-            updateState(State.NORMAL);
-            new GetAllItemsTask().execute();
-            isLoading = false;
-            resetFooter();
-        }
-
-        @Override
-        public void refresh() {
-            updateState(State.REFRESHING);
-            //isLoading =true;
-            FilesManager.refreshFiles();
-        }
-
-        protected void addItemsToAdapter(ArrayList<DatabaseItem> items) {
-
-            //Loading is done list can be scrolled
-            isLoading = false;
-
-            fullySynced = AppUtils.mPref.getBoolean(AppUtils.FULLY_SYNCED, false);
-
-
-            //If item size is zero, there's not more files.
-            if(items.size() == 0) {
-
-                // If the adapter has no files at this point, the user might not have any files.
-                if(getListAdapter().getCount() == 0 && fullySynced) {
-                    updateState(State.NO_FILES);
-                } else {
-                    updateState(State.NORMAL);
-                    resetFooter();
-                }
-
-
-            } else {
-
-                updateState(State.NORMAL);
-
-                final ArrayAdapter adapter = (ArrayAdapter) getListAdapter();
-                adapter.addAll(items);
-                notifyChangeInAdapter();
-
-                resetFooter();
-            }
-
-
-        }
-
-        public FilesListViewAdapter getAdapter() {
-            return adapter;
-        }
-
-        protected ArrayList<DatabaseItem> sortListByType(Type type, ArrayList<DatabaseItem> items) {
-            ArrayList<DatabaseItem> typedList = new ArrayList<DatabaseItem>();
-            if(type == Type.ALL) {
-                typedList = items;
-            } else {
-                for (DatabaseItem i : items) {
-                    if (i.getItemType() == type) {
-                        typedList.add(i);
-                    }
-                }
-            }
-            return typedList;
-        }
-
-        protected void notifyChangeInAdapter() {
-            if(getListAdapter() != null) {
-                final ArrayAdapter adapter = (ArrayAdapter) getListAdapter();
-                adapter.notifyDataSetChanged();
-            }
-        }
-
-        protected void clearAdapter() {
-            if(getListAdapter() != null) {
-                final ArrayAdapter adapter = (ArrayAdapter) getListAdapter();
-                adapter.clear();
-                notifyChangeInAdapter();
-            }
-        }
-
-        @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            switch (scrollState) {
-                case SCROLL_STATE_TOUCH_SCROLL:
-                    userScrolled = true;
-                    break;
-                case SCROLL_STATE_IDLE:
-                    userScrolled = false;
-                    break;
-                case SCROLL_STATE_FLING:
-                    userScrolled = true;
-                    break;
-                default:
-                    userScrolled = false;
-                    break;
-            }
-        }
-
-
-        @Override
-        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-
-            if((firstVisibleItem + visibleItemCount) >= (totalItemCount - AUTOLOAD_THRESHOLD)
-                    && !isLoading
-                    && visibleItemCount != 0
-                    && mState != State.NO_FILES
-                    && mState != State.REFRESHING
-                    && !fullySynced
-                    && userScrolled) {
-
-                if(mAutoLoad) {
-                    loadMoreFiles();
-                }
-
-            }
-        }
-
-        public class GetAllItemsTask extends AsyncTask<Void, Void, ArrayList<DatabaseItem>> {
-            @Override
-            protected ArrayList<DatabaseItem> doInBackground(Void... params) {
-                return FilesManager.getFiles(getType());
-            }
-            @Override
-            protected void onPostExecute(ArrayList<DatabaseItem> databaseItems) {
-                addItemsToAdapter(databaseItems);
-            }
-        }
-
-        private void loadMoreFiles() {
-            isLoading = true;
-            updateState(State.LOADING_MORE);
-            FilesManager.requestMoreFiles(Type.ALL);
-        }
-
-        @Override
-        public void onListItemClick(final ListView l, final View v, int position, long id) {
-
-            if(l.getAdapter().getCount() != 0) {
-                DatabaseItem dbItem = (DatabaseItem) l.getAdapter().getItem(position);
-                String name = dbItem.getName();
-
-                switch (dbItem.getItemType()) {
-                    case IMAGE:
-                        Intent intent = new Intent(getActivity(), ImageViewActivity.class);
-                        intent.putExtra(EXTRA_NAME, name);
-                        startActivity(intent);
-
-                        break;
-                    default:
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse(dbItem.getContentUrl()));
-                        startActivity(i);
-
-                }
-            }
-
-
-        }
-
-        protected void updateState(State state) {
-            mState  = state;
-
-            switch(mState) {
-                case NO_FILES:
-                    if(getListView() != null) {
-                        addHeaderView(noFiles);
-                        footerFrameLayout.setVisibility(View.GONE);
-                    }
-
-                    break;
-                case REFRESHING:
-                    if(getListView() != null) {
-                        addHeaderView(refreshingFiles);
-                        if (getListView().getAdapter() != null) {
-                            clearAdapter();
-                        }
-                        footerFrameLayout.setVisibility(View.GONE);
-                    }
-                    isLoading = true;
-                    break;
-                case NORMAL:
-                    removeHeaderViews();
-                    break;
-                case LOADING_MORE:
-
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            currentFragment = this;
-        }
-
-        @Override
-        public void onDetach() {
-            super.onDetach();
-        }
-    }
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-
-    public static class AllFragment extends RecentFragment implements FilesFragment, AbsListView.OnScrollListener {
-
-        public AllFragment() {}
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.mAutoLoad = true;
-            super.setType(Type.ALL);
-            super.onCreate(savedInstanceState);
-        }
-    }
-
-    public static class ImageFragment extends RecentFragment implements FilesFragment, AbsListView.OnScrollListener {
-
-        public ImageFragment() {}
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.mAutoLoad = false;
-            super.setType(Type.IMAGE);
-            super.onCreate(savedInstanceState);
-
-        }
-    }
-
-    public static class VideoFragment extends RecentFragment implements FilesFragment, AbsListView.OnScrollListener {
-
-        public VideoFragment() {}
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.mAutoLoad = false;
-            super.setType(Type.VIDEO);
-            super.onCreate(savedInstanceState);
-        }
-    }
-
-    public static class AudioFragment extends RecentFragment implements FilesFragment, AbsListView.OnScrollListener {
-
-        public AudioFragment() {}
-
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.mAutoLoad = false;
-            super.setType(Type.AUDIO);
-            super.onCreate(savedInstanceState);
-        }
-    }
-
-    public static class TextFragment extends RecentFragment implements FilesFragment, AbsListView.OnScrollListener {
-
-        public TextFragment() {}
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.mAutoLoad = false;
-            super.setType(Type.TEXT);
-            super.onCreate(savedInstanceState);
-        }
-    }
-
-    public static class ArchiveFragment extends RecentFragment implements FilesFragment, AbsListView.OnScrollListener {
-
-        public ArchiveFragment() {}
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.mAutoLoad = false;
-            super.setType(Type.ARCHIVE);
-            super.onCreate(savedInstanceState);
-        }
-    }
-
-    public static class BookmarkFragment extends RecentFragment implements FilesFragment, AbsListView.OnScrollListener {
-
-        public BookmarkFragment() {}
-
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.mAutoLoad = false;
-            super.setType(Type.BOOKMARK);
-            super.onCreate(savedInstanceState);
-        }
-    }
-
-    public static class OtherFragment extends RecentFragment implements FilesFragment, AbsListView.OnScrollListener {
-
-        public OtherFragment() {}
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.mAutoLoad = false;
-            super.setType(Type.UNKNOWN);
-            super.onCreate(savedInstanceState);
-        }
-    }
-
-    public static class TrashFragment extends RecentFragment implements FilesFragment, AbsListView.OnScrollListener {
-
-        public TrashFragment() {}
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.mAutoLoad = false;
-            super.setType(Type.DELETED);
-            super.onCreate(savedInstanceState);
-        }
-    }
 
     public static Type parseType(String s) {
 
@@ -1122,11 +496,7 @@ public class MainActivity extends ActionBarActivity
         }
 
     }
-    private interface FilesFragment {
-        public void datebaseUpdateEvent(ArrayList<DatabaseItem> items);
-        public void errorEvent();
-        public void refresh();
-    }
+
 
 
 }
