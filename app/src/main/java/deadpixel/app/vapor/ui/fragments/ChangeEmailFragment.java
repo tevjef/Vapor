@@ -6,14 +6,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.MenuItem;
+
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.squareup.otto.Subscribe;
@@ -30,9 +30,7 @@ import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.libs.TransitionButton;
 import deadpixel.app.vapor.utils.AppUtils;
 
-/**
- * Created by Tevin on 7/7/2014.
- */
+
 public class ChangeEmailFragment extends Fragment {
 
     private static String TAG = "ChangeEmailFragment";
