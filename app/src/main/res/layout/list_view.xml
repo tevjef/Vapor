@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<merge>
-
     <ListView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/android:list"
+        android:id="@+id/files_fragment_list_view"
         android:divider="@null"
         android:dividerHeight="0px"
         android:background="@android:color/transparent"
@@ -20,4 +18,3 @@
         android:textStyle="italic"
         android:fontFamily="sans-serif-light"
         android:id="@+id/android:empty"/>-->
-</merge>

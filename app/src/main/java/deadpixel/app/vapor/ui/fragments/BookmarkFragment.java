@@ -13,7 +13,7 @@ public class BookmarkFragment extends RecentFragment implements FilesFragment, A
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.mAutoLoad = false;
+        super.autoLoadFiles = false;
         super.setType(CloudAppItem.Type.BOOKMARK);
         super.onCreate(savedInstanceState);
     }

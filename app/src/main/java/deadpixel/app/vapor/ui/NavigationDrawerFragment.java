@@ -13,7 +13,12 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,14 +26,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
+
 
 import java.util.ArrayList;
 
+import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.adapter.NavDrawerListAdapter;
 import deadpixel.app.vapor.model.NavDrawerItem;
 import deadpixel.app.vapor.utils.AppUtils;
@@ -94,6 +96,8 @@ public class NavigationDrawerFragment extends Fragment {
 
     public NavigationDrawerFragment() {
     }
+
+    private ActionBar actionBar;
 
     @Override
     public void onDestroy() {
@@ -442,6 +446,8 @@ public class NavigationDrawerFragment extends Fragment {
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
         }
+        actionBar = ((ActionBarActivity)activity).getSupportActionBar();
+
     }
 
     @Override
@@ -501,7 +507,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private ActionBar getActionBar() {
-        return getSherlockActivity().getSupportActionBar();
+        return actionBar;
     }
 
     /**
@@ -514,4 +520,6 @@ public class NavigationDrawerFragment extends Fragment {
         void onNavigationDrawerItemSelected(int position);
         void restoreActionBarTitle(int position);
     }
+
+
 }

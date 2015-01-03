@@ -11,6 +11,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.ui.fragments.AccountMainFragment;
 import deadpixel.app.vapor.utils.AppUtils;
 

@@ -15,6 +15,11 @@ public interface FilesFragment {
     static final String OTHER_FRAGMENT = "other_fragment";
     static final String TRASH_FRAGMENT = "trash_fragment";
 
+    static final String AUTOLOAD = "auto_run";
+    static final String FRAGMENT_TYPE = "fragment_type";
+
+    final public static String EXTRA_NAME = "item_name";
+
     public void datebaseUpdateEvent(ArrayList<DatabaseItem> items);
     public void errorEvent();
     public void refresh();

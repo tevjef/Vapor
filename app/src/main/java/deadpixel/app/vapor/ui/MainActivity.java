@@ -44,6 +44,7 @@ import org.apache.http.HttpStatus;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.adapter.FilesListViewAdapter;
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
@@ -58,6 +59,7 @@ import deadpixel.app.vapor.ui.fragments.AudioFragment;
 import deadpixel.app.vapor.ui.fragments.BookmarkFragment;
 import deadpixel.app.vapor.ui.fragments.ImageFragment;
 import deadpixel.app.vapor.ui.fragments.OtherFragment;
+import deadpixel.app.vapor.ui.fragments.RecentFragment;
 import deadpixel.app.vapor.ui.fragments.TextFragment;
 import deadpixel.app.vapor.ui.fragments.TrashFragment;
 import deadpixel.app.vapor.ui.fragments.VideoFragment;
@@ -173,7 +175,7 @@ public class MainActivity extends ActionBarActivity
                 break;
             case 2:
                 replaceFragment(FilesFragment.VIDEO_FRAGMENT);
-                break
+                break;
             case 3:
                 replaceFragment(FilesFragment.AUDIO_FRAGMENT);
                 break;
@@ -458,7 +460,6 @@ public class MainActivity extends ActionBarActivity
 
 
     public static Type parseType(String s) {
-
         if (s.equals("ALL")) {
             return Type.ALL;
 
@@ -493,6 +494,7 @@ public class MainActivity extends ActionBarActivity
 
     }
 
-
-
+    public void setCurrentFragment(FilesFragment fragment) {
+        currentFragment = fragment;
+    }
 }

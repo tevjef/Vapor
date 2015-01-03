@@ -7,14 +7,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -22,19 +23,25 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.nineoldandroids.animation.Animator;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
+import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.adapter.FilesListViewAdapter;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
 import deadpixel.app.vapor.database.FilesManager;
 import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.libs.EaseOutQuint;
 import deadpixel.app.vapor.ui.ImageViewActivity;
+import deadpixel.app.vapor.ui.MainActivity;
 import deadpixel.app.vapor.ui.intefaces.FilesFragment;
 import deadpixel.app.vapor.utils.AppUtils;
 
-public class RecentFragment extends Fragment implements FilesFragment, AbsListView.OnScrollListener{
+public class RecentFragment extends Fragment implements FilesFragment, AbsListView.OnScrollListener, AbsListView.OnItemClickListener{
 
     FilesListViewAdapter adapter;
+
+    ListView mListView;
+
 
     //A flag for when the fragment is in the process of getting more files after an onScroll event
 
@@ -46,7 +53,7 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
 
     boolean userScrolled = false;
     final int AUTOLOAD_THRESHOLD = 4;
-    public boolean mAutoLoad;
+    public boolean autoLoadFiles;
 
     ArrayList<DatabaseItem> items;
 
@@ -58,6 +65,9 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
     FrameLayout headerFrameLayout;
 
     AnimationDrawable anim;
+    private boolean firstStart;
+    private String fragmentType;
+    private boolean isLoading;
 
     public CloudAppItem.Type getType() {
         return mType;
@@ -77,6 +87,74 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
     public RecentFragment() {
     }
 
+    public ListView getListView() {
+        return mListView;
+    }
+
+    public ListAdapter getListAdapter() {
+        return getListView().getAdapter();
+    }
+
+    public void setListAdapter(FilesListViewAdapter listAdapter) {
+        getListView().setAdapter(listAdapter);
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        switch (scrollState) {
+            case SCROLL_STATE_TOUCH_SCROLL:
+                userScrolled = true;
+                break;
+            case SCROLL_STATE_IDLE:
+                userScrolled = false;
+                break;
+            case SCROLL_STATE_FLING:
+                userScrolled = true;
+                break;
+            default:
+                userScrolled = false;
+                break;
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        if((firstVisibleItem + visibleItemCount) >= (totalItemCount - AUTOLOAD_THRESHOLD)
+                && !isLoading
+                && visibleItemCount != 0
+                && mState != State.NO_FILES
+                && mState != State.REFRESHING
+                && !fullySynced
+                && userScrolled) {
+
+            if(autoLoadFiles) {
+                loadMoreFiles();
+            }
+
+        }
+    }
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (parent.getCount() != 0) {
+            DatabaseItem dbItem = (DatabaseItem) parent.getAdapter().getItem(position);
+            String name = dbItem.getName();
+
+            switch (dbItem.getItemType()) {
+                case IMAGE:
+                    Intent intent = new Intent(getActivity(), ImageViewActivity.class);
+                    intent.putExtra(EXTRA_NAME, name);
+                    startActivity(intent);
+
+                    break;
+                default:
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(dbItem.getContentUrl()));
+                    startActivity(i);
+
+            }
+        }
+    }
+
     private enum State {
         NO_FILES, REFRESHING, NORMAL, LOADING_MORE
     }
@@ -85,6 +163,11 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Bundle arguments = getArguments();
+
+        autoLoadFiles = arguments.getBoolean(AUTOLOAD, true);
+        fragmentType = arguments.getString(FRAGMENT_TYPE);
+
         firstStart = AppUtils.mPref.getBoolean(AppUtils.APP_FIRST_START, true);
 
         if(firstStart && !isLoading) {
@@ -92,6 +175,7 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
             FilesManager.requestMoreFiles(CloudAppItem.Type.ALL);
         }
 
+        mListView = (ListView)getActivity().findViewById(R.id.files_fragment_list_view);
 
         footerFrameLayout = new FrameLayout(getActivity());
         headerFrameLayout = new FrameLayout(getActivity());
@@ -133,7 +217,7 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
 
         if(!fullySynced) {
 
-            if (mAutoLoad) {
+            if (autoLoadFiles) {
                 textContainer.setVisibility(View.VISIBLE);
                 btnContainer.setVisibility(View.GONE);
             } else {
@@ -367,44 +451,7 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
         }
     }
 
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
 
-        switch (scrollState) {
-            case SCROLL_STATE_TOUCH_SCROLL:
-                userScrolled = true;
-                break;
-            case SCROLL_STATE_IDLE:
-                userScrolled = false;
-                break;
-            case SCROLL_STATE_FLING:
-                userScrolled = true;
-                break;
-            default:
-                userScrolled = false;
-                break;
-        }
-    }
-
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-
-        if((firstVisibleItem + visibleItemCount) >= (totalItemCount - AUTOLOAD_THRESHOLD)
-                && !isLoading
-                && visibleItemCount != 0
-                && mState != State.NO_FILES
-                && mState != State.REFRESHING
-                && !fullySynced
-                && userScrolled) {
-
-            if(mAutoLoad) {
-                loadMoreFiles();
-            }
-
-        }
-    }
 
     public class GetAllItemsTask extends AsyncTask<Void, Void, ArrayList<DatabaseItem>> {
         @Override
@@ -417,35 +464,11 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
         }
     }
 
+
     private void loadMoreFiles() {
         isLoading = true;
         updateState(State.LOADING_MORE);
         FilesManager.requestMoreFiles(CloudAppItem.Type.ALL);
-    }
-
-    @Override
-    public void onListItemClick(final ListView l, final View v, int position, long id) {
-
-        if(l.getAdapter().getCount() != 0) {
-            DatabaseItem dbItem = (DatabaseItem) l.getAdapter().getItem(position);
-            String name = dbItem.getName();
-
-            switch (dbItem.getItemType()) {
-                case IMAGE:
-                    Intent intent = new Intent(getActivity(), ImageViewActivity.class);
-                    intent.putExtra(EXTRA_NAME, name);
-                    startActivity(intent);
-
-                    break;
-                default:
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(dbItem.getContentUrl()));
-                    startActivity(i);
-
-            }
-        }
-
-
     }
 
     protected void updateState(State state) {
@@ -483,7 +506,7 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        currentFragment = this;
+        ((MainActivity) getActivity()).setCurrentFragment(this);
     }
 
     @Override

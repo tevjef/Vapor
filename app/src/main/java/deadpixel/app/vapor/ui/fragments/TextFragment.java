@@ -12,7 +12,7 @@ public class TextFragment extends RecentFragment implements FilesFragment, AbsLi
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.mAutoLoad = false;
+        super.autoLoadFiles = false;
         super.setType(CloudAppItem.Type.TEXT);
         super.onCreate(savedInstanceState);
     }

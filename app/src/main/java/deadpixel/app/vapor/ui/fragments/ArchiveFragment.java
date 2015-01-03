@@ -12,7 +12,7 @@ public class ArchiveFragment extends RecentFragment implements FilesFragment, Ab
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.mAutoLoad = false;
+        super.autoLoadFiles = false;
         super.setType(CloudAppItem.Type.ARCHIVE);
         super.onCreate(savedInstanceState);
     }
