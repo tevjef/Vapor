@@ -1,15 +1,11 @@
 package deadpixel.app.vapor.libs;
 
-import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
 import java.util.ArrayList;

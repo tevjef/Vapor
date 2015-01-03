@@ -1,6 +1,5 @@
 package deadpixel.app.vapor.networkOp;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.NetworkResponse;
@@ -10,11 +9,7 @@ import com.android.volley.VolleyError;
 
 import org.apache.http.HttpStatus;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import deadpixel.app.vapor.callbacks.ErrorEvent;
-import deadpixel.app.vapor.callbacks.ObserverCollection;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.utils.AppUtils;

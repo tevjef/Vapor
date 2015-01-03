@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 
 import deadpixel.app.vapor.callbacks.DatabaseUpdateEvent;
-import deadpixel.app.vapor.cloudapp.api.CloudApp;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
 import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.utils.AppUtils;

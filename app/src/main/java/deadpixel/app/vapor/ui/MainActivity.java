@@ -1,4 +1,4 @@
-package deadpixel.app.vapor;
+package deadpixel.app.vapor.ui;
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -15,7 +15,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -29,12 +33,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.nineoldandroids.animation.Animator;
@@ -53,9 +52,9 @@ import deadpixel.app.vapor.libs.EaseOutQuint;
 import deadpixel.app.vapor.networkOp.DatabaseTaskFragment;
 import deadpixel.app.vapor.utils.AppUtils;
 
-import static deadpixel.app.vapor.cloudapp.api.model.CloudAppItem.*;
+import static deadpixel.app.vapor.cloudapp.api.model.CloudAppItem.Type;
 
-public class MainActivity extends SherlockFragmentActivity
+public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, DatabaseTaskFragment.TaskCallbacks{
 
     private static final String TAG_TASK_FRAGMENT = "Database_task_fragment";
@@ -347,7 +346,7 @@ public class MainActivity extends SherlockFragmentActivity
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
-            getSupportMenuInflater().inflate(R.menu.main, menu);
+            getMenuInflater().inflate(R.menu.main, menu);
             // Associate searchable configuration with the SearchView
             SearchManager searchManager =
                     (SearchManager) getSystemService(Context.SEARCH_SERVICE);

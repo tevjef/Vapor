@@ -1,7 +1,6 @@
 package deadpixel.app.vapor.cloudapp.api.model;
 
 import java.text.ParseException;
-import java.util.Date;
 
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 

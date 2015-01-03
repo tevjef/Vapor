@@ -4,12 +4,10 @@ import com.android.volley.Request;
 import com.koushikdutta.ion.ProgressCallback;
 
 import java.io.File;
-import java.util.List;
 
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener;
 
 public interface CloudApp {
 

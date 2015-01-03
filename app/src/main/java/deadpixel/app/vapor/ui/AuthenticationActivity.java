@@ -1,4 +1,4 @@
-package deadpixel.app.vapor;
+package deadpixel.app.vapor.ui;
 
 import android.animation.LayoutTransition;
 import android.app.Activity;
@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,24 +21,15 @@ import android.widget.EditText;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.android.volley.Request;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
 import org.apache.http.HttpStatus;
 
-
-import java.util.ArrayList;
-
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.impl.CloudAppImpl;
 import deadpixel.app.vapor.libs.EaseOutQuint;
 import deadpixel.app.vapor.libs.TransitionButton;
@@ -44,7 +37,7 @@ import deadpixel.app.vapor.networkOp.AuthenticationTaskFragment;
 import deadpixel.app.vapor.utils.AppUtils;
 import deadpixel.app.vapor.utils.AppUtils.TextStyle;
 
-public class AuthenticationActivity extends SherlockFragmentActivity implements AuthenticationTaskFragment.TaskCallbacks {
+public class AuthenticationActivity extends ActionBarActivity implements AuthenticationTaskFragment.TaskCallbacks {
 
     String TAG = "AuthenticationActivity";
     public static SharedPreferences prefs;

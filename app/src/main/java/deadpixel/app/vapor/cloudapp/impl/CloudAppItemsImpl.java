@@ -10,14 +10,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.HeadersCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
 import com.koushikdutta.ion.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.ParseException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,20 +26,14 @@ import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ItemResponseEvent;
-import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppProgressListener;
 import deadpixel.app.vapor.cloudapp.impl.model.ItemModel;
-import deadpixel.app.vapor.cloudapp.impl.model.MultiItemResponseModel;
 import deadpixel.app.vapor.cloudapp.impl.model.UploadResponseModel;
 import deadpixel.app.vapor.database.DatabaseUpdate;
 import deadpixel.app.vapor.networkOp.RequestExecutor;

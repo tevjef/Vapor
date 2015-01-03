@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +35,7 @@ import deadpixel.app.vapor.utils.AppUtils;
 /**
  * Created by Tevin on 7/7/2014.
  */
-public class ChangePasswordFragment extends SherlockFragment{
+public class ChangePasswordFragment extends ActionBarActivity {
 
     private static String TAG = "ChangeEmailFragment";
     private static State mState;

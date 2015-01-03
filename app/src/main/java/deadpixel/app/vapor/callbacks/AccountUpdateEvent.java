@@ -1,7 +1,5 @@
 package deadpixel.app.vapor.callbacks;
 
-import deadpixel.app.vapor.cloudapp.api.CloudApp;
-import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 
 /**

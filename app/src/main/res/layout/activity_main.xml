@@ -7,7 +7,7 @@
 
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        tools:context="deadpixel.app.vapor.MainActivity">
+        tools:context="deadpixel.app.vapor.ui.MainActivity">
 
         <!-- As the main content view, the view below consumes the entire
              space available using match_parent in both dimensions. -->
@@ -29,12 +29,12 @@
         <!-- The drawer is given a fixed width in dp and extends the full height of
              the container. -->
 
-        <fragment android:name="deadpixel.app.vapor.NavigationDrawerFragment"
+        <fragment android:name="deadpixel.app.vapor.ui.NavigationDrawerFragment"
             android:id="@+id/navigation_drawer"
             android:layout_width="@dimen/navigation_drawer_width"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            tools:context="deadpixel.app.vapor.NavigationDrawerFragment"
+            tools:context="deadpixel.app.vapor.ui.NavigationDrawerFragment"
             />
 
     </android.support.v4.widget.DrawerLayout>

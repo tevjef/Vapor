@@ -2,14 +2,10 @@ package deadpixel.app.vapor.cloudapp.impl.model;
 
 import android.util.Log;
 
-import org.json.JSONObject;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 
 public abstract class CloudAppModel {
 

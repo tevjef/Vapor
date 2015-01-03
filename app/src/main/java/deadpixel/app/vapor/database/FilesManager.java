@@ -1,15 +1,11 @@
 package deadpixel.app.vapor.database;
 
 import com.android.volley.Request;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
-import deadpixel.app.vapor.callbacks.DatabaseUpdateEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
-import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.database.PreferenceHandler;
 import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.utils.AppUtils;
 
