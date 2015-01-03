@@ -6,6 +6,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.view.Gravity;
 import android.view.View;
@@ -31,7 +32,7 @@ import deadpixel.app.vapor.ui.ImageViewActivity;
 import deadpixel.app.vapor.ui.intefaces.FilesFragment;
 import deadpixel.app.vapor.utils.AppUtils;
 
-public class RecentFragment extends ListFragment implements FilesFragment, AbsListView.OnScrollListener{
+public class RecentFragment extends Fragment implements FilesFragment, AbsListView.OnScrollListener{
 
     FilesListViewAdapter adapter;
 
@@ -90,6 +91,7 @@ public class RecentFragment extends ListFragment implements FilesFragment, AbsLi
             isLoading = true;
             FilesManager.requestMoreFiles(CloudAppItem.Type.ALL);
         }
+
 
         footerFrameLayout = new FrameLayout(getActivity());
         headerFrameLayout = new FrameLayout(getActivity());
