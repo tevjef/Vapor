@@ -38,6 +38,7 @@ import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 import deadpixel.app.vapor.cloudapp.impl.CloudAppImpl;
+import deadpixel.app.vapor.libs.EaseOutQuint;
 import deadpixel.app.vapor.libs.TransitionButton;
 import deadpixel.app.vapor.networkOp.AuthenticationTaskFragment;
 import deadpixel.app.vapor.utils.AppUtils;
@@ -190,8 +191,8 @@ public class AuthenticationActivity extends SherlockFragmentActivity implements 
             }
         });
         //For debugging purposes
-        mEmailField.setText("***REMOVED***");
-        mPassField.setText("***REMOVED***");
+        mEmailField.setText("mastermindtj94@gmail.com");
+        mPassField.setText("master123");
 
         //Special lister to change state to Sign In after user successfully sends and email to a recovery address
         mButton.setTransitionListener(new TransitionButton.OnTransitionListener() {

@@ -10,7 +10,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.async.http.libcore.RawHeaders;
 import com.koushikdutta.ion.HeadersCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
@@ -18,9 +17,7 @@ import com.koushikdutta.ion.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.mime.content.InputStreamBody;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -281,8 +278,9 @@ public class CloudAppItemsImpl {
                         public void onCompleted(Exception e, Response<JsonObject> result) {
 
 
+                            //Get file after upload. Commmented out because it interupts the build.
                             if (result != null) {
-
+/*
                                 String requestString = result.getRequest().getRequestString();
                                 RawHeaders header = result.getHeaders();
                                 String location = header.get("Location");
@@ -293,7 +291,7 @@ public class CloudAppItemsImpl {
                                     }
                                 } catch (CloudAppException e1) {
                                     e1.printStackTrace();
-                                }
+                                }*/
                             /*if (result.getResult() != null) {
                                 String resultString = result.getResult().toString();
 
