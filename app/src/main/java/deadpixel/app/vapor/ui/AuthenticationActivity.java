@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -42,6 +43,8 @@ import deadpixel.app.vapor.utils.AppUtils.TextStyle;
 
 public class AuthenticationActivity extends ActionBarActivity implements AuthenticationTaskFragment.TaskCallbacks {
 
+
+    Toolbar toolbar;
     String TAG = "AuthenticationActivity";
     public static SharedPreferences prefs;
     private Context context;
@@ -81,13 +84,16 @@ public class AuthenticationActivity extends ActionBarActivity implements Authent
         boolean signedIn = prefs.getBoolean(AppUtils.SIGNED_IN, false);
 
 
+        if (toolbar != null) {
+            toolbar.setTitle("Navigation Drawer");
+            setSupportActionBar(toolbar);
+        }
+
         if(!signedIn) {
             setContentView(R.layout.activity_login);
             //sets the Actionbar and its properties
             ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setDisplayShowHomeEnabled(false);
-            actionBar.setDisplayShowCustomEnabled(true);
+
 
             //stores the application context for future use.
             context = getApplicationContext();
