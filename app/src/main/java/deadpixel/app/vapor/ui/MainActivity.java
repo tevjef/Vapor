@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
@@ -17,6 +18,9 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -26,6 +30,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -46,11 +51,13 @@ import java.util.ArrayList;
 
 import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.adapter.FilesListViewAdapter;
+import deadpixel.app.vapor.adapter.NavDrawerListAdapter;
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ResponseEvent;
 import deadpixel.app.vapor.database.FilesManager;
 import deadpixel.app.vapor.database.model.DatabaseItem;
 import deadpixel.app.vapor.libs.EaseOutQuint;
+import deadpixel.app.vapor.model.NavDrawerItem;
 import deadpixel.app.vapor.networkOp.DatabaseTaskFragment;
 import deadpixel.app.vapor.ui.factory.FilesFragmentFactory;
 import deadpixel.app.vapor.ui.fragments.AllFilesFragment;
@@ -69,7 +76,23 @@ import deadpixel.app.vapor.utils.AppUtils;
 import static deadpixel.app.vapor.cloudapp.api.model.CloudAppItem.Type;
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, DatabaseTaskFragment.TaskCallbacks{
+        implements DatabaseTaskFragment.TaskCallbacks, AdapterView.OnItemClickListener {
+
+
+
+    private Toolbar toolbar;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+    private ListView leftDrawerList;
+
+    private View mDrawerContainerView ;
+
+    private NavDrawerListAdapter adapter;
+
+    // slide menu items
+    private String[] navMenuTitles;
+    private TypedArray navMenuIconsGrey;
+    private TypedArray navMenuIconsBlue;
 
     private static final String TAG = "MainActivity";
 
@@ -94,8 +117,7 @@ public class MainActivity extends ActionBarActivity
 
 
 
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-
+    //private NavigationDrawerFragment mNavigationDrawerFragment;
 
     private CharSequence mTitle;
     public Typeface mNormal, mBold;
@@ -114,14 +136,14 @@ public class MainActivity extends ActionBarActivity
 
     public static FilesFragment currentFragment;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        //mNavigationDrawerFragment = (NavigationDrawerFragment) getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
 
         mTitle = getTitle();
 
@@ -147,10 +169,125 @@ public class MainActivity extends ActionBarActivity
             fm.beginTransaction().add(mDatabaseTaskFragment, TAG_TASK_FRAGMENT).commit();
         }
 
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        initView();
+        if (toolbar != null) {
+            toolbar.setTitle("Navigation Drawer");
+            setSupportActionBar(toolbar);
+        }
+
+    }
+
+    public void initView() {
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        leftDrawerList = (ListView) findViewById(R.id.drawer_listview);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        mDrawerContainerView = findViewById(R.id.drawer_container);
+        // load slide menu items
+        navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
+
+        // nav drawer icons from resources
+        navMenuIconsBlue = getResources()
+                .obtainTypedArray(R.array.file_icons_blue);
+
+        // nav drawer icons from resources
+        navMenuIconsGrey = getResources()
+                .obtainTypedArray(R.array.file_icons_grey);
+
+        ArrayList<NavDrawerItem> navDrawerItems = new ArrayList<>();
+
+        // adding nav drawer items to array
+        // Recent Files
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[0], navMenuIconsGrey.getResourceId(0, -1)));
+        // Images
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[1], navMenuIconsGrey.getResourceId(1, -1)));
+        // Video
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[2], navMenuIconsGrey.getResourceId(2, -1)));
+        // Audio
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[3], navMenuIconsGrey.getResourceId(3, -1)));
+        // Text
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[4], navMenuIconsGrey.getResourceId(4, -1)));
+        // Archives
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[5], navMenuIconsGrey.getResourceId(5, -1)));
+        // Bookmarks
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[6], navMenuIconsGrey.getResourceId(6, -1)));
+        // Other
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[7], navMenuIconsGrey.getResourceId(7, -1)));
+        // Trash
+        navDrawerItems.add(new NavDrawerItem(navMenuTitles[8], navMenuIconsGrey.getResourceId(8, -1)));
+
+        // Recycle the typed array
+        navMenuIconsGrey.recycle();
+
+        adapter = new NavDrawerListAdapter(this, navDrawerItems, 0);
+
+        leftDrawerList.setAdapter(adapter);
+
+        leftDrawerList.setOnItemClickListener(this);
+
+        initDrawer();
+
+    }
+
+
+
+
+    private void initDrawer() {
+
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+
+            }
+        };
+        drawerLayout.setDrawerListener(drawerToggle);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        onNavigationDrawerItemSelected(position);
+    }
+
+    public boolean isDrawerOpen() {
+        return false;
+    }
+
+    /**
+     * Callbacks interface that all activities using this fragment must implement.
+     */
+    public static interface NavigationDrawerCallbacks {
+        /**
+         * Called when an item in the navigation drawer is selected.
+         */
+        void onNavigationDrawerItemSelected(int position);
+        void restoreActionBarTitle(int position);
+    }
+
+    @Override
+    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+        return super.onCreateView(parent, name, context, attrs);
     }
 
     private void createFilesFragmentFactory() {
@@ -160,7 +297,7 @@ public class MainActivity extends ActionBarActivity
     private void logError(Exception e) {
         Log.e(TAG, e.getMessage());
     }
-    @Override
+
     public void onNavigationDrawerItemSelected(int position) {
 
         configureActionBar(position);
@@ -216,7 +353,7 @@ public class MainActivity extends ActionBarActivity
      * An implemented callback function to handle the action bar title and
      * icon when the drawer is closed
      */
-    @Override
+
     public void restoreActionBarTitle(int position) {
         configureActionBar(position);
     }
@@ -285,7 +422,7 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
+        /*if (!isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
@@ -301,7 +438,9 @@ public class MainActivity extends ActionBarActivity
             styleSearchView(searchView);
 
             return true;
-        }
+        }*/
+
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -382,7 +521,19 @@ public class MainActivity extends ActionBarActivity
             }
         }
 
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if(drawerLayout.isDrawerOpen(mDrawerContainerView)) {
+                    drawerLayout.closeDrawer(mDrawerContainerView);
+                }
+                else {
+                    drawerLayout.openDrawer(mDrawerContainerView);
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 
     @Override

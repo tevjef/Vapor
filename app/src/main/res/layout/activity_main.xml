@@ -1,12 +1,21 @@
-    <!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
+
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".MainActivity">
+
+    <include layout="@layout/toolbar" />
+<!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:context="deadpixel.app.vapor.ui.MainActivity">
+        >
 
         <!-- As the main content view, the view below consumes the entire
              space available using match_parent in both dimensions. -->
@@ -16,10 +25,19 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             android:background="@color/activity_bg"
-    />
+         >
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/files_fragment_list_view"
+                android:divider="@null"
+                android:dividerHeight="0px"
+                android:background="@android:color/transparent"
+                android:listSelector="@null"/>
 
 
-
+</FrameLayout>
         <!-- android:layout_gravity="start" tells DrawerLayout to treat
              this as a sliding drawer on the left side for left-to-right
              languages and on the right side for right-to-left languages.
@@ -28,12 +46,18 @@
         <!-- The drawer is given a fixed width in dp and extends the full height of
              the container. -->
 
-        <fragment android:name="deadpixel.app.vapor.ui.NavigationDrawerFragment"
-            android:id="@+id/navigation_drawer"
-            android:layout_width="@dimen/navigation_drawer_width"
-            android:layout_height="match_parent"
+
+        <!-- navigation drawer -->
+        <FrameLayout
             android:layout_gravity="start"
-            tools:context="deadpixel.app.vapor.ui.NavigationDrawerFragment"
-            tools:layout="@layout/fragment_navigation_drawer" />
+            android:layout_width="300dp"
+            android:background="#fff"
+            android:id="@+id/drawer_container"
+            android:layout_height="match_parent">
+
+            <include layout="@layout/fragment_navigation_drawer"/>
+
+        </FrameLayout>
 
     </android.support.v4.widget.DrawerLayout>
+</LinearLayout>
