@@ -77,7 +77,7 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
         this.mType = mType;
     }
 
-    CloudAppItem.Type mType = CloudAppItem.Type.ALL;
+    CloudAppItem.Type mType;
 
 
 
@@ -108,10 +108,8 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = getArguments();
 
-        autoLoadFiles = arguments.getBoolean(AUTOLOAD, true);
-        fragmentType = arguments.getString(FRAGMENT_TYPE);
+        configureFragment(getArguments());
 
         firstStart = AppUtils.mPref.getBoolean(AppUtils.APP_FIRST_START, true);
 
@@ -142,6 +140,13 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
         anim.start();
 
     }
+
+    private void configureFragment(Bundle arguments) {
+        autoLoadFiles = arguments.getBoolean(AUTOLOAD, true);
+        fragmentType = arguments.getString(FRAGMENT_TYPE);
+        setType(parseType(fragmentType));
+    }
+
 
 
     private void setFooterVisibility(int i) {
@@ -383,13 +388,13 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
 
     protected void notifyChangeInAdapter() {
         if(getListAdapter() != null) {
-            adapter.notifyDataSetChanged();
+            getAdapter().notifyDataSetChanged();
         }
     }
 
     protected void clearAdapter() {
         if(getListAdapter() != null) {
-            adapter.clear();
+            getAdapter().clear();
             notifyChangeInAdapter();
         }
     }
@@ -512,5 +517,40 @@ public class RecentFragment extends Fragment implements FilesFragment, AbsListVi
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    public static CloudAppItem.Type parseType(String s) {
+        if (s.equals(ALL_FRAGMENT)) {
+            return CloudAppItem.Type.ALL;
+
+        } else if (s.equals(IMAGE_FRAGMENT)) {
+            return CloudAppItem.Type.IMAGE;
+
+        } else if (s.equals(VIDEO_FRAGMENT)) {
+            return CloudAppItem.Type.VIDEO;
+
+        } else if (s.equals(AUDIO_FRAGMENT)) {
+            return CloudAppItem.Type.AUDIO;
+
+        } else if (s.equals(TEXT_FRAGMENT)) {
+            return CloudAppItem.Type.TEXT;
+
+        } else if (s.equals(ARCHIVE_FRAGMENT)) {
+            return CloudAppItem.Type.ARCHIVE;
+
+        } else if (s.equals(BOOKMARK_FRAGMENT)) {
+            return CloudAppItem.Type.BOOKMARK;
+
+        } else if (s.equals(OTHER_FRAGMENT)) {
+            return CloudAppItem.Type.UNKNOWN;
+
+        } else if (s.equals(TRASH_FRAGMENT)) {
+            return CloudAppItem.Type.DELETED;
+
+        } else {
+            return CloudAppItem.Type.ALL;
+
+        }
+
     }
 }
