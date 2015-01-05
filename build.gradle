@@ -12,6 +12,10 @@ buildscript {
 allprojects {
     repositories {
         mavenCentral()
+        jcenter()
+        maven {
+            url 'https://raw.github.com/iFixit/ark/master/releases/'
+        }
     }
 }
 

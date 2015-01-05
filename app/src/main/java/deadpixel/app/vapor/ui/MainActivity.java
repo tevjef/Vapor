@@ -114,6 +114,7 @@ public class MainActivity extends ActionBarActivity
 
 
     private DatabaseTaskFragment mDatabaseTaskFragment;
+    private DatabaseTaskFragment mDatabaseTaskFragment;
 
 
 
@@ -608,42 +609,6 @@ public class MainActivity extends ActionBarActivity
     /**
      * A placeholder fragment containing a simple view.
      */
-
-
-    public static Type parseType(String s) {
-        if (s.equals("ALL")) {
-            return Type.ALL;
-
-        } else if (s.equals("IMAGE")) {
-            return Type.IMAGE;
-
-        } else if (s.equals("VIDEO")) {
-            return Type.VIDEO;
-
-        } else if (s.equals("AUDIO")) {
-            return Type.AUDIO;
-
-        } else if (s.equals("TEXT")) {
-            return Type.TEXT;
-
-        } else if (s.equals("ARCHIVE")) {
-            return Type.ARCHIVE;
-
-        } else if (s.equals("BOOKMARK")) {
-            return Type.BOOKMARK;
-
-        } else if (s.equals("UNKNOWN")) {
-            return Type.UNKNOWN;
-
-        } else if (s.equals("DELETED")) {
-            return Type.DELETED;
-
-        } else {
-            return Type.ALL;
-
-        }
-
-    }
 
     public void setCurrentFragment(FilesFragment fragment) {
         currentFragment = fragment;

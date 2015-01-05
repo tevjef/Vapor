@@ -23,4 +23,6 @@ public interface FilesFragment {
     public void datebaseUpdateEvent(ArrayList<DatabaseItem> items);
     public void errorEvent();
     public void refresh();
+
+
 }
