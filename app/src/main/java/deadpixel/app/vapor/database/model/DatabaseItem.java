@@ -1,7 +1,7 @@
 package deadpixel.app.vapor.database.model;
 
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.impl.model.ItemModel;
+import deadpixel.app.vapor.okcloudapp.model.ItemModel;
 
 /**
  * Created by Tevin on 7/27/2014.

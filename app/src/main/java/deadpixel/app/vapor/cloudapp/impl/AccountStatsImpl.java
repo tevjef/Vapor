@@ -9,7 +9,7 @@ import com.google.gson.GsonBuilder;
 
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
-import deadpixel.app.vapor.cloudapp.impl.model.AccountStatsModel;
+import deadpixel.app.vapor.okcloudapp.model.AccountStatsModel;
 import deadpixel.app.vapor.database.DatabaseManager;
 import deadpixel.app.vapor.networkOp.RequestExecutor;
 

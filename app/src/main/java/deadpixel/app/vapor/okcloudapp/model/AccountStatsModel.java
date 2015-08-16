@@ -1,4 +1,4 @@
-package deadpixel.app.vapor.cloudapp.impl.model;
+package deadpixel.app.vapor.okcloudapp.model;
 
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
 

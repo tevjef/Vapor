@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount.DefaultSecurity;
-import deadpixel.app.vapor.cloudapp.impl.model.AccountModel;
+import deadpixel.app.vapor.okcloudapp.model.AccountModel;
 import deadpixel.app.vapor.database.DatabaseManager;
 import deadpixel.app.vapor.database.PreferenceHandler;
 import deadpixel.app.vapor.networkOp.RequestExecutor;

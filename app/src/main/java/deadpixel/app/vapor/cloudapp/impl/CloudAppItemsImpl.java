@@ -33,7 +33,7 @@ import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.callbacks.ItemResponseEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
-import deadpixel.app.vapor.cloudapp.impl.model.ItemModel;
+import deadpixel.app.vapor.okcloudapp.model.ItemModel;
 import deadpixel.app.vapor.cloudapp.impl.model.UploadResponseModel;
 import deadpixel.app.vapor.database.DatabaseUpdate;
 import deadpixel.app.vapor.networkOp.RequestExecutor;

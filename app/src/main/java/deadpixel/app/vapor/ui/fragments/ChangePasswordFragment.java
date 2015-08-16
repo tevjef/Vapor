@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,7 +27,7 @@ import deadpixel.app.vapor.R;
 import deadpixel.app.vapor.callbacks.AccountUpdateEvent;
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
-import deadpixel.app.vapor.cloudapp.impl.model.AccountModel;
+import deadpixel.app.vapor.okcloudapp.model.AccountModel;
 import deadpixel.app.vapor.libs.TransitionButton;
 import deadpixel.app.vapor.utils.AppUtils;
 

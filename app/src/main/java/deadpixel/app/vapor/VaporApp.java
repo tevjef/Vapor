@@ -1,4 +1,4 @@
-package deadpixel.app.vapor.networkOp;
+package deadpixel.app.vapor;
 
 import android.app.Application;
 import android.content.Context;
@@ -15,28 +15,32 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import dagger.ObjectGraph;
 import deadpixel.app.vapor.ui.AuthenticationActivity;
 
-/**
- * Created by Tevin on 1/18/14.
- */
-public class RequestHandler extends Application {
+public class VaporApp extends Application {
 
     private static String TAG = "deadpixel.app.vapor.networkOp";
-    private static RequestHandler sInstance;
+    private static VaporApp sInstance;
     private static Context context;
     public static RequestQueue queue;
     public static DefaultHttpClient client;
+
+    ObjectGraph objectGraph;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+
+        objectGraph = ObjectGraph.create(new VaporModule(getApplicationContext()));
+
         // initialize the singleton
         sInstance = this;
-        RequestHandler.context = getApplicationContext();
+        VaporApp.context = getApplicationContext();
     }
 
-    public RequestHandler() {
+    public VaporApp() {
 
     }
 

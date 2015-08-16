@@ -1,4 +1,4 @@
-package deadpixel.app.vapor.cloudapp.impl.model;
+package deadpixel.app.vapor.okcloudapp.model;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -8,11 +8,12 @@ import java.util.Date;
 
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppItem;
+import deadpixel.app.vapor.cloudapp.impl.model.CloudAppModel;
 
-/**
- * Created by Tevin on 6/7/14.
- */
-public class ItemModel implements CloudAppItem {
+import static deadpixel.app.vapor.okcloudapp.CloudAppUtils.format;
+import static deadpixel.app.vapor.okcloudapp.CloudAppUtils.formatDate;
+
+public class ItemModel {
 
 
     private long id;
@@ -52,7 +53,6 @@ public class ItemModel implements CloudAppItem {
         return isSubscribed;
     }
 
-    @Override
     public boolean isTrashed() {
         return deleted_at == null;
     }
@@ -160,19 +160,19 @@ public class ItemModel implements CloudAppItem {
     }
 
     public void setCreatedAt(String created_at) {
-        this.created_at = created_at == null?null:String.valueOf(CloudAppModel.formatDate(created_at).getTime());
+        this.created_at = created_at == null?null:String.valueOf(formatDate(created_at).getTime());
     }
 
     public void setUpdatedAt(String updated_at) {
-        this.updated_at = updated_at  == null?null:String.valueOf(CloudAppModel.formatDate(updated_at).getTime());
+        this.updated_at = updated_at  == null?null:String.valueOf(formatDate(updated_at).getTime());
     }
 
     public void setDeletedAt(String deleted_at) {
-        this.deleted_at = deleted_at == null?null:String.valueOf(CloudAppModel.formatDate(deleted_at).getTime());
+        this.deleted_at = deleted_at == null?null:String.valueOf(formatDate(deleted_at).getTime());
     }
 
     public void setLastViewedAt(String lastViewed_at) {
-        this.lastViewed_at = lastViewed_at == null?null:String.valueOf(CloudAppModel.formatDate(lastViewed_at).getTime());
+        this.lastViewed_at = lastViewed_at == null?null:String.valueOf(formatDate(lastViewed_at).getTime());
     }
     public void setEpochCreatedAt(Long created_at) {
         this.created_at = created_at == 0? null:String.valueOf(created_at);
@@ -221,7 +221,7 @@ public class ItemModel implements CloudAppItem {
     public String getFormattedUpdatedAt() throws CloudAppException {
         try {
             return updated_at ==null?null:DateFormat.getDateInstance()
-                    .format(CloudAppModel.format.parse(updated_at));
+                    .format(format.parse(updated_at));
         } catch (ParseException e) {
             throw new CloudAppException(500, "Error parsing account updated_at date", e);
         }
@@ -230,10 +230,15 @@ public class ItemModel implements CloudAppItem {
     public String getFormattedDeletedAt() throws CloudAppException {
         try {
             return deleted_at==null?null:DateFormat.getDateInstance()
-                    .format(CloudAppModel.format.parse(deleted_at));
+                    .format(format.parse(deleted_at));
         } catch (ParseException e) {
             throw new CloudAppException(500, "Error parsing account deleted_at date", e);
         }
+    }
+
+    enum Type {
+
+        ALL, DELETED, AUDIO, BOOKMARK, IMAGE, UNKNOWN, VIDEO, ARCHIVE, TEXT;
     }
 
 

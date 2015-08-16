@@ -2,7 +2,7 @@ package deadpixel.app.vapor.callbacks;
 
 import java.util.ArrayList;
 
-import deadpixel.app.vapor.cloudapp.impl.model.ItemModel;
+import deadpixel.app.vapor.okcloudapp.model.ItemModel;
 
 /**
  * Created by Tevin on 6/16/2014.

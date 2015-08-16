@@ -3,6 +3,8 @@ package deadpixel.app.vapor.cloudapp.impl.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import deadpixel.app.vapor.okcloudapp.model.ItemModel;
+
 /**
  * Created by Tevin on 6/10/2014.
  */
