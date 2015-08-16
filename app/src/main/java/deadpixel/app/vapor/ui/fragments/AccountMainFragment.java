@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,8 +31,8 @@ import deadpixel.app.vapor.callbacks.AccountStatsUpdateEvent;
 import deadpixel.app.vapor.callbacks.ErrorEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
-import deadpixel.app.vapor.cloudapp.impl.model.AccountModel;
-import deadpixel.app.vapor.cloudapp.impl.model.AccountStatsModel;
+import deadpixel.app.vapor.okcloudapp.model.AccountModel;
+import deadpixel.app.vapor.okcloudapp.model.AccountStatsModel;
 import deadpixel.app.vapor.database.DatabaseManager;
 import deadpixel.app.vapor.utils.AppUtils;
 

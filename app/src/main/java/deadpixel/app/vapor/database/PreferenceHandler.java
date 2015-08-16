@@ -12,8 +12,8 @@ import deadpixel.app.vapor.callbacks.AccountUpdateEvent;
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccountStats;
-import deadpixel.app.vapor.cloudapp.impl.model.AccountModel;
-import deadpixel.app.vapor.cloudapp.impl.model.AccountStatsModel;
+import deadpixel.app.vapor.okcloudapp.model.AccountModel;
+import deadpixel.app.vapor.okcloudapp.model.AccountStatsModel;
 import deadpixel.app.vapor.cloudapp.impl.model.UploadResponseModel;
 import deadpixel.app.vapor.utils.AppUtils;
 

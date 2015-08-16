@@ -1,10 +1,11 @@
-package deadpixel.app.vapor.cloudapp.impl.model;
+package deadpixel.app.vapor.okcloudapp.model;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 
 import deadpixel.app.vapor.cloudapp.api.CloudAppException;
 import deadpixel.app.vapor.cloudapp.api.model.CloudAppAccount;
+import deadpixel.app.vapor.cloudapp.impl.model.CloudAppModel;
 
 /**
  * Created by Tevin on 6/7/14.
