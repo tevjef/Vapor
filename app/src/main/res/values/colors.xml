@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="secondary_text_color">#98a4b3</color>
-    <color name="primary_text_color">#6b747e</color>
-    <color name="text_highlight_color">#c9e5f7</color>
-    <color name="edittext_shadow">#d6dae3</color>
-    <color name="file_list_item_shadow">#d6dae3</color>
-    <color name="white">#FFF</color>
-    <color name="text_hint">#adb6bf</color>
-    <color name="light_blue">#6fafdb</color>
-    <color name="blue">#4c97cb</color>
-    <color name="blue_button_shadow">#4287b7</color>
-    <color name="activity_bg">#e9ecf2</color>
-    <color name="list_item_pressed_color">#f5f7fa</color>
-    <color name="drawer_sub_bg">#e9ecf2</color>
-    <color name="drawer_sub_bg_pressed">#e1e9f3</color>
-    <color name="success">#68A54F</color>
-    <color name="success_button_shadow">#5a9443</color>
-    <color name="error">#f36c60</color>
-    <color name="error_button_shadow">#dd5f54</color>
+    <color name="primary_light">#BBDEFB</color>
+    <color name="primary">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="primary_darker">#0D47A1</color>
 
+    <color name="accent">#009688</color>
+    <color name="accent_dark">#00796B</color>
+    <color name="accent_light">#B2DFDB</color>
+
+    <color name="blue_grey">#607D8B</color>
+    <color name="blue_grey_dark">#455A64</color>
+    <color name="blue_grey_light">#CFD8DC</color>
+
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#727272</color>
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#B6B6B6</color>
+    <color name="window_background">#eeeeee</color>
 </resources>
