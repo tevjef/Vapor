@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:orientation="vertical"
+    android:id="@+id/empty_view"
+    android:visibility="gone"
+    tools:visibility="visible"
+    tools:showIn="@layout/fragment_tracked_sections"
+    android:gravity="center">
+
+
+    <net.steamcrafted.materialiconlib.MaterialIconView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:padding="12dp"
+        app:materialIcon="file_cloud"
+        app:materialIconColor="@color/primary"
+        app:materialIconSize="24dp"
+    />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/empty_view"
+        android:id="@+id/text"
+        android:layout_marginTop="-12dp" />
+
+</LinearLayout>
