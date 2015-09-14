@@ -1,0 +1,113 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary"
+    android:theme="@style/Vapr_Login"
+    tools:context="com.tevinjeffrey.vapor.ui.login.LoginActivity">
+
+    <RelativeLayout
+        android:padding="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/frameLayout">
+
+            <ImageView
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:src="@drawable/home"/>
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/frameLayout"
+            android:paddingLeft="36dp"
+            android:paddingRight="36dp">
+
+
+            <RelativeLayout
+                android:id="@+id/login_field_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/login_wrapper_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:theme="@style/EditTextTheme"
+                    >
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:ems="10"
+                        android:id="@+id/login_field_email"
+                        android:hint="E-mail Address"
+                        android:textColorHint="@color/primary_light"
+                        android:textColor="@android:color/white" />
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/login_wrapper_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/login_wrapper_email"
+                    android:layout_centerHorizontal="true"
+                    android:theme="@style/EditTextTheme"
+                    android:layout_marginTop="8dp">
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:ems="10"
+                        android:id="@+id/login_field_password"
+                        android:hint="Password"
+                        android:textColorHint="@color/primary_light"
+                        android:textColor="@android:color/white" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Login"
+                    android:id="@+id/login_button"
+                    android:layout_below="@+id/login_wrapper_password"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp"
+                    android:theme="@style/LoginButtonStyle"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+
+            <include layout="@layout/progress_indeterminate" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/tos"
+            android:id="@+id/tos"
+            android:textColor="@android:color/white"
+            android:textSize="10dp"
+            android:layout_gravity="center"
+            android:clickable="true"
+            android:onClick="tosDialog"
+            android:visibility="visible"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true" />
+
+    </RelativeLayout>
+
+</FrameLayout>

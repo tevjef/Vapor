@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Vapr.iml" filepath="$PROJECT_DIR$/Vapr.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Vapor.iml" filepath="$PROJECT_DIR$/Vapor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vapor-app/vapor-app.iml" filepath="$PROJECT_DIR$/vapor-app/vapor-app.iml" />
     </modules>
   </component>
 </project>

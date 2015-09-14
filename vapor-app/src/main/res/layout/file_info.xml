@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:background="@color/primary"
+        android:id="@+id/bs_main_container"
+        >
+
+        <com.tevinjeffrey.vapor.customviews.TouchImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/bs_main_icon"
+            android:layout_centerInParent="true" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/bg_gradient"
+            android:layout_alignParentBottom="true"
+            android:padding="16dp">
+
+            <net.steamcrafted.materialiconlib.MaterialIconView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/bs_expand_icon"
+                app:materialIcon="arrow_expand"
+                app:materialIconColor="@android:color/white"
+                app:materialIconSize="24dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:id="@+id/bs_file_name"
+                android:layout_alignParentBottom="true"
+                android:text="Long ass file name.zip Long ass file name.zip Long ass file name.zip"
+
+                android:layout_alignParentStart="true"
+                android:paddingRight="40dp"
+                android:maxLines="2" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="4"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+
+
+    <RelativeLayout
+        android:id="@+id/bs_copy_link_container"
+        style="@style/BottomSheetItemContainer"
+        android:layout_weight="1">
+
+        <net.steamcrafted.materialiconlib.MaterialIconView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:materialIcon="link"
+            app:materialIconColor="?attr/colorPrimary"
+            app:materialIconSize="24dp"
+            android:id="@+id/bs_copy_link_icon"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:text="Copy Link"
+            android:id="@+id/bs_copy_link_title"
+            style="@style/PrimaryText"
+            android:layout_below="@+id/bs_copy_link_icon"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/bs_share_link_container"
+        style="@style/BottomSheetItemContainer"
+        android:layout_weight="1">
+
+        <net.steamcrafted.materialiconlib.MaterialIconView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:materialIcon="share_variant"
+            app:materialIconColor="?attr/colorPrimary"
+            app:materialIconSize="24dp"
+            android:id="@+id/bs_share_link_icon"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:text="Share Link"
+            android:layout_below="@+id/bs_share_link_icon"
+            android:id="@+id/bs_share_link_title"
+            android:layout_centerHorizontal="true"
+            style="@style/PrimaryText"
+            />
+    </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/bs_rename_container"
+            style="@style/BottomSheetItemContainer"
+            android:layout_weight="1">
+
+            <net.steamcrafted.materialiconlib.MaterialIconView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:materialIcon="rename_box"
+                app:materialIconColor="?attr/colorPrimary"
+                app:materialIconSize="24dp"
+                android:id="@+id/bs_rename_icon"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:text="Rename"
+                android:layout_below="@+id/bs_rename_icon"
+                android:id="@+id/bs_rename_title"
+                android:layout_centerHorizontal="true"
+                style="@style/PrimaryText"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/bs_delete_container"
+            style="@style/BottomSheetItemContainer"
+            android:layout_weight="1">
+
+            <net.steamcrafted.materialiconlib.MaterialIconView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:materialIcon="delete"
+                app:materialIconColor="?attr/colorPrimary"
+                app:materialIconSize="24dp"
+                android:id="@+id/bs_delete_icon"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:text="Remove"
+                android:layout_below="@+id/bs_delete_icon"
+                android:id="@+id/bs_delete_title"
+                android:layout_centerHorizontal="true"
+                style="@style/PrimaryText"
+                />
+        </RelativeLayout>
+        
+        </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp" />
+
+    <RelativeLayout
+        android:id="@+id/bs_size_container"
+        style="@style/BottomSheetItemContainer"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:text="Size"
+            android:id="@+id/bs_size_title"
+            style="@style/PrimaryText"
+            android:layout_marginStart="16dp"/>
+
+        <TextView
+            android:text="2.6MB"
+            android:id="@+id/bs_size_text"
+            style="@style/SecondaryText"
+            android:layout_marginStart="72dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/bs_created_container"
+        style="@style/BottomSheetItemContainer"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:text="Created"
+            android:id="@+id/bs_created_title"
+            style="@style/PrimaryText"
+            android:layout_marginStart="16dp"/>
+
+        <TextView
+            android:text="September 16th 1994"
+            android:id="@+id/bs_created_text"
+            style="@style/SecondaryText"
+            android:layout_marginStart="72dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/bs_views_container"
+        style="@style/BottomSheetItemContainer"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:text="Views"
+            android:id="@+id/bs_views_title"
+            style="@style/PrimaryText"
+            android:layout_marginStart="16dp"/>
+
+        <TextView
+            android:text="image/png 2.6MB"
+            android:id="@+id/bs_views_text"
+            style="@style/SecondaryText"
+            android:layout_marginStart="72dp"/>
+    </RelativeLayout>
+
+
+
+</LinearLayout>
