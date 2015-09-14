@@ -13,6 +13,28 @@ buildscript {
     }
 }
 
+
+Properties signingProperties = new Properties()
+File propertiesFile = new File('signing.properties')
+propertiesFile.withInputStream {
+    signingProperties.load(it)
+}
+Properties secretProperties = new Properties()
+propertiesFile = new File('secret.properties')
+propertiesFile.withInputStream {
+    secretProperties.load(it)
+}
+ext {
+    keyAlias = signingProperties.keyAlias
+    keyPassword = signingProperties.keyPassword
+    storePassword = signingProperties.storePassword
+    storeFile = signingProperties.storeFile
+
+    email = secretProperties.email
+    password = secretProperties.password
+}
+
+
 allprojects {
     repositories {
         jcenter()
