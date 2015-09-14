@@ -7,8 +7,11 @@ import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.HawkBuilder;
 import com.orhanobut.hawk.LogLevel;
 import com.orm.SugarApp;
+import com.tevinjeffrey.vapor.okcloudapp.CloudAppService;
+import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 
 import dagger.ObjectGraph;
+import jonathanfinerty.once.Once;
 import timber.log.Timber;
 
 public class VaprApp extends SugarApp {
@@ -26,6 +29,8 @@ public class VaprApp extends SugarApp {
                 .setStorage(HawkBuilder.newSqliteStorage(this))
                 .setLogLevel(LogLevel.FULL)
                 .build();
+
+        Hawk.clear();
 
         objectGraph = ObjectGraph.create(new VaprModule(getApplicationContext()));
 

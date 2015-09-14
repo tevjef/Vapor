@@ -24,4 +24,10 @@
     <string name="title_activity_image">ImageActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="action_logout">Logout</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="logout">Logout</string>
+    <string name="yes">Ok</string>
+    <string name="no">Cancel</string>
 </resources>
+

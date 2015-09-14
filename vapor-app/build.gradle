@@ -14,8 +14,8 @@ android {
         versionCode 1
         versionName "1.0"
 
-        buildConfigField "String", "PASS", "\"rootProject.ext.password\""
-        buildConfigField "String", "EMAIL", "\"rootProject.ext.email\""
+        buildConfigField "String", "PASS", "\"$rootProject.ext.password\""
+        buildConfigField "String", "EMAIL", "\"$rootProject.ext.email\""
         buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
     }
     buildTypes {

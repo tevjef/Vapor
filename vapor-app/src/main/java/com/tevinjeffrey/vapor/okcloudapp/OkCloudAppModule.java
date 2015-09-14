@@ -66,8 +66,8 @@ public class OkCloudAppModule {
 
     @Provides
     @Singleton
-    public UserManager provideUserManager(CloudAppService cloudAppService, DigestAuthenticator digestAuthenticator) {
-        return new UserManager(cloudAppService, digestAuthenticator);
+    public UserManager provideUserManager(CloudAppService cloudAppService, DigestAuthenticator digestAuthenticator, Bus bus) {
+        return new UserManager(cloudAppService, digestAuthenticator, bus);
     }
 
     @Provides

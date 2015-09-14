@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.events.DatabaseUpdateEvent;
+import com.tevinjeffrey.vapor.events.LogoutEvent;
 import com.tevinjeffrey.vapor.events.UploadEvent;
 import com.tevinjeffrey.vapor.okcloudapp.exceptions.FileToLargeException;
 import com.tevinjeffrey.vapor.okcloudapp.exceptions.UploadLimitException;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jonathanfinerty.once.Once;
 import retrofit.RestAdapter;
 import retrofit.client.Client;
 import retrofit.converter.GsonConverter;

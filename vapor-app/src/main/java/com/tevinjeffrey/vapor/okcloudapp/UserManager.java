@@ -1,6 +1,9 @@
 package com.tevinjeffrey.vapor.okcloudapp;
 
 import com.orhanobut.hawk.Hawk;
+import com.squareup.otto.Bus;
+import com.tevinjeffrey.vapor.events.LoginEvent;
+import com.tevinjeffrey.vapor.events.LogoutEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.AccountModel;
 import com.tevinjeffrey.vapor.utils.RxUtils;
 
@@ -9,6 +12,8 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import java.util.Objects;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -19,10 +24,12 @@ public class UserManager {
 
     private final DigestAuthenticator digestAuthenticator;
     private final CloudAppService cloudAppService;
+    private final Bus bus;
 
-    public UserManager(CloudAppService cloudAppService, DigestAuthenticator digestAuthenticator) {
+    public UserManager(CloudAppService cloudAppService, DigestAuthenticator digestAuthenticator, Bus bus) {
         this.digestAuthenticator = digestAuthenticator;
         this.cloudAppService = cloudAppService;
+        this.bus = bus;
     }
     
     public boolean isLoggedIn() {
@@ -41,7 +48,6 @@ public class UserManager {
         
         return cloudAppService.getAccount()
                 .retryWhen(new RxUtils.RetryWithDelay(2, 2000))
-                .observeOn(Schedulers.io())
                 .map(new Func1<AccountModel, Boolean>() {
                     @Override
                     public Boolean call(AccountModel accountModel) {
@@ -52,7 +58,8 @@ public class UserManager {
                         setLoggedIn(false);
                         return false;
                     }
-                });
+                })
+                .subscribeOn(Schedulers.io());
                 
     }
     
@@ -70,5 +77,10 @@ public class UserManager {
 
     public static String getPassword() {
         return Hawk.get(PASSWORD);
+    }
+
+    public void logout() {
+        Hawk.clear();
+        bus.post(new LogoutEvent());
     }
 }

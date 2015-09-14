@@ -268,6 +268,24 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
             case R.id.action_refresh:
                 dataManager.getAllItems(ALL, true);
                 return true;
+            case R.id.action_logout:
+                new MaterialDialog.Builder(this)
+                        .title(R.string.are_you_sure)
+                        .content(R.string.logout)
+                        .positiveText(R.string.yes)
+                        .negativeText(R.string.no)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+                                userManager.logout();
+                                Intent intent = new Intent(FilesActivity.this, FilesActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        })
+                        .show();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
