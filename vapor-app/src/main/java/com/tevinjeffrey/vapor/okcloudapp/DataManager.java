@@ -394,8 +394,13 @@ public class DataManager {
     }
 
     @Subscribe
-    public void loginEvent(LoginEvent event) {
+    public void onLoginEvent(LoginEvent event) {
         syncAllItems();
+    }
+
+    @Subscribe
+    public void onLogoutEvent(LogoutEvent event) {
+        CloudAppItem.deleteAll(CloudAppItem.class);
     }
 
     @Subscribe
