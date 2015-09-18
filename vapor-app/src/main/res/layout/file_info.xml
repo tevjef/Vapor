@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -31,6 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/bs_expand_icon"
                 app:materialIcon="arrow_expand"
                 app:materialIconColor="@android:color/white"
@@ -44,10 +46,9 @@
                 android:textSize="18sp"
                 android:id="@+id/bs_file_name"
                 android:layout_alignParentBottom="true"
-                android:text="Long ass file name.zip Long ass file name.zip Long ass file name.zip"
-
+                tools:text="Long ass file name.zip Long ass file name.zip Long ass file name.zip"
                 android:layout_alignParentStart="true"
-                android:paddingRight="40dp"
+                android:paddingEnd="40dp"
                 android:maxLines="2" />
 
         </RelativeLayout>
@@ -62,55 +63,53 @@
         android:orientation="horizontal"
         android:padding="16dp">
 
+        <RelativeLayout
+            android:id="@+id/bs_download_link_container"
+            style="@style/BottomSheetItemContainer"
+            android:layout_weight="1">
 
+            <net.steamcrafted.materialiconlib.MaterialIconView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:materialIcon="download"
+                app:materialIconColor="?attr/colorPrimary"
+                app:materialIconSize="24dp"
+                android:id="@+id/bs_download_link_icon"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
 
-    <RelativeLayout
-        android:id="@+id/bs_copy_link_container"
-        style="@style/BottomSheetItemContainer"
-        android:layout_weight="1">
+            <TextView
+                android:text="Download"
+                android:id="@+id/bs_download_link_title"
+                style="@style/PrimaryText"
+                android:layout_below="@+id/bs_download_link_icon"
+                android:layout_centerHorizontal="true" />
 
-        <net.steamcrafted.materialiconlib.MaterialIconView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:materialIcon="link"
-            app:materialIconColor="?attr/colorPrimary"
-            app:materialIconSize="24dp"
-            android:id="@+id/bs_copy_link_icon"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
+        </RelativeLayout>
 
-        <TextView
-            android:text="Copy Link"
-            android:id="@+id/bs_copy_link_title"
-            style="@style/PrimaryText"
-            android:layout_below="@+id/bs_copy_link_icon"
-            android:layout_centerHorizontal="true" />
+        <RelativeLayout
+            android:id="@+id/bs_share_link_container"
+            style="@style/BottomSheetItemContainer"
+            android:layout_weight="1">
 
-    </RelativeLayout>
+            <net.steamcrafted.materialiconlib.MaterialIconView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:materialIcon="share_variant"
+                app:materialIconColor="?attr/colorPrimary"
+                app:materialIconSize="24dp"
+                android:id="@+id/bs_share_link_icon"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"/>
 
-    <RelativeLayout
-        android:id="@+id/bs_share_link_container"
-        style="@style/BottomSheetItemContainer"
-        android:layout_weight="1">
-
-        <net.steamcrafted.materialiconlib.MaterialIconView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:materialIcon="share_variant"
-            app:materialIconColor="?attr/colorPrimary"
-            app:materialIconSize="24dp"
-            android:id="@+id/bs_share_link_icon"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"/>
-
-        <TextView
-            android:text="Share Link"
-            android:layout_below="@+id/bs_share_link_icon"
-            android:id="@+id/bs_share_link_title"
-            android:layout_centerHorizontal="true"
-            style="@style/PrimaryText"
-            />
-    </RelativeLayout>
+            <TextView
+                android:text="Share Link"
+                android:layout_below="@+id/bs_share_link_icon"
+                android:id="@+id/bs_share_link_title"
+                android:layout_centerHorizontal="true"
+                style="@style/PrimaryText"
+                />
+        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/bs_rename_container"
@@ -159,8 +158,9 @@
                 style="@style/PrimaryText"
                 />
         </RelativeLayout>
-        
-        </LinearLayout>
+
+    </LinearLayout>
+
 
     <View
         android:layout_width="match_parent"

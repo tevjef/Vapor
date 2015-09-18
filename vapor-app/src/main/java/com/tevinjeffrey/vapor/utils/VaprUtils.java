@@ -85,7 +85,7 @@ public class VaprUtils {
         Drawable drawable = getTypedDrawable(imageView.getContext(), cloudAppItem, size);
         if (cloudAppItem.getItemType() == IMAGE) {
             Glide.with(imageView.getContext())
-                    .load(thumbnail?cloudAppItem.getThumbnailUrl():cloudAppItem.getRemoteUrl())
+                    .load(thumbnail?cloudAppItem.getThumbnailUrl():cloudAppItem.getThumbnailUrl())
                     .placeholder(getIconDrawable(imageView.getContext(), MaterialDrawableBuilder.IconValue.FILE_IMAGE))
                     .centerCrop()
                     .crossFade()

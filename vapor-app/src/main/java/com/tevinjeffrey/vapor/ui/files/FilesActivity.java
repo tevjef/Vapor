@@ -43,7 +43,6 @@ import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.UserManager;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.services.IntentBridge;
-import com.tevinjeffrey.vapor.services.UploadService;
 import com.tevinjeffrey.vapor.ui.ImageActivity;
 import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragment;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BottomSheetPresenter;
@@ -304,12 +303,15 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         TextView bsSizeText = ButterKnife.findById(bottomsheet, R.id.bs_size_text);
         TextView bsCreatedText = ButterKnife.findById(bottomsheet, R.id.bs_created_text);
         TextView bsViewsText = ButterKnife.findById(bottomsheet, R.id.bs_views_text);
-        View copyLink = ButterKnife.findById(bottomsheet, R.id.bs_copy_link_container);
+        View downloadLink = ButterKnife.findById(bottomsheet, R.id.bs_download_link_container);
         View shareLink = ButterKnife.findById(bottomsheet, R.id.bs_share_link_container);
         View renameFile = ButterKnife.findById(bottomsheet, R.id.bs_rename_container);
         View deleteFile = ButterKnife.findById(bottomsheet, R.id.bs_delete_container);
         final View mainContainer = ButterKnife.findById(bottomsheet, R.id.bs_main_container);
         View expandButton = ButterKnife.findById(bottomsheet, R.id.bs_expand_icon);
+        if (data.getItemType() != IMAGE) {
+            expandButton.setVisibility(View.GONE);
+        }
 
         final TouchImageView mainImage = ButterKnife.findById(bottomsheet, R.id.bs_main_icon);
         VaprUtils.setTypedImageView(data, mainImage, false, 120);
@@ -391,12 +393,10 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
             }
         });
 
-        copyLink.setOnClickListener(new View.OnClickListener() {
+        downloadLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ClipData clip = ClipData.newPlainText("Uploaded item url", data.getUrl());
-                clipboardManager.setPrimaryClip(clip);
-                Toast.makeText(FilesActivity.this, "Copied: " + data.getUrl(), Toast.LENGTH_SHORT).show();
+                sheetPresenter.downloadFile();
             }
         });
 
@@ -424,7 +424,6 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
                 }));
             }
         });
-//        VaprUtils.openLink(getParentActivity(), data.getUrl());
     }
 
 
