@@ -42,6 +42,7 @@ import com.tevinjeffrey.vapor.events.RenameEvent;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.UserManager;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
+import com.tevinjeffrey.vapor.services.IntentBridge;
 import com.tevinjeffrey.vapor.services.UploadService;
 import com.tevinjeffrey.vapor.ui.ImageActivity;
 import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragment;
@@ -178,9 +179,9 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == FILE_SELECT_CODE) {
             if (resultCode == RESULT_OK) {
-                Intent uploadIntent = new Intent(this, UploadService.class);
+                Intent uploadIntent = new Intent(this, IntentBridge.class);
                 uploadIntent.setData(data.getData());
-                startService(uploadIntent);
+                startActivity(uploadIntent);
             }
         }
 

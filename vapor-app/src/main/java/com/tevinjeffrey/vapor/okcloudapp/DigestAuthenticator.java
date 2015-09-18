@@ -4,6 +4,7 @@ import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.apache.http.HttpRequest;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.MalformedChallengeException;
@@ -58,7 +59,7 @@ public class DigestAuthenticator implements Authenticator {
     }
 
     private String generateDigestHeader(Response response) throws IOException {
-        org.apache.http.HttpRequest request = new BasicHttpRequest(
+        HttpRequest request = new BasicHttpRequest(
                 response.request().method(),
                 response.request().uri().toString()
         );

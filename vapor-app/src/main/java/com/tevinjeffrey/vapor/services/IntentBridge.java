@@ -7,11 +7,12 @@ import android.os.PersistableBundle;
 
 public class IntentBridge extends Activity {
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-        getIntent();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         Intent intent = new Intent(this, UploadService.class);
         intent.setData(getIntent().getData());
+        intent.setAction(UploadService.ACTION_UPLOAD);
         startService(intent);
+        finish();
     }
 }

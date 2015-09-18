@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
+import com.squareup.okhttp.RequestBody;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.events.DatabaseUpdateEvent;
@@ -18,7 +19,6 @@ import com.tevinjeffrey.vapor.okcloudapp.model.ItemModel;
 import com.tevinjeffrey.vapor.events.LoginEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.UploadModel;
 import com.tevinjeffrey.vapor.okcloudapp.utils.ProgressListener;
-import com.tevinjeffrey.vapor.okcloudapp.utils.ProgressiveTypedFile;
 import com.tevinjeffrey.vapor.ui.login.LoginException;
 
 import org.json.JSONException;
@@ -29,10 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jonathanfinerty.once.Once;
-import retrofit.RestAdapter;
-import retrofit.client.Client;
-import retrofit.converter.GsonConverter;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -50,17 +46,14 @@ public class DataManager {
     private final CloudAppService cloudAppService;
     private final Bus bus;
     private final UserManager userManager;
-    private final Client client;
 
     private final int DEFAULT_ITEM_LIMIT = 40;
     private final int MAX_ITEM_LIMIT = 500;
 
-    public DataManager(CloudAppService cloudAppService, UserManager userManager, Bus bus, Client client) {
+    public DataManager(CloudAppService cloudAppService, UserManager userManager, Bus bus) {
         this.cloudAppService = cloudAppService;
         this.bus = bus;
         this.userManager = userManager;
-        this.client = client;
-
         bus.register(this);
     }
 
@@ -204,9 +197,8 @@ public class DataManager {
                             return Observable.error(new FileToLargeException("File too large for you current plan"));
                         }
 
-                        AmazonUploadService amazonUploadService = getAmazonUploadService(uploadModel.getUrl(), client);
-                        ProgressiveTypedFile typedByteArray = new ProgressiveTypedFile(file, listener);
-                        return amazonUploadService.postFile(makeMultipartParams(uploadModel), typedByteArray);
+                        RequestBody body = new ProgressiveRequestBody(file, listener);
+                        return cloudAppService.uploadFile(makeMultipartParams(uploadModel), body);
                     }
                 });
     }
@@ -378,19 +370,6 @@ public class DataManager {
         params.put("signature", uploadModel.getParams().getSignature());
         params.put("policy", uploadModel.getParams().getPolicy());
         return params;
-    }
-
-    public AmazonUploadService getAmazonUploadService(String endpoint, Client client) {
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setClient(client)
-                .setEndpoint("http://f.cl.ly")
-                .setLogLevel(RestAdapter.LogLevel.HEADERS_AND_ARGS)
-                .setConverter(new GsonConverter(new GsonBuilder()
-                        .setPrettyPrinting()
-                        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                        .create()))
-                .build();
-        return restAdapter.create(AmazonUploadService.class);
     }
 
     @Subscribe
