@@ -20,7 +20,7 @@ propertiesFile.withInputStream {
     signingProperties.load(it)
 }
 Properties secretProperties = new Properties()
-propertiesFile = new File('secret.properties')
+propertiesFile = file('secret.properties')
 propertiesFile.withInputStream {
     secretProperties.load(it)
 }
@@ -39,7 +39,8 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
-        maven {url "https://clojars.org/repo/"}
+        maven { url "https://jitpack.io" }
+        maven { url "https://clojars.org/repo/"}
         maven { url 'https://dl.bintray.com/drummer-aidan/maven' }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }

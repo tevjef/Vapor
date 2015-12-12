@@ -44,6 +44,7 @@ import com.tevinjeffrey.vapor.okcloudapp.UserManager;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.services.IntentBridge;
 import com.tevinjeffrey.vapor.ui.ImageActivity;
+import com.tevinjeffrey.vapor.ui.SettingsActivity;
 import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragment;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BottomSheetPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BottomSheetPresenterImpl;
@@ -234,7 +235,7 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        viewPager.setOffscreenPageLimit(7);
+        viewPager.setOffscreenPageLimit(5);
         Adapter adapter = new Adapter(getSupportFragmentManager());
         adapter.addFragment(FilesFragment.newInstance(ALL), "Recent");
         adapter.addFragment(FilesFragment.newInstance(IMAGE), "Images");
@@ -264,6 +265,10 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         switch (id) {
             case android.R.id.home:
                 drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+            case R.id.action_settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
             case R.id.action_refresh:
                 dataManager.getAllItems(ALL, true);
@@ -307,7 +312,6 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         View shareLink = ButterKnife.findById(bottomsheet, R.id.bs_share_link_container);
         View renameFile = ButterKnife.findById(bottomsheet, R.id.bs_rename_container);
         View deleteFile = ButterKnife.findById(bottomsheet, R.id.bs_delete_container);
-        final View mainContainer = ButterKnife.findById(bottomsheet, R.id.bs_main_container);
         View expandButton = ButterKnife.findById(bottomsheet, R.id.bs_expand_icon);
         if (data.getItemType() != IMAGE) {
             expandButton.setVisibility(View.GONE);

@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="com.tevinjeffrey.vapor.VaprApp"
+        android:name=".VaprApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -27,7 +27,7 @@
             android:value="com.tevinjeffrey.vapor.okcloudapp.model" />
 
         <activity
-            android:name="com.tevinjeffrey.vapor.ui.files.FilesActivity"
+            android:name=".ui.files.FilesActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,11 +36,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.tevinjeffrey.vapor.ui.login.LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
         <activity
-            android:name="com.tevinjeffrey.vapor.services.IntentBridge"
+            android:name=".services.IntentBridge"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -52,15 +52,19 @@
         </activity>
 
         <service
-            android:name="com.tevinjeffrey.vapor.services.UploadService"
+            android:name=".services.UploadService"
             android:exported="false"
             android:label="@string/app_name" >
         </service>
 
         <activity
-            android:name="com.tevinjeffrey.vapor.ui.ImageActivity"
+            android:name=".ui.ImageActivity"
             android:label="@string/title_activity_image"
             android:theme="@style/Vapr_Fullscreen" >
+        </activity>
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/title_activity_settings" >
         </activity>
     </application>
 

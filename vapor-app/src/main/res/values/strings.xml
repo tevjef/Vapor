@@ -29,5 +29,7 @@
     <string name="logout">Logout</string>
     <string name="yes">Ok</string>
     <string name="no">Cancel</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="settings">Settings</string>
 </resources>
 
