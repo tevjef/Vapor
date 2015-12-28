@@ -30,8 +30,6 @@ public class VaprApp extends SugarApp {
                 .setLogLevel(LogLevel.FULL)
                 .build();
 
-        Hawk.clear();
-
         objectGraph = ObjectGraph.create(new VaprModule(getApplicationContext()));
 
         initStetho();

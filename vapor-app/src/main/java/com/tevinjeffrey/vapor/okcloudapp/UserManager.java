@@ -2,9 +2,9 @@ package com.tevinjeffrey.vapor.okcloudapp;
 
 import com.orhanobut.hawk.Hawk;
 import com.squareup.otto.Bus;
-import com.tevinjeffrey.vapor.events.LoginEvent;
 import com.tevinjeffrey.vapor.events.LogoutEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.AccountModel;
+import com.tevinjeffrey.vapor.okcloudapp.utils.DigestAuthenticator;
 import com.tevinjeffrey.vapor.utils.RxUtils;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -12,8 +12,6 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import java.util.Objects;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 

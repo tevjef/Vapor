@@ -20,5 +20,6 @@
     <color name="window_background">#eeeeee</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="drawer_scrim">#1A000000</color>
 
 </resources>

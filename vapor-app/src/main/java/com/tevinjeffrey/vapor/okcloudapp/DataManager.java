@@ -2,8 +2,6 @@ package com.tevinjeffrey.vapor.okcloudapp;
 
 import android.support.annotation.NonNull;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -19,6 +17,7 @@ import com.tevinjeffrey.vapor.okcloudapp.model.ItemModel;
 import com.tevinjeffrey.vapor.events.LoginEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.UploadModel;
 import com.tevinjeffrey.vapor.okcloudapp.utils.ProgressListener;
+import com.tevinjeffrey.vapor.okcloudapp.utils.ProgressiveRequestBody;
 import com.tevinjeffrey.vapor.ui.login.LoginException;
 
 import org.json.JSONException;

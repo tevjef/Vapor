@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.okcloudapp;
+package com.tevinjeffrey.vapor.okcloudapp.utils;
 
 import java.lang.annotation.Retention;
 

@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.okcloudapp;
+package com.tevinjeffrey.vapor.okcloudapp.utils;
 
 import android.webkit.MimeTypeMap;
 

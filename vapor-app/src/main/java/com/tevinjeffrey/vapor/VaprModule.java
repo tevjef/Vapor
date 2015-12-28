@@ -7,7 +7,7 @@ import android.content.Context;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
-import com.tevinjeffrey.vapor.adapters.FilesVH;
+import com.tevinjeffrey.vapor.ui.files.adapters.FilesVH;
 import com.tevinjeffrey.vapor.services.UploadService;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BottomSheetPresenterImpl;
 import com.tevinjeffrey.vapor.ui.UiModule;

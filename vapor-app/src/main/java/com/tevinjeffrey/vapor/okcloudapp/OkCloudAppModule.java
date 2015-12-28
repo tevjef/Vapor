@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import com.facebook.stetho.okhttp.StethoInterceptor;
 import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.HttpUrl;
@@ -15,6 +14,8 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.R;
+import com.tevinjeffrey.vapor.okcloudapp.utils.AuthClient;
+import com.tevinjeffrey.vapor.okcloudapp.utils.DigestAuthenticator;
 
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;

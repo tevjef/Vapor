@@ -55,6 +55,7 @@
                         android:hint="E-mail Address"
                         android:textColorHint="@color/primary_light"
                         android:textColor="@android:color/white" />
+
                 </android.support.design.widget.TextInputLayout>
 
                 <android.support.design.widget.TextInputLayout
@@ -85,7 +86,7 @@
                     android:layout_below="@+id/login_wrapper_password"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
-                    android:theme="@style/LoginButtonStyle"
+                    style="@style/LoginButtonStyle"
                     android:layout_alignParentEnd="true" />
             </RelativeLayout>
 

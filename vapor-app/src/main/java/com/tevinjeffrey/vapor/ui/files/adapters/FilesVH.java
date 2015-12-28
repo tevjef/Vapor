@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.adapters;
+package com.tevinjeffrey.vapor.ui.files.adapters;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;

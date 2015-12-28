@@ -98,7 +98,7 @@
         <item name="android:windowBackground">@color/window_background</item>
     </style>
 
-    <style name="EditTextTheme">
+    <style name="EditTextTheme" parent="Vapr_Default">
         <item name="colorPrimary">@color/primary</item>
         <!--   darker variant for the status bar and contextual app bars -->
         <item name="colorPrimaryDark">@color/primary_darker</item>
@@ -108,9 +108,10 @@
         <item name="colorControlActivated">@android:color/white</item>
         <item name="colorControlHighlight">@android:color/white</item>
         <item name="colorControlNormal">@color/primary_light</item>
+        <item name="android:textColorHint">@color/primary_light</item>
     </style>
 
-    <style name="LoginButtonStyle">
+    <style name="LoginButtonStyle" parent="Widget.AppCompat.Button.Colored">
         <item name="colorPrimary">@color/primary</item>
         <!--   darker variant for the status bar and contextual app bars -->
         <item name="colorPrimaryDark">@color/primary_darker</item>
@@ -121,6 +122,7 @@
         <item name="colorControlActivated">@color/primary_dark</item>
         <item name="colorControlHighlight">@color/primary_dark</item>
         <item name="colorControlNormal">@color/primary_dark</item>
+        <item name="colorButtonNormal">@android:color/white</item>
     </style>
 
     <style name="DrawerTheme" parent="Vapr_Default">

@@ -1,6 +1,6 @@
 package com.tevinjeffrey.vapor.okcloudapp.model;
 
-import com.tevinjeffrey.vapor.okcloudapp.CloudAppUtils;
+import com.tevinjeffrey.vapor.okcloudapp.utils.CloudAppUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;

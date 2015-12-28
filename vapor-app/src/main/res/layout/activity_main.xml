@@ -39,7 +39,6 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_view"
-        tools:layout_marginTop="56dp"
         tools:layout_marginRight="56dp"
         tools:layout_gravity="" />
 

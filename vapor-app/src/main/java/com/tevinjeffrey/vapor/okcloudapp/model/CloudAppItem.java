@@ -3,13 +3,13 @@ package com.tevinjeffrey.vapor.okcloudapp.model;
 import android.content.Context;
 
 import com.orm.SugarRecord;
-import com.tevinjeffrey.vapor.okcloudapp.CloudAppUtils;
+import com.tevinjeffrey.vapor.okcloudapp.utils.CloudAppUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 
 import static android.text.format.DateUtils.*;
-import static com.tevinjeffrey.vapor.okcloudapp.CloudAppUtils.formatDate;
+import static com.tevinjeffrey.vapor.okcloudapp.utils.CloudAppUtils.formatDate;
 
 public class CloudAppItem extends SugarRecord<CloudAppItem> {
 

@@ -16,7 +16,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaprApp;
-import com.tevinjeffrey.vapor.adapters.FilesFragmentAdapter;
+import com.tevinjeffrey.vapor.ui.files.adapters.FilesFragmentAdapter;
 import com.tevinjeffrey.vapor.events.DeleteEvent;
 import com.tevinjeffrey.vapor.events.RenameEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;

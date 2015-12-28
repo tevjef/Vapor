@@ -1,18 +1,22 @@
 package com.tevinjeffrey.vapor.ui.files;
 
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -34,7 +38,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaprApp;
-import com.tevinjeffrey.vapor.adapters.ItemClickListener;
+import com.tevinjeffrey.vapor.ui.files.adapters.ItemClickListener;
 import com.tevinjeffrey.vapor.customviews.TouchImageView;
 import com.tevinjeffrey.vapor.events.DeleteEvent;
 import com.tevinjeffrey.vapor.events.LoginEvent;
@@ -72,7 +76,7 @@ import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.TEXT
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.UNKNOWN;
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.VIDEO;
 
-public class FilesActivity extends AppCompatActivity implements ItemClickListener<CloudAppItem, View> {
+public class FilesActivity extends AppCompatActivity implements ItemClickListener<CloudAppItem, View>, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private final int FILE_SELECT_CODE = 42;
 
@@ -154,6 +158,8 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                ActivityCompat.requestPermissions(FilesActivity.this, new String[]{"android.permission.READ_EXTERNAL_STORAGE"}, 42);
                 // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
                 // browser.
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -172,6 +178,11 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
             }
         });
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -196,6 +207,7 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setCheckedItem(R.id.nav_all);
         setToolbarTitle("All Recent Files");
+        drawerLayout.setScrimColor(ContextCompat.getColor(this, R.color.drawer_scrim));
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -468,7 +480,9 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
+        if (userManager.isLoggedIn()) {
+            Icepick.saveInstanceState(this, outState);
+        }
     }
 
     @Subscribe
