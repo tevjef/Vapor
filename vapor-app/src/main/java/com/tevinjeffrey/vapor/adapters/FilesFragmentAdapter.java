@@ -27,25 +27,24 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesVH> {
 
     @Override
     public FilesVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        final Context context = viewGroup.getContext();
-        final View parent = LayoutInflater.from(context).inflate(R.layout.file_list_item, viewGroup, false);
-
-        return FilesVH.newInstance(parent);
+        final View parent = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.file_list_item, viewGroup, false);
+        final FilesVH filesVH = FilesVH.newInstance(parent);
+        filesVH.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int adapterPos = filesVH.getAdapterPosition();
+                if (adapterPos != RecyclerView.NO_POSITION) {
+                    itemClickListener.onItemClicked(cloudAppItems.get(adapterPos), v);
+                }
+            }
+        });
+        return filesVH;
     }
 
     @Override
     public void onBindViewHolder(final FilesVH holder, int position) {
-
-        final CloudAppItem cloudAppItem
-                = cloudAppItems.get(position);
+        final CloudAppItem cloudAppItem = cloudAppItems.get(position);
         holder.setItem(cloudAppItem);
-
-       holder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                itemClickListener.onItemClicked(cloudAppItem, v);
-            }
-        });
     }
 
     @Override
