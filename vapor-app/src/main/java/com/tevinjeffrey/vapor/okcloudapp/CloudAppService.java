@@ -16,6 +16,7 @@ import retrofit.Call;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.Multipart;
 import retrofit.http.POST;
@@ -37,7 +38,7 @@ public interface CloudAppService {
 
     @Headers("Accept: application/json")
     @GET("/items/new")
-    Observable<UploadModel> newUpload();
+    Observable<UploadModel> newUpload(@QueryMap Map<String, String> parts);
 
     @Headers("Accept: application/json")
     @DELETE("/items/{item-id}")
@@ -87,8 +88,8 @@ public interface CloudAppService {
     @GET("/account/stats")
     Observable<AccountStatsModel> getAccountStats();
 
-    @Headers("Accept: application/json")
     @Multipart
-    @POST("http://f.cl.ly")
-    Observable<CloudAppItem> uploadFile(@PartMap Map<String, String> options, @Part("file") RequestBody filePart);
+    @Headers("Accept: application/json")
+    @POST("http://s3.amazonaws.com/f.cl.ly")
+    Observable<CloudAppItem> uploadFile(@Header("content-length") String length, @PartMap Map<String, RequestBody> parts);
 }

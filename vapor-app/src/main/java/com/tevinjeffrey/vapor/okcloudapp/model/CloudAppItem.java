@@ -3,6 +3,8 @@ package com.tevinjeffrey.vapor.okcloudapp.model;
 import android.content.Context;
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Table;
+import com.orm.dsl.Unique;
 import com.tevinjeffrey.vapor.okcloudapp.utils.CloudAppUtils;
 
 import java.text.DateFormat;
@@ -11,8 +13,10 @@ import java.text.ParseException;
 import static android.text.format.DateUtils.*;
 import static com.tevinjeffrey.vapor.okcloudapp.utils.CloudAppUtils.formatDate;
 
-public class CloudAppItem extends SugarRecord<CloudAppItem> {
+@Table
+public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem> {
 
+    @Unique
     private long itemId;
     private String href;
     private String name;
@@ -197,6 +201,17 @@ public class CloudAppItem extends SugarRecord<CloudAppItem> {
         return ownerId;
     }
 
+    @Override
+    public int compareTo(CloudAppItem another) {
+        CloudAppItem lhs = this;
+        if (another != null) {
+            if (lhs.equals(another)) return 0;
+            if (lhs.getItemId() < another.getItemId()) return -1;
+            if (lhs.getItemId() < another.getItemId()) return 1;
+        }
+        return -1;
+    }
+
     public enum ItemType {
         ALL, DELETED, AUDIO, BOOKMARK, IMAGE, UNKNOWN, VIDEO, ARCHIVE, TEXT
     }
@@ -207,6 +222,22 @@ public class CloudAppItem extends SugarRecord<CloudAppItem> {
 
     public void setDeletedAt(String deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CloudAppItem item = (CloudAppItem) o;
+
+        return itemId == item.itemId;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (itemId ^ (itemId >>> 32));
     }
 
     @Override

@@ -59,4 +59,7 @@ public class ProgressiveRequestBody extends RequestBody {
         return type;
     }
 
+    public File getFile() {
+        return file;
+    }
 }

@@ -2,25 +2,19 @@ package com.tevinjeffrey.vapor.ui;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
 import com.tevinjeffrey.vapor.R;
-import com.tevinjeffrey.vapor.VaprApp;
+import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.utils.AppCompatPreferenceActivity;
 
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
-import dagger.ObjectGraph;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -83,9 +77,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.settings);
         }
 
-        public ObjectGraph getObjectGraph() {
-            return VaprApp.objectGraph(getParentActivity());
-        }
 
 
         @Override

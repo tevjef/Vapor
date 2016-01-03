@@ -28,6 +28,7 @@ public class UserManager {
         this.digestAuthenticator = digestAuthenticator;
         this.cloudAppService = cloudAppService;
         this.bus = bus;
+        bus.register(this);
     }
     
     public boolean isLoggedIn() {
