@@ -16,8 +16,8 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.R;
-import com.tevinjeffrey.vapor.VaprApp;
-import com.tevinjeffrey.vapor.utils.VaprUtils;
+import com.tevinjeffrey.vapor.VaporApp;
+import com.tevinjeffrey.vapor.utils.VaporUtils;
 import com.tevinjeffrey.vapor.events.UploadEvent;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.exceptions.FileToLargeException;
@@ -27,6 +27,7 @@ import com.tevinjeffrey.vapor.okcloudapp.utils.FileUtils;
 import com.tevinjeffrey.vapor.okcloudapp.utils.ProgressListener;
 
 import java.io.File;
+import java.net.HttpURLConnection;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -57,12 +58,11 @@ public class UploadService extends Service {
     @Inject
     Bus bus;
 
-    HashMap<Integer, Subscription> subscriptionHashMap = new HashMap<Integer, Subscription>();
+    HashMap<Integer, Subscription> subscriptionHashMap = new HashMap<>();
 
     @Override
     public int onStartCommand(final Intent intent, int flags, final int startId) {
-        VaprApp.objectGraph(getApplicationContext()).inject(this);
-
+        VaporApp.uiComponent(getApplicationContext()).inject(this);
         if (intent.getAction().equals(ACTION_COPY_LINK)) {
             ClipData clip = ClipData.newPlainText("Uploaded item url", intent.getDataString());
             mClipboardManager.setPrimaryClip(clip);
@@ -109,7 +109,7 @@ public class UploadService extends Service {
                             uploadNotification.setContentTitle(file.getName());
                             uploadNotification.setContentText("Uploading to CloudApp");
                             uploadNotification.setOngoing(true);
-                            uploadNotification.setContentInfo(VaprUtils.humanReadableByteCount(current, true));
+                            uploadNotification.setContentInfo(VaporUtils.humanReadableByteCount(current, true));
                             Notification notification1 = uploadNotification.build();
                             mNotificationManager.notify(startId, notification1);
 

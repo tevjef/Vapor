@@ -26,7 +26,7 @@ import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.TEXT
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.UNKNOWN;
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.VIDEO;
 
-public class VaprUtils {
+public class VaporUtils {
     public static boolean isValidWebAddress(CharSequence target) {
         return !TextUtils.isEmpty(target) && Patterns.DOMAIN_NAME.matcher(target).matches();
     }
