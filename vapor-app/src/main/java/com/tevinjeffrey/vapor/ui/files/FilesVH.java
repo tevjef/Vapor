@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.ui.files.adapters;
+package com.tevinjeffrey.vapor.ui.files;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.tevinjeffrey.vapor.R;
-import com.tevinjeffrey.vapor.VaprApp;
+import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
@@ -44,7 +44,7 @@ public class FilesVH extends RecyclerView.ViewHolder {
         this.fileImage = imageView;
         this.fileTimeAgo = fileTimeAgo;
         this.fileLink = fileLink;
-        VaprApp.objectGraph(parent.getContext()).inject(this);
+        VaporApp.uiComponent(parent.getContext()).inject(this);
     }
 
     static FilesVH newInstance(View parent) {
@@ -82,7 +82,8 @@ public class FilesVH extends RecyclerView.ViewHolder {
             Glide.with(fileImage.getContext().getApplicationContext())
                     .load(cloudAppItem.getThumbnailUrl())
                     .placeholder(getDrawable(IconValue.FILE_IMAGE))
-                    .centerCrop().into(fileImage);
+                    .centerCrop()
+                    .into(fileImage);
             return;
         } else if (type == VIDEO) {
             drawable = getDrawable(IconValue.FILE_VIDEO);
@@ -119,4 +120,7 @@ public class FilesVH extends RecyclerView.ViewHolder {
         parent.setOnClickListener(listener);
     }
 
+    public ImageView getFileImage() {
+        return fileImage;
+    }
 }

@@ -1,14 +1,14 @@
 package com.tevinjeffrey.vapor.ui.files.fragments.presenters;
 
 import com.squareup.otto.Bus;
+import com.tevinjeffrey.vapor.okcloudapp.DataCursor;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 import com.tevinjeffrey.vapor.ui.base.BasePresenter;
-import com.tevinjeffrey.vapor.ui.base.View;
 import com.tevinjeffrey.vapor.ui.files.LayoutManager;
 import com.tevinjeffrey.vapor.ui.files.LayoutManager.NavContext;
-import com.tevinjeffrey.vapor.ui.files.fragments.views.FilesView;
+import com.tevinjeffrey.vapor.ui.files.fragments.FilesView;
 import com.tevinjeffrey.vapor.utils.RxUtils;
 
 import java.util.List;
@@ -22,10 +22,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
-public class BaseFilesPresenterImpl<V extends FilesView> extends BasePresenter<V> implements FilesPresenter<V> {
+public class BaseFilesPresenterImpl extends BasePresenter<FilesView> implements FilesPresenter<FilesView> {
 
     private static final String TAG = BaseFilesPresenterImpl.class.getSimpleName();
-
 
     private Subscription mSubscription;
     private boolean isLoading;
@@ -37,15 +36,14 @@ public class BaseFilesPresenterImpl<V extends FilesView> extends BasePresenter<V
     @Inject
     LayoutManager layoutManager;
 
-    public ItemType itemType;
+    ItemType itemType;
 
     public BaseFilesPresenterImpl() {
     }
 
     @Override
-    public void loadData(boolean pullToRefresh, boolean refreshData) {
-        if (getView() != null)
-            getView().showLoading(pullToRefresh);
+    public void loadData(boolean pullToRefresh, boolean refreshData, boolean useCursor) {
+        if (getView() != null) getView().showLoading(pullToRefresh);
 
         RxUtils.unsubscribeIfNotNull(mSubscription);
 
@@ -67,39 +65,34 @@ public class BaseFilesPresenterImpl<V extends FilesView> extends BasePresenter<V
                 }
 
             }
+
             @Override
             public void onNext(List<CloudAppItem> data) {
                 if (getView() != null) {
-
                     getView().setData(data);
-
-                    if (data.size() == 0)
-                        getView().showLayout(View.LayoutType.EMPTY);
-
-                    if (data.size() > 0)
-                        getView().showLayout(View.LayoutType.LIST);
                 }
             }
         };
 
-        Observable<List<CloudAppItem>> dataObservable;
-        NavContext navContext =layoutManager.getNavContext();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
+        DataCursor cursor = new DataCursor();
+        if (useCursor) {
+            if (getView() != null) {
+                cursor = getView().getCursor();
             }
-        });
+        }
+        Observable<List<CloudAppItem>> dataObservable;
+        NavContext navContext = layoutManager.getNavContext();
         if (navContext == NavContext.ALL) {
-            dataObservable = dataManager.getAllItems(itemType, refreshData);
+            dataObservable = dataManager.getAllItems(itemType, refreshData, cursor);
         } else if (navContext == NavContext.POPULAR) {
-            dataObservable = dataManager.getPopularItems(itemType, refreshData);
+            dataObservable = dataManager.getPopularItems(itemType, refreshData, cursor);
 
         } else if (navContext == NavContext.FAVORITE) {
-            dataObservable = dataManager.getFavoriteItems(itemType, refreshData);
+            dataObservable = dataManager.getFavoriteItems(itemType, refreshData, cursor);
 
         } else if (navContext == NavContext.TRASH) {
-            dataObservable = dataManager.getDeletedItems(itemType);
+            dataObservable = dataManager.getTrashItems(itemType, refreshData, cursor);
+            dataManager.purgeDeletedItems();
         } else {
             throw new RuntimeException("Unknown nav context");
         }
@@ -121,7 +114,6 @@ public class BaseFilesPresenterImpl<V extends FilesView> extends BasePresenter<V
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(mSubscriber);
     }
-
 
     @Override
     public boolean isLoading() {

@@ -4,11 +4,10 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.events.DatabaseUpdateEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
-import com.tevinjeffrey.vapor.ui.files.fragments.views.FilesView;
 
 import javax.inject.Inject;
 
-public class VideoPresenter<V extends FilesView> extends BaseFilesPresenterImpl<V> {
+public class VideoPresenter extends BaseFilesPresenterImpl {
     public VideoPresenter() {
         itemType = ItemType.VIDEO;
     }
@@ -17,7 +16,7 @@ public class VideoPresenter<V extends FilesView> extends BaseFilesPresenterImpl<
 
     @Subscribe
     public void dbUpdate(DatabaseUpdateEvent event) {
-        loadData(false, false);
+        loadData(false, false, false);
     }
 
     @Override

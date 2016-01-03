@@ -4,11 +4,10 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.events.DatabaseUpdateEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
-import com.tevinjeffrey.vapor.ui.files.fragments.views.FilesView;
 
 import javax.inject.Inject;
 
-public class ArchivePresenter<V extends FilesView> extends BaseFilesPresenterImpl<V> {
+public class ArchivePresenter extends BaseFilesPresenterImpl {
 
     public ArchivePresenter() {
         itemType = ItemType.ARCHIVE;
@@ -19,7 +18,7 @@ public class ArchivePresenter<V extends FilesView> extends BaseFilesPresenterImp
 
     @Subscribe
     public void dbUpdate(DatabaseUpdateEvent event) {
-        loadData(false, false);
+        loadData(false, false, false);
     }
 
     @Override

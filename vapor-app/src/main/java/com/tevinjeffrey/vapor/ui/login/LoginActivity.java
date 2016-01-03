@@ -24,8 +24,8 @@ import android.widget.RelativeLayout;
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.BuildConfig;
 import com.tevinjeffrey.vapor.R;
-import com.tevinjeffrey.vapor.VaprApp;
-import com.tevinjeffrey.vapor.utils.VaprUtils;
+import com.tevinjeffrey.vapor.VaporApp;
+import com.tevinjeffrey.vapor.utils.VaporUtils;
 import com.tevinjeffrey.vapor.events.LoginEvent;
 
 import java.net.SocketTimeoutException;
@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     ProgressBar loginProgressBar;
 
     @Inject
-    LoginPresenter<LoginView> loginPresenter;
+    LoginPresenter loginPresenter;
 
     @Inject
     Bus bus;
@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        VaprApp.objectGraph(this).inject(this);
+        VaporApp.uiComponent(this).inject(this);
         root = LayoutInflater.from(this).inflate(R.layout.activity_login, null);
         setContentView(root);
         loginPresenter.attachView(this);
@@ -212,7 +212,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             loginWrapperEmail.setErrorEnabled(true);
             loginWrapperEmail.setError(getString(R.string.empty_email));
             return false;
-        } else if (!VaprUtils.isValidEmail(userEmail)) {
+        } else if (!VaporUtils.isValidEmail(userEmail)) {
             loginWrapperEmail.setErrorEnabled(true);
             loginWrapperEmail.setError(getString(R.string.invalid_email));
             return false;

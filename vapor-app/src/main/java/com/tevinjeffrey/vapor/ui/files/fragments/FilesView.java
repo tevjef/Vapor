@@ -1,5 +1,6 @@
-package com.tevinjeffrey.vapor.ui.files.fragments.views;
+package com.tevinjeffrey.vapor.ui.files.fragments;
 
+import com.tevinjeffrey.vapor.okcloudapp.DataCursor;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.ui.base.View;
 
@@ -13,4 +14,6 @@ public interface FilesView extends View {
     void showError(Throwable e);
 
     void showLayout(LayoutType type);
+
+    DataCursor getCursor();
 }

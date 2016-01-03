@@ -2,9 +2,16 @@ package com.tevinjeffrey.vapor.okcloudapp;
 
 import android.support.annotation.NonNull;
 
+import com.orm.SugarRecord;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+import com.tevinjeffrey.vapor.events.AppLaunchEvent;
 import com.tevinjeffrey.vapor.events.DatabaseUpdateEvent;
 import com.tevinjeffrey.vapor.events.LogoutEvent;
 import com.tevinjeffrey.vapor.events.UploadEvent;
@@ -12,6 +19,7 @@ import com.tevinjeffrey.vapor.okcloudapp.exceptions.FileToLargeException;
 import com.tevinjeffrey.vapor.okcloudapp.exceptions.UploadLimitException;
 import com.tevinjeffrey.vapor.okcloudapp.model.AccountStatsModel;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
+import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppJsonItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.ItemModel;
 import com.tevinjeffrey.vapor.events.LoginEvent;
@@ -20,11 +28,15 @@ import com.tevinjeffrey.vapor.okcloudapp.utils.ProgressListener;
 import com.tevinjeffrey.vapor.okcloudapp.utils.ProgressiveRequestBody;
 import com.tevinjeffrey.vapor.ui.login.LoginException;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,25 +50,25 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.*;
-
 public class DataManager {
 
     private final CloudAppService cloudAppService;
     private final Bus bus;
     private final UserManager userManager;
 
-    private final int DEFAULT_ITEM_LIMIT = 40;
+    private final int SERVER_ITEM_LIMIT = 40;
     private final int MAX_ITEM_LIMIT = 500;
+    private final OkHttpClient client;
 
-    public DataManager(CloudAppService cloudAppService, UserManager userManager, Bus bus) {
+    public DataManager(CloudAppService cloudAppService, UserManager userManager, Bus bus, OkHttpClient client) {
         this.cloudAppService = cloudAppService;
         this.bus = bus;
         this.userManager = userManager;
+        this.client = client;
         bus.register(this);
     }
 
-    private void syncAllItems() {
+    public void syncAllItems() {
         cloudAppService.getAccountStats()
                 .flatMap(new Func1<AccountStatsModel, Observable<List<CloudAppItem>>>() {
                     @Override
@@ -65,28 +77,29 @@ public class DataManager {
                             @Override
                             public void call(Subscriber<? super Integer> subscriber) {
                                 if (!subscriber.isUnsubscribed()) {
-                                    CloudAppItem.deleteAll(CloudAppItem.class);
-                                    for (int i = 1; i <= Math.ceil((double)accountStatsModel.getItems() / (double)DEFAULT_ITEM_LIMIT)
-                                            && i < MAX_ITEM_LIMIT / DEFAULT_ITEM_LIMIT; i++) {
+                                    SugarRecord.deleteAll(CloudAppItem.class);
+                                    for (int i = 1; i <= Math.ceil((double)accountStatsModel.getItems() / (double) SERVER_ITEM_LIMIT)
+                                            && i < MAX_ITEM_LIMIT / SERVER_ITEM_LIMIT; i++) {
                                         subscriber.onNext(i);
                                     }
                                     subscriber.onCompleted();
                                 }
                             }
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .flatMap(new Func1<Integer, Observable<List<CloudAppItem>>>() {
+                            @Override
+                            public Observable<List<CloudAppItem>> call(Integer integer) {
+                                return getListFromServer(makeListParams(integer, ItemType.ALL, false));
+                            }
                         }).subscribeOn(Schedulers.io())
-                                .flatMap(new Func1<Integer, Observable<List<CloudAppItem>>>() {
-                                    @Override
-                                    public Observable<List<CloudAppItem>> call(Integer integer) {
-                                        return getListFromServer(makeListParams(integer, ItemType.ALL, false));
-                                    }
-                                }).subscribeOn(Schedulers.io())
-                                .flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
-                                    @Override
-                                    public Observable<List<CloudAppItem>> call(List<CloudAppItem> cloudAppItems) {
-                                        CloudAppItem.saveInTx(cloudAppItems);
-                                        return Observable.just(cloudAppItems);
-                                    }
-                                });
+                        .flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
+                            @Override
+                            public Observable<List<CloudAppItem>> call(List<CloudAppItem> cloudAppItems) {
+                                SugarRecord.updateInTx(cloudAppItems);
+                                return Observable.just(cloudAppItems);
+                            }
+                        });
 
                     }
                 })
@@ -98,13 +111,30 @@ public class DataManager {
                         bus.post(new DatabaseUpdateEvent());
                     }
                 })
-                .doOnError(new Action1<Throwable>() {
+                .subscribe(new Action1<List<CloudAppItem>>() {
+                    @Override
+                    public void call(List<CloudAppItem> cloudAppItems) {
+                        Timber.i("Synced all items. Size: %s", cloudAppItems.size());
+                    }
+                }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        throwable.printStackTrace();
+                        Timber.e(throwable, "Error syncing all items");
                     }
-                })
-                .subscribe();
+                });
+
+                getTrashItems(ItemType.ALL, true, new DataCursor())
+                        .subscribe(new Action1<List<CloudAppItem>>() {
+                            @Override
+                            public void call(List<CloudAppItem> cloudAppItems) {
+                                Timber.i("Synced all deleted items. Size: %s", cloudAppItems.size());
+                            }
+                        }, new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Timber.e(throwable, "Error syncing all deleted items");
+                            }
+                        });
     }
 
     @NonNull
@@ -122,32 +152,34 @@ public class DataManager {
         return new Func1<CloudAppItem, CloudAppItem>() {
             @Override
             public CloudAppItem call(CloudAppItem cloudAppItem) {
-                long count = getItemCount(cloudAppItem);
-                if (count >= 1) {
-                    deleteLocalItem(cloudAppItem);
-                }
-                insertItem(cloudAppItem);
+                cloudAppItem.update();
+                Timber.i("Inserting or update item: %s", cloudAppItem.getItemId());
                 return cloudAppItem;
             }
         };
     }
 
-    private void insertItem(CloudAppItem cloudAppItem) {
-        cloudAppItem.save();
-        Timber.i("Inserting item: %s", cloudAppItem.getItemId());
-
-    }
-
-    private long getItemCount(CloudAppItem cloudAppItem) {
-        return CloudAppItem.count(CloudAppItem.class,
-                "ITEM_ID = ?", new String[]{String.valueOf(cloudAppItem.getItemId())});
-    }
-
     private void deleteLocalItem(CloudAppItem cloudAppItem) {
-        CloudAppItem.executeQuery("DELETE FROM CLOUD_APP_ITEM WHERE ITEM_ID = ?",
-                String.valueOf(cloudAppItem.getItemId()));
+        SugarRecord.delete(cloudAppItem);
         Timber.i("Deleting item: %s", cloudAppItem.getItemId());
+    }
 
+    public void purgeDeletedItems() {
+        long expired = DateTime.now().minusDays(7).getMillis();
+        Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
+                "DELETE FROM CLOUD_APP_ITEM WHERE deleted_at <> -1 AND deleted_at < ?",
+                String.valueOf(expired)))
+                .subscribe(new Action1<List<CloudAppItem>>() {
+                    @Override
+                    public void call(List<CloudAppItem> cloudAppItems) {
+                        Timber.i("Deleting items: %s", cloudAppItems.size());
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Timber.e(throwable, "Error deleting stale items.");
+                    }
+                });
     }
 
     public Observable<CloudAppItem> deleteCloudItem(final CloudAppItem cloudAppItem) {
@@ -171,21 +203,8 @@ public class DataManager {
                 .map(saveToDb());
     }
 
-    public Observable<CloudAppItem> getItemById(final long id, boolean refresh) {
-        if (refresh) {
-            return getItemFromServer(id);
-        }
-        return Observable.defer(new Func0<Observable<CloudAppItem>>() {
-            @Override
-            public Observable<CloudAppItem> call() {
-                return Observable.just(CloudAppItem.findWithQuery(CloudAppItem.class, "SELECT * FROM ITEM_MODEL where ITEM_ID = ?",
-                        String.valueOf(id)).get(0));
-            }
-        });
-    }
-
     public Observable<CloudAppItem> upload(final File file, final ProgressListener listener) {
-        return cloudAppService.newUpload()
+        return cloudAppService.newUpload(makeQueryMap(file))
                 .flatMap(new Func1<UploadModel, Observable<CloudAppItem>>() {
                     @Override
                     public Observable<CloudAppItem> call(final UploadModel uploadModel) {
@@ -195,14 +214,20 @@ public class DataManager {
                         if (file.length() > uploadModel.getMax_upload_size()) {
                             return Observable.error(new FileToLargeException("File too large for you current plan"));
                         }
-
-                        RequestBody body = new ProgressiveRequestBody(file, listener);
-                        return cloudAppService.uploadFile(makeMultipartParams(uploadModel), body);
+                        ProgressiveRequestBody requestBody = new ProgressiveRequestBody(file, listener);
+                        return cloudAppService.uploadFile(String.valueOf(file.length()), makeMultipartParams(uploadModel, requestBody));
                     }
                 });
     }
 
-    private Observable<List<CloudAppItem>> getAllItems(final ItemType type) {
+    private Map<String, String> makeQueryMap(File file) {
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("name", file.getName());
+        params.put("file_size", String.valueOf(file.length()));
+        return params;
+    }
+
+    private Observable<List<CloudAppItem>> getAllItems(final ItemType type, final DataCursor cursor) {
         if (!userManager.isLoggedIn()) {
             return Observable.error(new LoginException());
         }
@@ -210,20 +235,22 @@ public class DataManager {
             return Observable.defer(new Func0<Observable<List<CloudAppItem>>>() {
                 @Override
                 public Observable<List<CloudAppItem>> call() {
-                    return Observable.just(CloudAppItem.findWithQuery(CloudAppItem.class, "SELECT * FROM CLOUD_APP_ITEM ORDER BY ITEM_ID DESC"));
+                    return Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
+                            "SELECT * FROM CLOUD_APP_ITEM WHERE deleted_at = -1 ORDER BY ITEM_ID DESC LIMIT ? OFFSET ?",
+                            String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset())));
                 }});
         }
         return Observable.defer(new Func0<Observable<List<CloudAppItem>>>() {
             @Override
             public Observable<List<CloudAppItem>> call() {
-                return Observable.just(CloudAppItem
-                        .findWithQuery(CloudAppItem.class, "SELECT * FROM CLOUD_APP_ITEM WHERE ITEM_TYPE = ? ORDER BY ITEM_ID DESC",
-                                type.toString().toLowerCase()));
+                return Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
+                        "SELECT * FROM CLOUD_APP_ITEM WHERE ITEM_TYPE = ? AND deleted_at = -1 ORDER BY ITEM_ID DESC LIMIT ? OFFSET ?",
+                                type.toString().toLowerCase(), String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset())));
             }
         });
     }
 
-    public Observable<List<CloudAppItem>> getPopularItems(final ItemType type, boolean refresh) {
+    public Observable<List<CloudAppItem>> getPopularItems(final ItemType type, boolean refresh, final DataCursor cursor) {
         if (!userManager.isLoggedIn()) {
             return Observable.error(new LoginException());
         }
@@ -233,19 +260,22 @@ public class DataManager {
             observable = Observable.defer(new Func0<Observable<List<CloudAppItem>>>() {
                 @Override
                 public Observable<List<CloudAppItem>> call() {
-                    return  Observable.just(CloudAppItem.findWithQuery(CloudAppItem.class, "SELECT * FROM CLOUD_APP_ITEM ORDER BY VIEW_COUNTER DESC"));
+                    return  Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
+                            "SELECT * FROM CLOUD_APP_ITEM WHERE deleted_at = -1 ORDER BY VIEW_COUNTER DESC LIMIT ? OFFSET ?",
+                            String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset())));
                 }});
         } else {
             observable = Observable.defer(new Func0<Observable<List<CloudAppItem>>>() {
                 @Override
                 public Observable<List<CloudAppItem>> call() {
-                    return   Observable.just(CloudAppItem
-                            .findWithQuery(CloudAppItem.class, "SELECT * FROM CLOUD_APP_ITEM WHERE ITEM_TYPE = ? ORDER BY VIEW_COUNTER DESC",
-                                    type.toString().toLowerCase()));
+                    return Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
+                            "SELECT * FROM CLOUD_APP_ITEM WHERE ITEM_TYPE = ? AND deleted_at = -1 ORDER BY VIEW_COUNTER DESC LIMIT ? OFFSET ?",
+                                    type.toString().toLowerCase(), String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset())));
                 }});
         }
         if (refresh) {
-            return refreshFirstPage().flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
+            return refreshPage(1, false)
+                    .flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
                 @Override
                 public Observable<List<CloudAppItem>> call(List<CloudAppItem> cloudAppItems) {
                     return observable;
@@ -255,7 +285,7 @@ public class DataManager {
         return observable;
     }
 
-    public Observable<List<CloudAppItem>> getFavoriteItems(final ItemType type, boolean refresh) {
+    public Observable<List<CloudAppItem>> getFavoriteItems(final ItemType type, boolean refresh, final DataCursor cursor) {
         if (!userManager.isLoggedIn()) {
             return Observable.error(new LoginException());
         }
@@ -265,21 +295,22 @@ public class DataManager {
             observable = Observable.defer(new Func0<Observable<List<CloudAppItem>>>() {
                 @Override
                 public Observable<List<CloudAppItem>> call() {
-                    return  Observable.just(CloudAppItem.findWithQuery(CloudAppItem.class,
-                            "SELECT * FROM CLOUD_APP_ITEM WHERE FAVORITE = 1 ORDER BY ITEM_ID DESC"));
+                    return  Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
+                            "SELECT * FROM CLOUD_APP_ITEM WHERE FAVORITE = 1 AND deleted_at = -1 ORDER BY ITEM_ID DESC LIMIT ? OFFSET ?",
+                            String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset())));
                 }
             });
         } else {
             observable = Observable.defer(new Func0<Observable<List<CloudAppItem>>>() {
                 @Override
                 public Observable<List<CloudAppItem>> call() {
-                    return Observable.just(CloudAppItem
-                                    .findWithQuery(CloudAppItem.class, "SELECT * FROM CLOUD_APP_ITEM WHERE ITEM_TYPE = ? AND FAVORITE = 1 ORDER BY ITEM_ID, VIEW_COUNTER DESC",
-                                            type.toString().toLowerCase()));
+                    return Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
+                            "SELECT * FROM CLOUD_APP_ITEM WHERE ITEM_TYPE = ? AND FAVORITE = 1 AND deleted_at = -1 ORDER BY ITEM_ID, VIEW_COUNTER DESC LIMIT ? OFFSET ?",
+                                            type.toString().toLowerCase(), String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset())));
                 }});
         }
         if (refresh) {
-            return refreshFirstPage().flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
+            return refreshPage(1, false).flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
                 @Override
                 public Observable<List<CloudAppItem>> call(List<CloudAppItem> cloudAppItems) {
                     return observable;
@@ -289,20 +320,52 @@ public class DataManager {
         return observable;
     }
 
-    public Observable<List<CloudAppItem>> getDeletedItems(final ItemType type) {
+    public Observable<List<CloudAppItem>> getTrashItems(final ItemType type, boolean refresh, final DataCursor cursor) {
         if (!userManager.isLoggedIn()) {
             return Observable.error(new LoginException());
         }
-        return getListFromServer(makeListParams(1, type, true));
+        final Observable<List<CloudAppItem>> observable;
+        if (type == ItemType.ALL) {
+            observable = Observable.defer(new Func0<Observable<List<CloudAppItem>>>() {
+                @Override
+                public Observable<List<CloudAppItem>> call() {
+                    return  Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
+                            "SELECT * FROM CLOUD_APP_ITEM WHERE DELETED_AT <> -1 ORDER BY ITEM_ID DESC LIMIT ? OFFSET ?",
+                            String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset())));
+                }
+            });
+        } else {
+            observable = Observable.defer(new Func0<Observable<List<CloudAppItem>>>() {
+                @Override
+                public Observable<List<CloudAppItem>> call() {
+                    return Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
+                            "SELECT * FROM CLOUD_APP_ITEM WHERE ITEM_TYPE = ? AND DELETED_AT <> -1 ORDER BY ITEM_ID, VIEW_COUNTER DESC LIMIT ? OFFSET ?",
+                            type.toString().toLowerCase(), String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset())));
+                }});
+        }
+        if (refresh) {
+            return refreshPage(1, true).flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
+                @Override
+                public Observable<List<CloudAppItem>> call(List<CloudAppItem> cloudAppItems) {
+                    return observable;
+                }
+            });
+        }
+        return observable;
     }
 
-    public Observable<List<CloudAppItem>> getAllItems(final ItemType type, boolean refresh) {
+    public Observable<List<CloudAppItem>> getAllItems(final ItemType type, boolean refresh, final DataCursor cursor) {
         if (!userManager.isLoggedIn()) {
             return Observable.error(new LoginException());
         }
-        final Observable<List<CloudAppItem>> observable = getAllItems(type);
+        final Observable<List<CloudAppItem>> observable = getAllItems(type, cursor).doOnNext(new Action1<List<CloudAppItem>>() {
+            @Override
+            public void call(List<CloudAppItem> cloudAppItems) {
+                cursor.setOffset(cursor.getOffset() + cloudAppItems.size());
+            }
+        });
         if (refresh) {
-            return refreshFirstPage().flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
+            return refreshPage(1, false).flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
                 @Override
                 public Observable<List<CloudAppItem>> call(List<CloudAppItem> cloudAppItems) {
                     return observable;
@@ -313,17 +376,18 @@ public class DataManager {
     }
 
     @NonNull
-    private Observable<List<CloudAppItem>> refreshFirstPage() {
-        return getListFromServer(makeListParams(1, ItemType.ALL, false))
-                .flatMap(reduceList()).map(saveToDb()).toList();
+    private Observable<List<CloudAppItem>> refreshPage(int page, boolean deleted) {
+        return getListFromServer(makeListParams(page, ItemType.ALL, deleted))
+                .flatMap(reduceList())
+                .map(saveToDb())
+                .toList();
 
     }
 
     private Observable<CloudAppItem> getItemFromServer(long itemId) {
         return cloudAppService.getItem(String.valueOf(itemId))
                 .map(convertItemModel())
-                .map(saveToDb())
-                ;
+                .map(saveToDb());
     }
 
     private Observable<List<CloudAppItem>> getListFromServer(Map<String, String> options) {
@@ -351,7 +415,7 @@ public class DataManager {
     private Map<String, String> makeListParams(int page, ItemType type, boolean deleted) {
         Map<String, String> params = new HashMap<>();
         params.put("page", String.valueOf(page));
-        params.put("per_page", String.valueOf(DEFAULT_ITEM_LIMIT));
+        params.put("per_page", String.valueOf(SERVER_ITEM_LIMIT));
         if (type != ItemType.ALL) {
             params.put("type", type.toString().toLowerCase());
         }
@@ -360,15 +424,21 @@ public class DataManager {
         return params;
     }
 
-    private Map<String, String> makeMultipartParams(UploadModel uploadModel) {
-        Map<String, String> params = new HashMap<>();
-        params.put("AWSAccessKeyId", uploadModel.getParams().getAWSAccessKeyId());
-        params.put("key", uploadModel.getParams().getKey());
-        params.put("acl", uploadModel.getParams().getAcl());
-        params.put("success_action_redirect", uploadModel.getParams().getSuccess_action_redirect());
-        params.put("signature", uploadModel.getParams().getSignature());
-        params.put("policy", uploadModel.getParams().getPolicy());
+    private Map<String, RequestBody> makeMultipartParams(UploadModel uploadModel, ProgressiveRequestBody body) {
+        String filename = "file\"; filename=\"" + body.getFile().getName();
+        Map<String, RequestBody> params = new LinkedHashMap<>();
+        params.put("AWSAccessKeyId", createStringBody(uploadModel.getParams().getAWSAccessKeyId()));
+        params.put("key", createStringBody(uploadModel.getParams().getKey()));
+        params.put("acl", createStringBody(uploadModel.getParams().getAcl()));
+        params.put("success_action_redirect", createStringBody(uploadModel.getParams().getSuccess_action_redirect()));
+        params.put("signature", createStringBody(uploadModel.getParams().getSignature()));
+        params.put("policy",createStringBody( uploadModel.getParams().getPolicy()));
+        params.put(filename, body);
         return params;
+    }
+
+    private RequestBody createStringBody(String string) {
+        return RequestBody.create(MediaType.parse("text/plain"), string);
     }
 
     @Subscribe
@@ -377,17 +447,23 @@ public class DataManager {
     }
 
     @Subscribe
+    public void onLaunchEvent(AppLaunchEvent event) {
+        syncAllItems();
+    }
+
+    @Subscribe
     public void onLogoutEvent(LogoutEvent event) {
-        CloudAppItem.deleteAll(CloudAppItem.class);
+        SugarRecord.deleteAll(CloudAppItem.class);
+        CloudAppItem.executeQuery("VACUUM");
     }
 
     @Subscribe
     public void onUploadEvent(UploadEvent event) {
-        getAllItems(ItemType.ALL, true)
+        refreshPage(1, false)
                 .doOnError(new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        throwable.printStackTrace();
+                        Timber.e(throwable, "Error refreshing after upload.");
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
