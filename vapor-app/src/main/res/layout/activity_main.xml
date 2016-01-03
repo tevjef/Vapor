@@ -37,7 +37,6 @@
         android:layout_width="wrap_content"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_view"
         tools:layout_marginRight="56dp"
         tools:layout_gravity="" />

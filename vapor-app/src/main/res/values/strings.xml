@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Vapr</string>
+    <string name="app_name">Vapor</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -17,7 +17,7 @@
 
     <string name="empty_view">There is nothing here.</string>
     <string name="error_occurred">An error occurred</string>
-    <string name="user_not_logged_in">Please login</string>
+    <string name="user_not_logged_in">Logging in.</string>
     <string name="title_activity_upload">UploadActivity</string>
     <string name="action_refresh">Refresh</string>
 
