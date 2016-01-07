@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class LoginActivity extends AppCompatActivity implements LoginView {
 
@@ -200,6 +201,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             loginWrapperEmail.setErrorEnabled(true);
             loginWrapperPassword.setErrorEnabled(true);
             loginWrapperPassword.setError(getString(R.string.email_password_incorrect));
+            Timber.e(t, "Error while logging in.");
             return;
         }
         Snackbar.make(root, message, Snackbar.LENGTH_LONG).show();
@@ -235,7 +237,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
     @Override
     public void onBackPressed() {
-        android.os.Process.killProcess(android.os.Process.myPid());
+        moveTaskToBack(true);
     }
 
     @OnClick(R.id.tos)

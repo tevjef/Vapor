@@ -85,8 +85,6 @@ import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.VIDE
 
 public class FilesActivity extends AppCompatActivity implements ItemClickListener<CloudAppItem, View>, ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private final int FILE_SELECT_CODE = 42;
-
     @Inject UserManager userManager;
     @Inject DataManager dataManager;
     @Inject Bus bus;
@@ -114,7 +112,6 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         bus.register(this);
-
 
         if (!userManager.isLoggedIn()) {
             Timber.d("User not logged in.");
@@ -481,11 +478,6 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
     @Subscribe
     public void onLogin(LoginEvent event) {
         setEmail();
-
-        if (getIntent().getParcelableExtra(IntentBridge.AWAITING_UPLOAD) != null) {
-            setResult(RESULT_OK, (Intent) getIntent().getParcelableExtra(IntentBridge.AWAITING_UPLOAD));
-            finish();
-        }
     }
 
     @Subscribe
