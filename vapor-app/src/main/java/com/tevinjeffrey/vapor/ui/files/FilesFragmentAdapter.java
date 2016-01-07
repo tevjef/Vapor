@@ -2,6 +2,7 @@ package com.tevinjeffrey.vapor.ui.files;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.ClipboardManager;
 import android.graphics.Bitmap;
@@ -154,17 +155,32 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesFragmentAdap
                             }
 
                             @Override
-                            public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            public boolean onResourceReady(Bitmap resource, String model,
+                                                           Target<Bitmap> target,
+                                                           boolean isFromMemoryCache,
+                                                           boolean isFirstResource) {
                                 Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
                                     @Override
                                     public void onGenerated(Palette palette) {
                                         Palette.Swatch swatch = palette.getDarkVibrantSwatch();
                                         if (swatch != null) {
-                                            ObjectAnimator.ofArgb(itemName, "textColor", itemName.getCurrentTextColor(), swatch.getBodyTextColor()).setDuration(500).start();
-                                            ObjectAnimator.ofArgb(timeSince, "textColor", timeSince.getCurrentTextColor(), swatch.getTitleTextColor()).setDuration(500).start();
+                                            ObjectAnimator animator = ObjectAnimator.ofInt(itemName,
+                                                    "textColor",  itemName.getCurrentTextColor(),
+                                                    swatch.getBodyTextColor()).setDuration(500);
+                                            animator.setEvaluator(new ArgbEvaluator());
+                                            animator.start();
+
+                                            ObjectAnimator animator1 = ObjectAnimator.ofInt(timeSince,
+                                                    "textColor", timeSince.getCurrentTextColor(),
+                                                    swatch.getTitleTextColor()).setDuration(500);
+                                            animator1.setEvaluator(new ArgbEvaluator());
+                                            animator1.start();
+
                                             background.setHasTransientState(true);
-                                            ObjectAnimator animator3 = ObjectAnimator.ofArgb(background, "backgroundColor", ((ColorDrawable)background.getBackground()).getColor(),
+                                            ObjectAnimator animator3 = ObjectAnimator.ofInt(background,
+                                                    "backgroundColor", ((ColorDrawable)background.getBackground()).getColor(),
                                                     ColorUtils.setAlphaComponent(swatch.getRgb(), 204));
+                                            animator3.setEvaluator(new ArgbEvaluator());
                                             animator3.addListener(new AnimatorListenerAdapter() {
                                                 @Override
                                                 public void onAnimationStart(Animator animation) {
@@ -182,7 +198,6 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesFragmentAdap
 
                                     }
                                 });
-
                                 return false;
                             }
                         })
