@@ -1,9 +1,9 @@
-package com.tevinjeffrey.vapor.ui;
+package com.tevinjeffrey.vapor.dagger;
 
 
 import android.content.Context;
 
-import com.tevinjeffrey.vapor.utils.SessionScope;
+import com.tevinjeffrey.vapor.dagger.SessionScope;
 import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.ui.files.LayoutManager;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ArchivePresenter;

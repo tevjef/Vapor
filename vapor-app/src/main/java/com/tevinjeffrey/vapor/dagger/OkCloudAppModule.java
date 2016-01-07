@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.okcloudapp.utils;
+package com.tevinjeffrey.vapor.dagger;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -8,41 +8,30 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.Cache;
 import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.okcloudapp.CloudAppService;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
+import com.tevinjeffrey.vapor.okcloudapp.DigestAuthenticator;
+import com.tevinjeffrey.vapor.okcloudapp.RefCountManager;
 import com.tevinjeffrey.vapor.okcloudapp.UserManager;
-import com.tevinjeffrey.vapor.okcloudapp.utils.AuthClient;
-import com.tevinjeffrey.vapor.okcloudapp.utils.DigestAuthenticator;
 
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.auth.DigestScheme;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okio.Buffer;
-import okio.BufferedSink;
-import okio.GzipSink;
-import okio.Okio;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
-import timber.log.Timber;
 
 @Module
 public class OkCloudAppModule {
@@ -82,7 +71,7 @@ public class OkCloudAppModule {
     public OkHttpClient providesOkHttpClient(Context context) {
         OkHttpClient client = new OkHttpClient();
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
         client.interceptors().add(interceptor);
         client.networkInterceptors().add(new StethoInterceptor());
 
@@ -121,5 +110,11 @@ public class OkCloudAppModule {
                         .create()))
                 .build();
         return retrofit.create(CloudAppService.class);
+    }
+
+    @Provides
+    @Singleton
+    public RefCountManager providePersistentManager(Context context, Bus bus) {
+        return new RefCountManager(context, bus);
     }
 }

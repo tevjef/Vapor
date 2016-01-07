@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.utils;
+package com.tevinjeffrey.vapor.dagger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

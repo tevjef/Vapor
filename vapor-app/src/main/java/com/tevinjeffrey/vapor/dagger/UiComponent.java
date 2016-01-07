@@ -1,8 +1,7 @@
-package com.tevinjeffrey.vapor.ui;
+package com.tevinjeffrey.vapor.dagger;
 
-import com.tevinjeffrey.vapor.utils.SessionScope;
-import com.tevinjeffrey.vapor.VaporAppComponent;
-import com.tevinjeffrey.vapor.okcloudapp.utils.DigestAuthenticator;
+import com.tevinjeffrey.vapor.services.IntentBridge;
+import com.tevinjeffrey.vapor.okcloudapp.DigestAuthenticator;
 import com.tevinjeffrey.vapor.services.UploadService;
 import com.tevinjeffrey.vapor.ui.files.FilesActivity;
 import com.tevinjeffrey.vapor.ui.files.FilesVH;
@@ -29,6 +28,7 @@ import dagger.Component;
 public interface UiComponent {
     void inject(LoginActivity loginActivity);
     void inject(FilesActivity filesActivity);
+    void inject(IntentBridge intentBridge);
     void inject(UploadService uploadService);
     void inject(FilesVH filesVH);
     void inject(BottomSheetPresenterImpl bottomSheetPresenter);

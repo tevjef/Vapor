@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor;
+package com.tevinjeffrey.vapor.dagger;
 
 import android.app.DownloadManager;
 import android.app.NotificationManager;
@@ -7,6 +7,7 @@ import android.content.Context;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
+import com.tevinjeffrey.vapor.VaporApp;
 
 import javax.inject.Singleton;
 
