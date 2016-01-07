@@ -4,7 +4,7 @@ import com.tevinjeffrey.vapor.okcloudapp.DigestAuthenticator;
 import com.tevinjeffrey.vapor.services.IntentBridge;
 import com.tevinjeffrey.vapor.services.UploadService;
 import com.tevinjeffrey.vapor.ui.files.FilesActivity;
-import com.tevinjeffrey.vapor.ui.files.FilesVH;
+import com.tevinjeffrey.vapor.ui.files.FilesFragmentAdapter;
 import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragment;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ArchivePresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.AudioPresenter;
@@ -30,7 +30,7 @@ public interface UiComponent {
     void inject(FilesActivity filesActivity);
     void inject(IntentBridge intentBridge);
     void inject(UploadService uploadService);
-    void inject(FilesVH filesVH);
+    void inject(FilesFragmentAdapter.FilesVH filesVH);
     void inject(BottomSheetPresenterImpl bottomSheetPresenter);
 
     void inject(DigestAuthenticator digestAuthenticator);
