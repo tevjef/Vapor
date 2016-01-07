@@ -29,7 +29,7 @@ import com.tevinjeffrey.vapor.okcloudapp.exceptions.UploadLimitException;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.utils.FileUtils;
 import com.tevinjeffrey.vapor.okcloudapp.ProgressListener;
-import com.tevinjeffrey.vapor.ui.login.LoginException;
+import com.tevinjeffrey.vapor.utils.RxUtils;
 
 import java.io.File;
 import java.net.UnknownHostException;
@@ -77,245 +77,169 @@ public class UploadService extends Service {
         VaporApp.uiComponent(getApplicationContext()).inject(this);
         Timber.d("Upload intent with startId=%s intent=%s ", startId, intent.toString());
         final int notificationId = Long.valueOf(System.currentTimeMillis()).hashCode();
-        Timber.i("Notification Id generated id=%s", notificationId);
+        Timber.i("New Notification Id generated id=%s", notificationId);
 
         String action = intent.getStringExtra(ACTION_TYPE);
-        if (action == null) {
-            Timber.d("Action is null for intent=%s", intent.toString());
-           
-            return START_NOT_STICKY;
-        }
-        if (action.equals(ACTION_COPY_LINK)) {
-            Timber.i("ACTION_COPY_LINK with id=%s", notificationId);
-            ClipData clip = ClipData.newPlainText("Uploaded item url", intent.getDataString());
-            mClipboardManager.setPrimaryClip(clip);
-            Toast.makeText(getApplicationContext(), "Copied: " + intent.getDataString(),
-                    Toast.LENGTH_SHORT).show();
-           
-            return START_NOT_STICKY;
-        } else if (action.equals(ACTION_UPLOAD_CANCEL)) {
-            int notificationIdExtra = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1);
-            Timber.i("ACTION_UPLOAD_CANCEL with id=%s", notificationIdExtra);
-            if (notificationIdExtra != -1) {
-                Subscription toCancel = subscriptionHashMap.get(notificationIdExtra);
-                if (toCancel != null && !toCancel.isUnsubscribed()) {
+
+        switch (action) {
+            case ACTION_COPY_LINK:
+                // Takes the data saved the intent and adds it to the clipboard.
+                Timber.i("ACTION_COPY_LINK with id=%s", notificationId);
+                ClipData clip = ClipData.newPlainText("Uploaded item url", intent.getDataString());
+                mClipboardManager.setPrimaryClip(clip);
+                Toast.makeText(getApplicationContext(), "Copied: " + intent.getDataString(),
+                        Toast.LENGTH_SHORT).show();
+
+                return START_NOT_STICKY;
+            case ACTION_UPLOAD_CANCEL:
+                // ACTION_UPLOAD_CANCEL is user action from a PendingIntent to cancel a notification
+                // the the notification it was showing. Every uploads subscription is saved to a hashmap
+                // along with the notificationId the upload is tied to. This can action looks up a table
+                // for the Subscription (the upload) using the notificationId, then unsubscribes.
+                // The networking library, Retrofit and OkHttp will close the connection after all
+                // subscribers are unsubscribed. We early cancel the notification, but residual bytes
+                // being writing may cause the upload notification to get recreated. Unsubscribing the
+                // upload subscription causes then unsubscribes from the Subject tied to progress of
+                // the notification, guaranteeing the notification was cancelled.
+                int notificationIdExtra = intent.getIntExtra(EXTRA_NOTIFICATION_ID, -1);
+                Timber.i("ACTION_UPLOAD_CANCEL with id=%s", notificationIdExtra);
+                if (notificationIdExtra != -1) {
+                    Subscription toCancel = subscriptionHashMap.get(notificationIdExtra);
+                    RxUtils.unsubscribeIfNotNull(toCancel);
                     Timber.i("Upload cancelled with id=%s", notificationIdExtra);
-                    toCancel.unsubscribe();
                     Toast.makeText(getApplicationContext(), "Upload cancelled",
                             Toast.LENGTH_SHORT).show();
+                    mNotificationManager.cancel(notificationIdExtra);
                 }
-                mNotificationManager.cancel(notificationIdExtra);
-            }
+                return START_NOT_STICKY;
 
-            return START_NOT_STICKY;
-        } else if (action.equals(ACTION_UPLOAD)) {
-            final String fileType = intent.getStringExtra(FILE_TYPE);
-            final PublishSubject<Long> progressSubject = PublishSubject.create();
+            case ACTION_UPLOAD:
+                final String fileType = intent.getStringExtra(FILE_TYPE);
+                final PublishSubject<Long> progressSubject = PublishSubject.create();
+                final ProgressListener listener = new NotificationProgress(progressSubject);
+                String fileSize = "";
+                String fileName = "";
+                Uri fileUri = null;
+                Observable<CloudAppItem> uploadObservable;
+                CloudAppRequestBody requestBody;
 
-            final ProgressListener listener = new ProgressListener() {
-                @Override
-                public void onProgress(long current, long max) {
-                    //Timber.i("Progress: %s Max: %s", current, max);
-                    progressSubject.onNext(current);
-                }
-            };
-
-            String fileSize = "";
-            String fileName = "";
-            Uri fileUri = null;
-            Observable<CloudAppItem> uploadObservable;
-            CloudAppRequestBody requestBody;
-
-            switch (fileType) {
-                case FILE_TEXT: {
-                    String text = intent.getStringExtra(Intent.EXTRA_TEXT);
-                    requestBody = new ProgressiveStringRequestBody(text, null, listener);
-                    fileSize = requestBody.getFileSize();
-                    fileName = requestBody.getFileName();
-                    uploadObservable = dataManager.upload(requestBody);
-                    break;
-                }
-                case FILE_BOOKMARK: {
-                    String text = intent.getStringExtra(Intent.EXTRA_TEXT);
-                    uploadObservable = dataManager.bookmarkItem(text, text);
-                    break;
-                }
-                default:
-                    fileUri = intent.getData();
-                    if (fileUri == null) {
-                        fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                switch (fileType) {
+                    case FILE_TEXT: {
+                        // The text is passed into a custom RequestBody. Currently the file name of
+                        // UTF8 string is the first 18 characters of the the string itself.
+                        // The option remains for the user to provide a name. from pass it and a
+                        // listener into the RequestBody. The listener allows us to get notifications
+                        // on how many bytes have been written. This information is useful as it
+                        // allows us to display the upload progress to the user.
+                        String text = intent.getStringExtra(Intent.EXTRA_TEXT);
+                        requestBody = new ProgressiveStringRequestBody(text, null, listener);
+                        fileSize = requestBody.getFileSize();
+                        fileName = requestBody.getFileName();
+                        uploadObservable = dataManager.upload(requestBody);
+                        break;
                     }
-                    final File file = FileUtils.getFile(this, fileUri);
-                    if (file == null) {
-                        Toast.makeText(this, "Cannot upload file", Toast.LENGTH_SHORT).show();
-                       
-                        return START_NOT_STICKY;
+                    case FILE_BOOKMARK: {
+                        // The url is retrieved from EXTRA_TEXT, then the api call is made to create
+                        // the necessary file for upload. Currently the bookmark name is the url itself.
+                        // The option remains for the user to provide a name.
+                        String text = intent.getStringExtra(Intent.EXTRA_TEXT);
+                        uploadObservable = dataManager.bookmarkItem(text, text);
+                        break;
                     }
-                    requestBody = new ProgressiveFileRequestBody(file, listener);
-                    fileSize = requestBody.getFileSize();
-                    fileName = requestBody.getFileName();
-                    uploadObservable = dataManager.upload(requestBody);
-                    break;
-            }
-
-            Timber.i("ACTION_UPLOAD with id=%s and fileName=%s, fileSize=%s, filetype=%s",
-                    notificationId, fileName, fileSize, fileType);
-
-            final Uri finalFileUri = fileUri;
-            final String finalFileName = fileName;
-
-            final NotificationCompat.Builder uploadNotification = newNotification(notificationId);
-
-            final Subscription progressSubscription = progressSubject
-                    .sample(250, TimeUnit.MILLISECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnError(new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            Timber.e(throwable, "Error creating progress listener.");
+                    default:
+                        // Try URI from data, then from EXTRA_STREAM. If no valid URI exists,
+                        // throw error then exit. Create a File from pass it and a listener into the
+                        // RequestBody. The listener allows us to get notifications on how many bytes
+                        // have been written. This information is useful as it allows us to display
+                        // the upload progress to the user.
+                        fileUri = intent.getData();
+                        if (fileUri == null) {
+                            fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                         }
-                    })
-                    .doOnUnsubscribe(new Action0() {
-                        @Override
-                        public void call() {
-                            Timber.i("Progress unsubscribed %s", finalFileName);
-                            mNotificationManager.cancel(notificationId);
+                        final File file = FileUtils.getFile(this, fileUri);
+                        if (file == null) {
+                            Toast.makeText(this, "Cannot upload file", Toast.LENGTH_SHORT).show();
+                            return START_NOT_STICKY;
                         }
-                    })
-                    .doOnNext(new ProgressNotification(fileName,
-                            fileSize.length() == 0?0:Long.valueOf(fileSize),
-                            uploadNotification,
-                            mNotificationManager,
-                            notificationId))
-                    .onBackpressureDrop()
-                    .subscribe();
+                        requestBody = new ProgressiveFileRequestBody(file, listener);
+                        fileSize = requestBody.getFileSize();
+                        fileName = requestBody.getFileName();
+                        uploadObservable = dataManager.upload(requestBody);
+                        break;
+                }
 
-            refCountManager.addNotificationId(notificationId);
-            subscriptionHashMap.put(notificationId, uploadObservable.subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnUnsubscribe(new Action0() {
-                        @Override
-                        public void call() {
-                            Timber.i("Upload unsubscribed %s", finalFileName);
-                            progressSubscription.unsubscribe();
-                        }
-                    })
-                    .doOnTerminate(new Action0() {
-                        @Override
-                        public void call() {
-                            Timber.i("Upload terminated %s", finalFileName);
-                            refCountManager.removeNotificationId(notificationId);
-                        }
-                    })
-                    .doOnSubscribe(new Action0() {
-                        @Override
-                        public void call() {
-                            Toast.makeText(getApplicationContext(), "Adding " + finalFileName + " to Vapor",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .subscribe(new Observer<CloudAppItem>() {
+                Timber.i("ACTION_UPLOAD with id=%s and fileName=%s, fileSize=%s, filetype=%s",
+                        notificationId, fileName, fileSize, fileType);
 
-                        int newNotificationId = notificationId / 2;
-                        @Override
-                        public void onCompleted() {
-                            Timber.i("Upload complete %s", finalFileName);
-                        }
+                final String finalFileName = fileName;
+                final NotificationCompat.Builder uploadNotification = new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_cloud_upload_white_18dp)
+                        .setContentTitle(fileName)
+                        .setContentText("Upload in Progress")
+                        .setOngoing(true)
+                        .addAction(0, "Cancel upload", PendingIntent.getService(UploadService.this,
+                                notificationId,
+                                new Intent(UploadService.this, UploadService.class)
+                                        .putExtra(EXTRA_NOTIFICATION_ID, notificationId)
+                                        .putExtra(ACTION_TYPE, ACTION_UPLOAD_CANCEL),
+                                PendingIntent.FLAG_UPDATE_CURRENT));
 
-                        @Override
-                        public void onError(Throwable e) {
-                            Timber.e(e, "Error during upload. File: %s", finalFileName);
-                            if (e instanceof FileToLargeException || e instanceof UploadLimitException) {
-                                String title = finalFileName;
-                                String subText = e.getMessage();
-                                if (e instanceof FileToLargeException) {
-                                    title = "File too large for your current plan";
-                                    subText = "Tap to view plans";
-                                }
-                                if (e instanceof UploadLimitException) {
-                                    title = "Monthly upload limit reached";
-                                    subText = "Tap to view plans";
-                                }
-                                Intent openInBrowser = new Intent(Intent.ACTION_VIEW);
-                                openInBrowser.setData(Uri.parse("https://www.getcloudapp.com/plans"));
-                                PendingIntent pOpenInBrowser =
-                                        PendingIntent.getActivity(UploadService.this, 0, openInBrowser, 0);
 
-                                NotificationCompat.Builder errorNotification =
-                                        new NotificationCompat.Builder(UploadService.this);
-                                errorNotification.setContentTitle(title);
-                                errorNotification.setContentText(subText);
-                                errorNotification.setSmallIcon(R.drawable.ic_cloud_error);
-                                errorNotification.setOngoing(false);
-                                errorNotification.setWhen(System.currentTimeMillis());
-                                errorNotification.setContentIntent(pOpenInBrowser);
-                                mNotificationManager.notify(newNotificationId, errorNotification.build());
-                                Toast.makeText(getApplicationContext(), title, Toast.LENGTH_LONG).show();
-
-                            } else if (e instanceof UnknownHostException) {
-                                mNotificationManager.cancel(notificationId);
-                                Timber.i("Network error, closing notification with id=%s", notificationId);
-                                Toast.makeText(getApplicationContext(), "No internet connection. Upload failed.",
-                                        Toast.LENGTH_LONG).show();
-                            } else if (e instanceof LoginException) {
-                                mNotificationManager.cancel(notificationId);
-                            } else {
-                                Toast.makeText(getApplicationContext(), "An error occurred. Upload failed.",
-                                        Toast.LENGTH_LONG).show();
-                                mNotificationManager.cancel(notificationId);
-                                Timber.i("Generic error, closing notification with id=%s", notificationId);
-
+                // Subject to reduce notification updates as the byes are written to the server.
+                // The notification updates 4 times per second.
+                final Subscription progressSubscription = progressSubject
+                        .sample(250, TimeUnit.MILLISECONDS)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnError(new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                Timber.e(throwable, "Error creating progress listener.");
                             }
-                        }
+                        })
+                        .doOnUnsubscribe(new Action0() {
+                            @Override
+                            public void call() {
+                                Timber.i("Progress unsubscribed %s", finalFileName);
+                                mNotificationManager.cancel(notificationId);
+                            }
+                        })
+                        .doOnNext(new ProgressNotification(
+                                fileSize.length() == 0 ? 0 : Long.valueOf(fileSize),
+                                uploadNotification,
+                                mNotificationManager,
+                                notificationId))
+                        .onBackpressureDrop()
+                        .subscribe();
 
-                        @Override
-                        public void onNext(CloudAppItem cloudAppItem) {
-
-                            Intent openInBrowser = new Intent(Intent.ACTION_VIEW);
-                            openInBrowser.setData(Uri.parse(cloudAppItem.getUrl()));
-                            PendingIntent pOpenInBrowser =
-                                    PendingIntent.getActivity(UploadService.this, 0, openInBrowser,
-                                            PendingIntent.FLAG_UPDATE_CURRENT);
-                            Intent intentCopyLink = new Intent(UploadService.this, UploadService.class);
-                            intentCopyLink.putExtra(ACTION_TYPE, ACTION_COPY_LINK);
-                            intentCopyLink.setData(Uri.parse(cloudAppItem.getUrl()));
-                            PendingIntent pCopyLink  = PendingIntent.getService(UploadService.this, 0,
-                                    intentCopyLink, PendingIntent.FLAG_UPDATE_CURRENT);
-                            NotificationCompat.Builder successNotification =
-                                    new NotificationCompat.Builder(UploadService.this)
-                                            .setContentTitle(cloudAppItem.getName())
-                                            .setSmallIcon(R.drawable.ic_cloud_done_white_18dp)
-                                            .setOngoing(false)
-                                            .setContentIntent(pOpenInBrowser)
-                                            .setColor(ContextCompat.getColor(UploadService.this, R.color.primary))
-                                            .setWhen(System.currentTimeMillis())
-                                            .setPriority(Notification.PRIORITY_MAX)
-                                            .setContentText("Tap to open")
-                                            .addAction(0, "Copy link", pCopyLink);
-                            mNotificationManager.notify(newNotificationId, successNotification.build());
-
-                            ClipData clip = ClipData.newPlainText("Uploaded item url", cloudAppItem.getUrl());
-                            mClipboardManager.setPrimaryClip(clip);
-                            Toast.makeText(getApplicationContext(), "Copied: " + cloudAppItem.getUrl(),
-                                    Toast.LENGTH_LONG).show();
-                            bus.post(new UploadEvent(finalFileUri, cloudAppItem));
-                        }
-                    }));
+                refCountManager.addNotificationId(notificationId);
+                subscriptionHashMap.put(notificationId, uploadObservable.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnUnsubscribe(new Action0() {
+                            @Override
+                            public void call() {
+                                Timber.i("Upload unsubscribed %s", finalFileName);
+                                RxUtils.unsubscribeIfNotNull(progressSubscription);
+                            }
+                        })
+                        .doOnTerminate(new Action0() {
+                            @Override
+                            public void call() {
+                                Timber.i("Upload terminated %s", finalFileName);
+                                refCountManager.removeNotificationId(notificationId);
+                            }
+                        })
+                        .doOnSubscribe(new Action0() {
+                            @Override
+                            public void call() {
+                                Toast.makeText(getApplicationContext(), "Adding " + finalFileName + " to Vapor",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .subscribe(new UploadObserver(notificationId, fileName, fileUri)));
+                break;
         }
 
         return START_NOT_STICKY;
-    }
-
-    private NotificationCompat.Builder newNotification(int notificationId) {
-        Intent intentCancelUpload = new Intent(UploadService.this, UploadService.class);
-        intentCancelUpload.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
-        intentCancelUpload.putExtra(ACTION_TYPE, ACTION_UPLOAD_CANCEL);
-        return new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_cloud_upload_white_18dp)
-                .setContentTitle("Uploading to CloudApp")
-                .setContentText("Upload in Progress")
-                .addAction(0, "Cancel upload", PendingIntent.getService(UploadService.this, notificationId,
-                        intentCancelUpload, PendingIntent.FLAG_UPDATE_CURRENT));
     }
 
     @Override
@@ -348,6 +272,123 @@ public class UploadService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    private class UploadObserver implements Observer<CloudAppItem> {
+        int notificationId;
+        int newNotificationId;
+        String fileName;
+        Uri fileUri;
+
+        public UploadObserver(int notificationId, String fileName, Uri fileUri) {
+            this.newNotificationId = notificationId / 2;
+            this.fileName = fileName;
+            this.fileUri = fileUri;
+        }
+
+        @Override
+        public void onCompleted() {
+            Timber.i("Upload complete %s", fileName);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Timber.e(e, "Error during upload. File: %s", fileName);
+            if (e instanceof FileToLargeException || e instanceof UploadLimitException) {
+                String title = fileName;
+                String subText = e.getMessage();
+                if (e instanceof FileToLargeException) {
+                    title = "File too large for your current plan";
+                    subText = "Tap to view plans";
+                }
+                if (e instanceof UploadLimitException) {
+                    title = "Monthly upload limit reached";
+                    subText = "Tap to view plans";
+                }
+
+                NotificationCompat.Builder errorNotification =
+                        new NotificationCompat.Builder(UploadService.this)
+                                .setContentTitle(title)
+                                .setContentText(subText)
+                                .setSmallIcon(R.drawable.ic_cloud_error)
+                                .setOngoing(false)
+                                .setWhen(System.currentTimeMillis())
+                                .setContentIntent(PendingIntent.getActivity(UploadService.this, newNotificationId,
+                                        new Intent(Intent.ACTION_VIEW)
+                                                .setData(Uri.parse("https://www.getcloudapp.com/plans")),
+                                        PendingIntent.FLAG_UPDATE_CURRENT));
+
+                // Fire notification with a new id separate from the id used to identify the upload
+                // progress notification.
+                mNotificationManager.notify(newNotificationId, errorNotification.build());
+                Toast.makeText(getApplicationContext(), title, Toast.LENGTH_LONG).show();
+
+            } else if (e instanceof UnknownHostException) {
+                mNotificationManager.cancel(notificationId);
+                Timber.i("Network error, closing notification with id=%s", notificationId);
+                Toast.makeText(getApplicationContext(), "No internet connection. Upload failed.",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "An error occurred. Upload failed.",
+                        Toast.LENGTH_LONG).show();
+                mNotificationManager.cancel(notificationId);
+                Timber.i("Generic error, closing notification with id=%s", notificationId);
+
+            }
+        }
+
+
+        @Override
+        public void onNext(CloudAppItem cloudAppItem) {
+            //
+            NotificationCompat.Builder successNotification =
+                    new NotificationCompat.Builder(UploadService.this)
+                            .setContentTitle(cloudAppItem.getName())
+                            .setSmallIcon(R.drawable.ic_cloud_done_white_18dp)
+                            .setOngoing(false)
+                            // Open browser when user clicks notification
+                            .setContentIntent(PendingIntent.getActivity(UploadService.this, 0,
+                                    new Intent(Intent.ACTION_VIEW)
+                                            .setData(Uri.parse(cloudAppItem.getUrl())),
+                                    PendingIntent.FLAG_UPDATE_CURRENT))
+                            .setColor(ContextCompat.getColor(UploadService.this, R.color.primary))
+                            .setWhen(System.currentTimeMillis())
+                            .setPriority(Notification.PRIORITY_MAX)
+                            .setContentText("Tap to open")
+                            // Action to copy link when user clicks the copy link action.
+                            .addAction(0, "Copy link",
+                                    PendingIntent.getService(UploadService.this, 0,
+                                        new Intent(UploadService.this, UploadService.class)
+                                            .putExtra(ACTION_TYPE, ACTION_COPY_LINK)
+                                            .setData(Uri.parse(cloudAppItem.getUrl())),
+                                        PendingIntent.FLAG_UPDATE_CURRENT));
+
+            // Fire notification with a new id separate from the id used to identify the upload
+            // progress notification.
+            mNotificationManager.notify(newNotificationId, successNotification.build());
+
+            //Add link to clip board.
+            ClipData clip = ClipData.newPlainText("Uploaded item url", cloudAppItem.getUrl());
+            mClipboardManager.setPrimaryClip(clip);
+            Toast.makeText(getApplicationContext(), "Copied: " + cloudAppItem.getUrl(),
+                    Toast.LENGTH_LONG).show();
+
+            // Tell the rest of the app that a file was successfully uploaded.
+            bus.post(new UploadEvent(fileUri, cloudAppItem));
+        }
+    }
+
+    private class NotificationProgress implements ProgressListener {
+        private final PublishSubject<Long> publishSubject;
+
+        public NotificationProgress(PublishSubject<Long> publishSubject) {
+            this.publishSubject = publishSubject;
+        }
+
+        @Override
+        public void onProgress(long current, long max) {
+            publishSubject.onNext(current);
+        }
     }
 
 }
