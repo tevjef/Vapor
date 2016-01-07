@@ -1,7 +1,10 @@
 package com.tevinjeffrey.vapor.services;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -39,7 +42,6 @@ public class IntentBridge extends Activity {
     public final static String FILE_TEXT = "com.tevinjeffrey.vapor.services.FILE_TEXT";
     public final static String FILE_OTHER = "com.tevinjeffrey.vapor.services.FILE_OTHER";
 
-    private static final int LOGIN_CODE = 43;
     private static final int FILE_SELECT_CODE = 42;
 
     @Inject
@@ -52,20 +54,33 @@ public class IntentBridge extends Activity {
         super.onCreate(savedInstanceState);
         VaporApp.uiComponent(getApplicationContext()).inject(this);
 
+        // If the user is not logged in, but tries to upload a file anyway. This should catch that
+        // intent and start the login process instead.
         if (!userManager.isLoggedIn()) {
             Intent intent = new Intent(this, FilesActivity.class);
-            intent.putExtra(AWAITING_UPLOAD, intent);
-            startActivityForResult(intent, LOGIN_CODE);
+            startActivity(intent);
+            Toast.makeText(this, "Please log in first!", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        //Check if the required permissions are granted.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(this, FilesActivity.class);
+            startActivity(intent);
+            Toast.makeText(this, "Please enable the required permissions!", Toast.LENGTH_LONG).show();
             finish();
         }
 
         Intent incomingIntent = getIntent();
+        // True when the user attempts to select a file from withing the app.
         if (incomingIntent.getAction().equals(FILE_SELECT)) {
-            ActivityCompat.requestPermissions(this, new String[]{"android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE"}, 42);
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("*/*");
             startActivityForResult(intent, FILE_SELECT_CODE);
+        // True when an external app attempts to SEND data to the app
         } else if(incomingIntent.getAction().equals(Intent.ACTION_SEND)) {
             handleIntent(incomingIntent);
         }
@@ -74,8 +89,12 @@ public class IntentBridge extends Activity {
 
     private void handleIntent(Intent incomingIntent) {
         final Intent outgoingIntent = new Intent(this, UploadService.class);
+        // Prepare the Intent to be sent to the UploadService. ACTION_UPLOAD to tell the service we
+        // attempting to upload a file.
         outgoingIntent.putExtra(UploadService.ACTION_TYPE, UploadService.ACTION_UPLOAD);
 
+        // Get the type of the file to determine what to do. Text files are treated differently from
+        // regular audio, video and other binaries. Text files could be a URL or a UTF-8 string.
         String type = incomingIntent.getType();
         if (type == null) {
             type = FileUtils.getMimeType(this, incomingIntent.getData());
@@ -91,13 +110,20 @@ public class IntentBridge extends Activity {
                 outgoingIntent.putExtra(FILE_TYPE, FILE_BOOKMARK);
             }
             outgoingIntent.putExtra(Intent.EXTRA_TEXT, text);
-            dispatchIntent(outgoingIntent);
+            startService(outgoingIntent);
+            finish();
         } else {
 
+            // Get the file from either data or EXTRA_STREAM. Depends on entirely on who's sending.
             final Uri fileUri = incomingIntent.getData() == null ? (Uri) incomingIntent.getParcelableExtra(Intent.EXTRA_STREAM) :
                     incomingIntent.getData();
             outgoingIntent.putExtra(FILE_TYPE, FILE_OTHER);
 
+            // Google photos is serious about privacy and does not allow URI's to be passed around
+            // component within the app. So we must first write the file publicly to the disk. Then
+            // retrieve the URI for that location. We pass the uri to the UploadService, which will
+            // alert use when the file a this URI has been successfully uploaded. After the upload
+            // complete's we delete the file.
             if (FileUtils.isGooglePhotosUri(fileUri)) {
                 Observable.defer(new Func0<Observable<Uri>>() {
                     @Override
@@ -110,13 +136,20 @@ public class IntentBridge extends Activity {
                             @Override
                             public void call(Uri uri) {
                                 refCountManager.addUri(uri);
-                                outgoingIntent.setData(uri);
-                                dispatchIntent(outgoingIntent, uri);
+                                outgoingIntent.setData(uri)
+                                    .putExtra(Intent.EXTRA_STREAM, uri);
+                                startService(outgoingIntent);
+                                finish();
+
                             }
                         });
+            // Check to see if the is local to the device as some apps may attempt to serve a file
+            // that's on a remote server.
             } else if (FileUtils.isLocal(fileUri.toString())) {
-                outgoingIntent.setData(fileUri);
-                dispatchIntent(outgoingIntent, fileUri);
+                outgoingIntent.setData(fileUri)
+                    .putExtra(Intent.EXTRA_STREAM, fileUri);
+                startService(outgoingIntent);
+                finish();
             } else {
                 Toast.makeText(this, "Vapor cannot upload that file", Toast.LENGTH_SHORT).show();
                 finish();
@@ -124,22 +157,11 @@ public class IntentBridge extends Activity {
         }
     }
 
-    private void dispatchIntent(Intent intent) {
-        dispatchIntent(intent, null);
-    }
-
-    private void dispatchIntent(Intent intent, Uri uri) {
-        if (uri != null) {
-            intent.putExtra(Intent.EXTRA_STREAM, uri);
-        }
-        startService(intent);
-        finish();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FILE_SELECT_CODE || requestCode == LOGIN_CODE) {
+        if (requestCode == FILE_SELECT_CODE) {
+            // User selects a file to upload from the document viewer.
             if (resultCode == RESULT_OK) {
                 handleIntent(data);
             } else if (resultCode == RESULT_CANCELED) {
@@ -148,6 +170,7 @@ public class IntentBridge extends Activity {
         }
     }
 
+    /* http://stackoverflow.com/questions/30527045/choosing-photo-using-new-google-photos-app-is-broken */
     public Uri getImageUrlWithAuthority(Uri uri) {
         InputStream is = null;
         if (uri.getAuthority() != null) {
@@ -168,15 +191,6 @@ public class IntentBridge extends Activity {
         }
         return null;
     }
-
-    /* https://code.google.com/p/android-developer-preview/issues/detail?id=2353 */
-/*
-    @Override
-    protected void onStart() {
-        super.onStart();
-        setVisible(true);
-    }
-*/
 
     public Uri writeToTempImageAndGetPathUri(Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
