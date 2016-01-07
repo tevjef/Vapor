@@ -18,6 +18,7 @@ import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.events.UploadEvent;
+import com.tevinjeffrey.vapor.events.UploadFailedEvent;
 import com.tevinjeffrey.vapor.okcloudapp.CloudAppRequestBody;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.ProgressListener;
@@ -336,13 +337,13 @@ public class UploadService extends Service {
                 mNotificationManager.cancel(notificationId);
                 Timber.i("Generic error, closing notification with id=%s", notificationId);
 
+                bus.post(new UploadFailedEvent(fileUri));
             }
         }
 
 
         @Override
         public void onNext(CloudAppItem cloudAppItem) {
-            //
             NotificationCompat.Builder successNotification =
                     new NotificationCompat.Builder(UploadService.this)
                             .setContentTitle(cloudAppItem.getName())

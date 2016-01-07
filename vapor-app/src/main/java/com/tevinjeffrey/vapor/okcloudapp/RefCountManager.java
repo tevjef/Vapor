@@ -6,6 +6,7 @@ import android.net.Uri;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.events.UploadEvent;
+import com.tevinjeffrey.vapor.events.UploadFailedEvent;
 import com.tevinjeffrey.vapor.okcloudapp.utils.FileUtils;
 
 import java.io.File;
@@ -100,6 +101,13 @@ public class RefCountManager {
 
     @Subscribe
     public void onUploadEvent(UploadEvent uploadEvent) {
+        if (uploadEvent.getUri() != null) {
+            cleanUpUri(uploadEvent.getUri());
+        }
+    }
+
+    @Subscribe
+    public void onUplaodFailed(UploadFailedEvent uploadEvent) {
         if (uploadEvent.getUri() != null) {
             cleanUpUri(uploadEvent.getUri());
         }
