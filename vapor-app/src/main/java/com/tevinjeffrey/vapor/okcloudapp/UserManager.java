@@ -4,7 +4,6 @@ import com.orhanobut.hawk.Hawk;
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.events.LogoutEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.AccountModel;
-import com.tevinjeffrey.vapor.okcloudapp.utils.DigestAuthenticator;
 import com.tevinjeffrey.vapor.utils.RxUtils;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -28,6 +27,7 @@ public class UserManager {
         this.digestAuthenticator = digestAuthenticator;
         this.cloudAppService = cloudAppService;
         this.bus = bus;
+        bus.register(this);
     }
     
     public boolean isLoggedIn() {
@@ -38,18 +38,17 @@ public class UserManager {
         Hawk.put(IS_LOGGED_IN, bool);
     }
 
-    public Observable<Boolean> loginWith(String userName, String password) {
-        putPassword(password);
-        putUserName(userName);
-
-        digestAuthenticator.setCredentials(new UsernamePasswordCredentials(getUserName(), getPassword()));
+    public Observable<Boolean> loginWith(final String userName, final String password) {
+        digestAuthenticator.setCredentials(new UsernamePasswordCredentials(userName, password));
         
         return cloudAppService.getAccount()
                 .retryWhen(new RxUtils.RetryWithDelay(2, 2000))
                 .map(new Func1<AccountModel, Boolean>() {
                     @Override
                     public Boolean call(AccountModel accountModel) {
-                        if (accountModel != null && Objects.equals(accountModel.getEmail(), getUserName())) {
+                        if (accountModel != null && Objects.equals(accountModel.getEmail(), userName)) {
+                            putPassword(password);
+                            putUserName(userName);
                             setLoggedIn(true);
                             return true;
                         }

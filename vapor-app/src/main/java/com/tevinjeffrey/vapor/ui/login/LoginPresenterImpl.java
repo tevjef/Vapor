@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class LoginPresenterImpl<V extends LoginView> extends BasePresenter<V> implements LoginPresenter<V> {
+public class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresenter {
 
     @Inject
     UserManager userManager;

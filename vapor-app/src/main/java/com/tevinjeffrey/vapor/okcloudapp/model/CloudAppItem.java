@@ -1,8 +1,12 @@
 package com.tevinjeffrey.vapor.okcloudapp.model;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Table;
+import com.orm.dsl.Unique;
 import com.tevinjeffrey.vapor.okcloudapp.utils.CloudAppUtils;
 
 import java.text.DateFormat;
@@ -11,8 +15,9 @@ import java.text.ParseException;
 import static android.text.format.DateUtils.*;
 import static com.tevinjeffrey.vapor.okcloudapp.utils.CloudAppUtils.formatDate;
 
-public class CloudAppItem extends SugarRecord<CloudAppItem> {
+public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem>,Parcelable {
 
+    @Unique
     private long itemId;
     private String href;
     private String name;
@@ -197,6 +202,17 @@ public class CloudAppItem extends SugarRecord<CloudAppItem> {
         return ownerId;
     }
 
+    @Override
+    public int compareTo(CloudAppItem another) {
+        CloudAppItem lhs = this;
+        if (another != null) {
+            if (lhs.equals(another)) return 0;
+            if (lhs.getItemId() < another.getItemId()) return 1;
+            if (lhs.getItemId() < another.getItemId()) return -1;
+        }
+        return -1;
+    }
+
     public enum ItemType {
         ALL, DELETED, AUDIO, BOOKMARK, IMAGE, UNKNOWN, VIDEO, ARCHIVE, TEXT
     }
@@ -210,6 +226,22 @@ public class CloudAppItem extends SugarRecord<CloudAppItem> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CloudAppItem item = (CloudAppItem) o;
+
+        return itemId == item.itemId;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (itemId ^ (itemId >>> 32));
+    }
+
+    @Override
     public String toString() {
         return "CloudAppItem{" +
                 "name='" + name + '\'' +
@@ -218,4 +250,67 @@ public class CloudAppItem extends SugarRecord<CloudAppItem> {
                 '}';
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.itemId);
+        dest.writeString(this.href);
+        dest.writeString(this.name);
+        dest.writeByte(isPrivate ? (byte) 1 : (byte) 0);
+        dest.writeByte(isSubscribed ? (byte) 1 : (byte) 0);
+        dest.writeString(this.contentUrl);
+        dest.writeString(this.itemType);
+        dest.writeLong(this.viewCounter);
+        dest.writeString(this.icon);
+        dest.writeString(this.url);
+        dest.writeString(this.remoteUrl);
+        dest.writeString(this.thumbnailUrl);
+        dest.writeString(this.downloadUrl);
+        dest.writeString(this.source);
+        dest.writeByte(favorite ? (byte) 1 : (byte) 0);
+        dest.writeString(this.ownerId);
+        dest.writeLong(this.contentLength);
+        dest.writeString(this.createdAt);
+        dest.writeString(this.updatedAt);
+        dest.writeString(this.deletedAt);
+        dest.writeString(this.lastViewedAt);
+    }
+
+    protected CloudAppItem(Parcel in) {
+        this.itemId = in.readLong();
+        this.href = in.readString();
+        this.name = in.readString();
+        this.isPrivate = in.readByte() != 0;
+        this.isSubscribed = in.readByte() != 0;
+        this.contentUrl = in.readString();
+        this.itemType = in.readString();
+        this.viewCounter = in.readLong();
+        this.icon = in.readString();
+        this.url = in.readString();
+        this.remoteUrl = in.readString();
+        this.thumbnailUrl = in.readString();
+        this.downloadUrl = in.readString();
+        this.source = in.readString();
+        this.favorite = in.readByte() != 0;
+        this.ownerId = in.readString();
+        this.contentLength = in.readLong();
+        this.createdAt = in.readString();
+        this.updatedAt = in.readString();
+        this.deletedAt = in.readString();
+        this.lastViewedAt = in.readString();
+    }
+
+    public static final Parcelable.Creator<CloudAppItem> CREATOR = new Parcelable.Creator<CloudAppItem>() {
+        public CloudAppItem createFromParcel(Parcel source) {
+            return new CloudAppItem(source);
+        }
+
+        public CloudAppItem[] newArray(int size) {
+            return new CloudAppItem[size];
+        }
+    };
 }

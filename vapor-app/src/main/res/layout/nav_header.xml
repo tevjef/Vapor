@@ -2,6 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="192dp"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="?attr/colorPrimaryDark"
 
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
@@ -9,9 +10,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Username"
+        tools:text="Username"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:id="@+id/nav_drawer_email"
+        android:id="@+id/nav_view_email"
         android:padding="16dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true" />

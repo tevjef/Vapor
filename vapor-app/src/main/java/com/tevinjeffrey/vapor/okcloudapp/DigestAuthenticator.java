@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.okcloudapp.utils;
+package com.tevinjeffrey.vapor.okcloudapp;
 
 import com.squareup.okhttp.Authenticator;
 import com.squareup.okhttp.Request;

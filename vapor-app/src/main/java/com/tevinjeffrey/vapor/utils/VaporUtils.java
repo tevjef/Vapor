@@ -13,10 +13,19 @@ import android.view.animation.Transformation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
+
+import timber.log.Timber;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.ARCHIVE;
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.AUDIO;
@@ -26,7 +35,7 @@ import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.TEXT
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.UNKNOWN;
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.VIDEO;
 
-public class VaprUtils {
+public class VaporUtils {
     public static boolean isValidWebAddress(CharSequence target) {
         return !TextUtils.isEmpty(target) && Patterns.DOMAIN_NAME.matcher(target).matches();
     }
@@ -81,16 +90,35 @@ public class VaprUtils {
         return drawable;
     }
 
-    public static void setTypedImageView(CloudAppItem cloudAppItem, final ImageView imageView, boolean thumbnail, int size) {
-        Drawable drawable = getTypedDrawable(imageView.getContext(), cloudAppItem, size);
+    public static void setTypedImageView(CloudAppItem cloudAppItem, final ImageView imageView, Drawable placeholder, boolean thumbnail, int size) {
         if (cloudAppItem.getItemType() == IMAGE) {
-            Glide.with(imageView.getContext())
-                    .load(thumbnail?cloudAppItem.getThumbnailUrl():cloudAppItem.getThumbnailUrl())
-                    .placeholder(getIconDrawable(imageView.getContext(), MaterialDrawableBuilder.IconValue.FILE_IMAGE))
-                    .centerCrop()
+            Glide.with(imageView.getContext().getApplicationContext())
+                    .load(thumbnail?cloudAppItem.getThumbnailUrl():cloudAppItem.getRemoteUrl())
                     .crossFade()
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .priority(Priority.IMMEDIATE)
+                    .placeholder(placeholder)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            if (e != null) {
+                                Timber.e(e, "Failed to load image");
+                            }
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+                            return false;
+                        }
+                    })
                     .into(imageView);
+            imageView.setScaleType(ImageView.ScaleType.CENTER);
         } else {
+            Drawable drawable = getTypedDrawable(imageView.getContext(), cloudAppItem, size);
             RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
             imageView.setLayoutParams(layoutParams);

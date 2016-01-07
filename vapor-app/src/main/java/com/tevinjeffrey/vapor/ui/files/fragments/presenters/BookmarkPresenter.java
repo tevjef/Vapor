@@ -3,14 +3,13 @@ package com.tevinjeffrey.vapor.ui.files.fragments.presenters;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.events.DatabaseUpdateEvent;
-import com.tevinjeffrey.vapor.okcloudapp.DataManager;
+import com.tevinjeffrey.vapor.events.UploadEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
-import com.tevinjeffrey.vapor.ui.files.fragments.views.FilesView;
 
 import javax.inject.Inject;
 
-public class BookmarkPresenter<V extends FilesView> extends BaseFilesPresenterImpl<V> {
-    public BookmarkPresenter(DataManager dataManager) {
+public class BookmarkPresenter extends BaseFilesPresenterImpl {
+    public BookmarkPresenter() {
         itemType = ItemType.BOOKMARK;
     }
     @Inject
@@ -19,7 +18,12 @@ public class BookmarkPresenter<V extends FilesView> extends BaseFilesPresenterIm
 
     @Subscribe
     public void dbUpdate(DatabaseUpdateEvent event) {
-        loadData(false, false);
+        loadData(false, false, true);
+    }
+
+    @Subscribe
+    public void onUploadEvent(UploadEvent event) {
+        loadData(false, false, false);
     }
 
     @Override

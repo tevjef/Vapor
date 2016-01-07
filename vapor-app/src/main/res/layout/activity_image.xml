@@ -1,13 +1,17 @@
-<android.support.v7.internal.widget.FitWindowsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/black"
-    android:fitsSystemWindows="true"
-    tools:context="com.tevinjeffrey.vapor.ui.ImageActivity">
+<com.tevinjeffrey.vapor.customviews.ElasticDragDismissFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:background="@android:color/black"
+  android:fitsSystemWindows="true"
+  app:dragDismissDistance="112dp"
+  app:dragDismissScale="0.95"
+  tools:context="com.tevinjeffrey.vapor.ui.ImageActivity">
 
-   <com.tevinjeffrey.vapor.customviews.TouchImageView
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:id="@+id/imageView"/>
-</android.support.v7.internal.widget.FitWindowsFrameLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/imageView"/>
+</com.tevinjeffrey.vapor.customviews.ElasticDragDismissFrameLayout>

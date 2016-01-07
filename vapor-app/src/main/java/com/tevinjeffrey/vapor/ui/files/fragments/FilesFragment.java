@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,14 +16,16 @@ import android.widget.ProgressBar;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.R;
-import com.tevinjeffrey.vapor.VaprApp;
-import com.tevinjeffrey.vapor.ui.files.adapters.FilesFragmentAdapter;
+import com.tevinjeffrey.vapor.VaporApp;
+import com.tevinjeffrey.vapor.okcloudapp.DataManager;
+import com.tevinjeffrey.vapor.ui.base.View;
+import com.tevinjeffrey.vapor.ui.files.FilesFragmentAdapter;
 import com.tevinjeffrey.vapor.events.DeleteEvent;
 import com.tevinjeffrey.vapor.events.RenameEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 import com.tevinjeffrey.vapor.ui.base.Presenter;
-import com.tevinjeffrey.vapor.ui.base.View;
+import com.tevinjeffrey.vapor.ui.files.LayoutManager;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ArchivePresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.AudioPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BookmarkPresenter;
@@ -32,18 +35,22 @@ import com.tevinjeffrey.vapor.ui.files.fragments.presenters.RecentPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.TextPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.UnknownPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.VideoPresenter;
-import com.tevinjeffrey.vapor.ui.files.fragments.views.FilesView;
 import com.tevinjeffrey.vapor.ui.login.LoginException;
+import com.tevinjeffrey.vapor.ui.utils.EndlessRecyclerOnScrollListener;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import icepick.Icicle;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -61,6 +68,12 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
 
     @Inject
     Bus bus;
+
+    @Icicle
+    FilesViewState mViewState = new FilesViewState();
+
+    @Icicle
+    DataManager.DataCursor cursor;
 
     private ItemType mItemType;
 
@@ -82,7 +95,7 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
     public void onCreate(Bundle savedInstanceState) {
         setRetainInstance(true);
         super.onCreate(savedInstanceState);
-        VaprApp.objectGraph(getParentActivity()).inject(this);
+        VaporApp.uiComponent(getParentActivity()).inject(this);
         if (getArguments() != null) {
             mItemType = (ItemType) getArguments().getSerializable(ITEM_TYPE);
         }
@@ -109,11 +122,14 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //Attach view to presenter
-        initRecyclerView();
-        initSwipeLayout();
+        mViewState.apply(this, savedInstanceState != null);
+
+        if (getCursor() == null) {
+            cursor = new DataManager.DataCursor(getPresenter().getClass().getSimpleName());
+        }
         mPresenter.attachView(this);
         if (!getPresenter().isLoading()) {
-            getPresenter().loadData(true, false);
+            getPresenter().loadData(true, false, true);
         }
     }
 
@@ -121,6 +137,7 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
     public void onResume() {
         super.onResume();
         bus.register(this);
+
     }
 
     @Override
@@ -139,13 +156,13 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
         return (FilesPresenter) mPresenter;
     }
 
-    public void setPresenter(Presenter<View> filesPresenter) {
+    public void setPresenter(Presenter filesPresenter) {
         mPresenter = filesPresenter;
-        VaprApp.objectGraph(getParentActivity()).inject(mPresenter);
     }
 
     @Override
     public void showLoading(final boolean pullToRefresh) {
+        mViewState.isRefreshing = pullToRefresh;
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -158,9 +175,40 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
 
     @Override
     public void setData(List<CloudAppItem> data) {
-        mListDataSet.clear();
+        if(mListDataSet.equals(data) && mListDataSet.size() != 0){
+           return;
+        }
+        Iterator<CloudAppItem> itemIterator = data.iterator();
+        while (itemIterator.hasNext()) {
+            CloudAppItem currentItem = itemIterator.next();
+            for (int i = 0; i < mListDataSet.size(); i++) {
+                if (mListDataSet.get(i).equals(currentItem)) {
+                    mListDataSet.remove(i);
+                    mListDataSet.add(i, currentItem);
+                    mRecyclerView.getAdapter().notifyDataSetChanged();
+                    itemIterator.remove();
+                    break;
+                }
+            }
+        }
+        appendData(data);
+    }
+
+    public void appendData(List<CloudAppItem> data) {
         mListDataSet.addAll(data);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        if (mListDataSet.size() == 0)
+            showLayout(View.LayoutType.EMPTY);
+
+        if (mListDataSet.size() > 0)
+            showLayout(View.LayoutType.LIST);
+
+        mViewState.data = mListDataSet;
+        if (getParentActivity().getLayoutManager().getNavContext() != LayoutManager.NavContext.POPULAR) {
+            Collections.sort(mListDataSet);
+        }
+        if (data.size() != 0) {
+            mRecyclerView.getAdapter().notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -176,14 +224,15 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
             message = resources.getString(R.string.user_not_logged_in);
             showLayout(LayoutType.LOADING);
         } else {
-            t.printStackTrace();
-            message = getString(R.string.error_occurred);
+            Timber.e(t, "show error");
+            message = t.getMessage();
         }
+        mViewState.errorMessage = message;
         Snackbar.make(getView(), message, Snackbar.LENGTH_LONG).show();
     }
 
     public void initRecyclerView() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getParentActivity());
+        GridLayoutManager layoutManager = new GridLayoutManager(getParentActivity(), 2);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.setSmoothScrollbarEnabled(true);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -194,8 +243,18 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
         }
 
         if (mRecyclerView.getAdapter() == null) {
+         /*   AlphaInAnimationAdapter animationAdapter = new AlphaInAnimationAdapter();
+            animationAdapter.setFirstOnly(false);
+            animationAdapter.setDuration(50);*/
             mRecyclerView.setAdapter(new FilesFragmentAdapter(mListDataSet, getParentActivity()));
         }
+
+        mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int currentPage) {
+                getPresenter().loadData(false, false, true);
+            }
+        });
     }
 
     public void initSwipeLayout() {
@@ -206,6 +265,7 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
 
     @Override
     public void showLayout(LayoutType type) {
+        mViewState.layoutType = type;
         switch (type) {
             case EMPTY:
                 showRecyclerView(GONE);
@@ -225,6 +285,11 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
             default:
                 throw new RuntimeException("Unknown type: " + type);
         }
+    }
+
+    @Override
+    public DataManager.DataCursor getCursor() {
+        return cursor;
     }
 
     private void showEmptyLayout(int visibility) {
@@ -248,35 +313,53 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
         ButterKnife.unbind(this);
     }
 
-    private Presenter<View> getTypedPresenter() {
-        Presenter<View> presenter;
+    private Presenter getTypedPresenter() {
+        Presenter presenter;
         switch (mItemType) {
             case ALL:
-                presenter = VaprApp.objectGraph(getParentActivity()).get(RecentPresenter.class);
+                RecentPresenter recentPresenter = VaporApp.uiComponent(getParentActivity()).getRecentPresenter();
+                VaporApp.uiComponent(getParentActivity()).inject(recentPresenter);
+                presenter = recentPresenter;
                 break;
             case IMAGE:
-                presenter = VaprApp.objectGraph(getParentActivity()).get(ImagePresenter.class);
+                ImagePresenter imagePresenter = VaporApp.uiComponent(getParentActivity()).getImagePresenter();
+                VaporApp.uiComponent(getParentActivity()).inject(imagePresenter);
+                presenter = imagePresenter;
                 break;
             case VIDEO:
-                presenter = VaprApp.objectGraph(getParentActivity()).get(VideoPresenter.class);
+                VideoPresenter videoPresenter = VaporApp.uiComponent(getParentActivity()).getVideoPresenter();
+                VaporApp.uiComponent(getParentActivity()).inject(videoPresenter);
+                presenter = videoPresenter;
                 break;
             case ARCHIVE:
-                presenter = VaprApp.objectGraph(getParentActivity()).get(ArchivePresenter.class);
+                ArchivePresenter archivePresenter = VaporApp.uiComponent(getParentActivity()).getArchivePresenter();
+                VaporApp.uiComponent(getParentActivity()).inject(archivePresenter);
+                presenter = archivePresenter;                
                 break;
             case TEXT:
-                presenter = VaprApp.objectGraph(getParentActivity()).get(TextPresenter.class);
+                TextPresenter textPresenter = VaporApp.uiComponent(getParentActivity()).getTextPresenter();
+                VaporApp.uiComponent(getParentActivity()).inject(textPresenter);
+                presenter = textPresenter;
                 break;
             case AUDIO:
-                presenter = VaprApp.objectGraph(getParentActivity()).get(AudioPresenter.class);
+                AudioPresenter audioPresenter = VaporApp.uiComponent(getParentActivity()).getAudioPresenter();
+                VaporApp.uiComponent(getParentActivity()).inject(audioPresenter);
+                presenter = audioPresenter;
                 break;
             case BOOKMARK:
-                presenter = VaprApp.objectGraph(getParentActivity()).get(BookmarkPresenter.class);
+                BookmarkPresenter bookmarkPresenter = VaporApp.uiComponent(getParentActivity()).getBookmarkPresenter();
+                VaporApp.uiComponent(getParentActivity()).inject(bookmarkPresenter);
+                presenter = bookmarkPresenter;
                 break;
             case UNKNOWN:
-                presenter = VaprApp.objectGraph(getParentActivity()).get(UnknownPresenter.class);
+                UnknownPresenter unknownPresenter = VaporApp.uiComponent(getParentActivity()).getUnknownPresenter();
+                VaporApp.uiComponent(getParentActivity()).inject(unknownPresenter);
+                presenter = unknownPresenter;
                 break;
             default:
-                presenter = VaprApp.objectGraph(getParentActivity()).get(RecentPresenter.class);
+                recentPresenter = VaporApp.uiComponent(getParentActivity()).getRecentPresenter();
+                VaporApp.uiComponent(getParentActivity()).inject(recentPresenter);
+                presenter = recentPresenter;
         }
         return presenter;
     }
@@ -290,7 +373,7 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
 
     @Override
     public void onRefresh() {
-        getPresenter().loadData(true, true);
+        getPresenter().loadData(true, true, false);
     }
 
     @Subscribe
