@@ -1,21 +1,14 @@
 package com.tevinjeffrey.vapor.okcloudapp;
 
-import android.webkit.MimeTypeMap;
-
 import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.internal.Util;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import okio.BufferedSink;
-import okio.Okio;
-import okio.Source;
 
 public class ProgressiveStringRequestBody extends CloudAppRequestBody {
 

@@ -13,7 +13,6 @@ import android.view.animation.Transformation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.bumptech.glide.GenericRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -25,7 +24,6 @@ import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import timber.log.Timber;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.ARCHIVE;
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.AUDIO;

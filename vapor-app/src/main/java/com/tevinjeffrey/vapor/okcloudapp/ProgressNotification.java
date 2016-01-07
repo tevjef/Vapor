@@ -1,7 +1,7 @@
 package com.tevinjeffrey.vapor.okcloudapp;
 
-import android.support.v4.app.NotificationCompat;
 import android.app.NotificationManager;
+import android.support.v4.app.NotificationCompat;
 
 import com.tevinjeffrey.vapor.utils.VaporUtils;
 

@@ -3,7 +3,6 @@ package com.tevinjeffrey.vapor.okcloudapp;
 import android.webkit.MimeTypeMap;
 
 import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
 
 import java.io.File;
 import java.io.FileInputStream;

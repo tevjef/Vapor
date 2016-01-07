@@ -1,11 +1,9 @@
 package com.tevinjeffrey.vapor.ui;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -15,7 +13,6 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.tevinjeffrey.vapor.R;
-import com.tevinjeffrey.vapor.customviews.TouchImageView;
 
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 

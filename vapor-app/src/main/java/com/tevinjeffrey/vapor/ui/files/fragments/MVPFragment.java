@@ -1,7 +1,7 @@
 package com.tevinjeffrey.vapor.ui.files.fragments;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-
 
 import com.tevinjeffrey.vapor.ui.base.Presenter;
 import com.tevinjeffrey.vapor.ui.base.View;

@@ -2,16 +2,15 @@ package com.tevinjeffrey.vapor.ui;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
 import com.tevinjeffrey.vapor.R;
-import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.utils.AppCompatPreferenceActivity;
 
 import butterknife.ButterKnife;

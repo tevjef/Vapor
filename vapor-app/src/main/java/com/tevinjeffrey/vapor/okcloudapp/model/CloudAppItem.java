@@ -5,14 +5,16 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.orm.SugarRecord;
-import com.orm.dsl.Table;
 import com.orm.dsl.Unique;
 import com.tevinjeffrey.vapor.okcloudapp.utils.CloudAppUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 
-import static android.text.format.DateUtils.*;
+import static android.text.format.DateUtils.FORMAT_SHOW_DATE;
+import static android.text.format.DateUtils.FORMAT_SHOW_TIME;
+import static android.text.format.DateUtils.FORMAT_SHOW_YEAR;
+import static android.text.format.DateUtils.formatDateTime;
 import static com.tevinjeffrey.vapor.okcloudapp.utils.CloudAppUtils.formatDate;
 
 public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem>,Parcelable {

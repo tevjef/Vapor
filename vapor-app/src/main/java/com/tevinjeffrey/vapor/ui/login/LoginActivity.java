@@ -26,8 +26,8 @@ import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.BuildConfig;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
-import com.tevinjeffrey.vapor.utils.VaporUtils;
 import com.tevinjeffrey.vapor.events.LoginEvent;
+import com.tevinjeffrey.vapor.utils.VaporUtils;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;

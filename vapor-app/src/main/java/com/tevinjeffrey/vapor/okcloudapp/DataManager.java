@@ -12,8 +12,8 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.events.AppLaunchEvent;
 import com.tevinjeffrey.vapor.events.DatabaseUpdateEvent;
+import com.tevinjeffrey.vapor.events.LoginEvent;
 import com.tevinjeffrey.vapor.events.LogoutEvent;
-import com.tevinjeffrey.vapor.events.UploadEvent;
 import com.tevinjeffrey.vapor.okcloudapp.exceptions.FileToLargeException;
 import com.tevinjeffrey.vapor.okcloudapp.exceptions.UploadLimitException;
 import com.tevinjeffrey.vapor.okcloudapp.model.AccountStatsModel;
@@ -21,16 +21,12 @@ import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppJsonItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.ItemModel;
-import com.tevinjeffrey.vapor.events.LoginEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.UploadModel;
 import com.tevinjeffrey.vapor.ui.login.LoginException;
 import com.tevinjeffrey.vapor.utils.RxUtils;
 
 import org.joda.time.DateTime;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;

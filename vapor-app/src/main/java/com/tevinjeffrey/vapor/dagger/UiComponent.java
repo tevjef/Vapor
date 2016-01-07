@@ -1,7 +1,7 @@
 package com.tevinjeffrey.vapor.dagger;
 
-import com.tevinjeffrey.vapor.services.IntentBridge;
 import com.tevinjeffrey.vapor.okcloudapp.DigestAuthenticator;
+import com.tevinjeffrey.vapor.services.IntentBridge;
 import com.tevinjeffrey.vapor.services.UploadService;
 import com.tevinjeffrey.vapor.ui.files.FilesActivity;
 import com.tevinjeffrey.vapor.ui.files.FilesVH;

@@ -2,7 +2,6 @@ package com.tevinjeffrey.vapor.ui.login;
 
 import com.tevinjeffrey.vapor.ui.base.Presenter;
 import com.tevinjeffrey.vapor.ui.base.StatefulPresenter;
-import com.tevinjeffrey.vapor.ui.base.View;
 
 public interface LoginPresenter extends Presenter<LoginView>, StatefulPresenter {
     //Coupled showing the loading animation with loading the View's data.

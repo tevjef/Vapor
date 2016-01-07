@@ -17,18 +17,18 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
+import com.tevinjeffrey.vapor.events.UploadEvent;
 import com.tevinjeffrey.vapor.okcloudapp.CloudAppRequestBody;
+import com.tevinjeffrey.vapor.okcloudapp.DataManager;
+import com.tevinjeffrey.vapor.okcloudapp.ProgressListener;
 import com.tevinjeffrey.vapor.okcloudapp.ProgressNotification;
 import com.tevinjeffrey.vapor.okcloudapp.ProgressiveFileRequestBody;
 import com.tevinjeffrey.vapor.okcloudapp.ProgressiveStringRequestBody;
 import com.tevinjeffrey.vapor.okcloudapp.RefCountManager;
-import com.tevinjeffrey.vapor.events.UploadEvent;
-import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.exceptions.FileToLargeException;
 import com.tevinjeffrey.vapor.okcloudapp.exceptions.UploadLimitException;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.utils.FileUtils;
-import com.tevinjeffrey.vapor.okcloudapp.ProgressListener;
 import com.tevinjeffrey.vapor.utils.RxUtils;
 
 import java.io.File;
@@ -48,7 +48,9 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
-import static com.tevinjeffrey.vapor.services.IntentBridge.*;
+import static com.tevinjeffrey.vapor.services.IntentBridge.FILE_BOOKMARK;
+import static com.tevinjeffrey.vapor.services.IntentBridge.FILE_TEXT;
+import static com.tevinjeffrey.vapor.services.IntentBridge.FILE_TYPE;
 
 
 public class UploadService extends Service {
