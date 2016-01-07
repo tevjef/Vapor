@@ -34,10 +34,6 @@ public class ProgressiveStringRequestBody extends CloudAppRequestBody {
         this.listener = listener;
     }
 
-    public void setListener(ProgressListener listener) {
-        this.listener = listener;
-    }
-
     @Override
     public long contentLength() {
         return bytes.length;
