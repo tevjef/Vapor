@@ -22,9 +22,9 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:background="@drawable/bg_gradient"
+            android:layout_height="130dp"
             android:layout_alignParentBottom="true"
+            android:id="@+id/bs_main_scrim"
             android:padding="16dp">
 
             <net.steamcrafted.materialiconlib.MaterialIconView

@@ -1,6 +1,6 @@
 package com.tevinjeffrey.vapor.ui.utils;
 
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScrollListener {
@@ -13,10 +13,10 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
 
     private int current_page = 1;
 
-    private LinearLayoutManager mLinearLayoutManager;
+    private GridLayoutManager layoutManager;
 
-    public EndlessRecyclerOnScrollListener(LinearLayoutManager linearLayoutManager) {
-        this.mLinearLayoutManager = linearLayoutManager;
+    public EndlessRecyclerOnScrollListener(GridLayoutManager linearLayoutManager) {
+        this.layoutManager = linearLayoutManager;
     }
 
     @Override
@@ -24,8 +24,8 @@ public abstract class EndlessRecyclerOnScrollListener extends RecyclerView.OnScr
         super.onScrolled(recyclerView, dx, dy);
 
         visibleItemCount = recyclerView.getChildCount();
-        totalItemCount = mLinearLayoutManager.getItemCount();
-        firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
+        totalItemCount = layoutManager.getItemCount();
+        firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
 
         if (loading) {
             if (totalItemCount > previousTotal) {

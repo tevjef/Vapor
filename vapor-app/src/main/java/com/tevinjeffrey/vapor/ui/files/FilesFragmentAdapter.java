@@ -26,7 +26,7 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesVH> {
 
     @Override
     public FilesVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        final View parent = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.file_list_item, viewGroup, false);
+        final View parent = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.file_grid_list_item, viewGroup, false);
         final FilesVH filesVH = FilesVH.newInstance(parent);
         filesVH.setOnClickListener(new View.OnClickListener() {
             @Override

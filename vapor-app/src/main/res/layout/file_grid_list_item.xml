@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="190dp"
+    android:layout_margin="4dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/image_container"
+            android:background="@color/primary"
+            android:gravity="center"
+            android:weightSum="1">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/files_list_image"
+                android:scaleType="centerInside"
+                android:adjustViewBounds="false"
+                android:cropToPadding="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:background="?attr/selectableItemBackground"
+            android:id="@+id/files_list_right_container">
+
+            <net.steamcrafted.materialiconlib.MaterialIconView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                app:materialIcon="link"
+                app:materialIconColor="?attr/colorAccent"
+                app:materialIconSize="44dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:visibility="gone"
+                android:id="@+id/files_list_link"/>
+
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/primary_dark"
+        android:id="@+id/background_shade"
+        android:padding="10dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_centerVertical="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Image 2014-08-14 at 1.30.25 PM.png"
+                android:id="@+id/files_list_title"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:singleLine="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="3 mins ago"
+                android:id="@+id/files_list_time_ago"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>
+
