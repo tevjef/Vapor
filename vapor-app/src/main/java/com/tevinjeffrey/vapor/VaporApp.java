@@ -1,7 +1,9 @@
 package com.tevinjeffrey.vapor;
 
 import android.app.Application;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.StrictMode;
 
 import com.bumptech.glide.Glide;
 import com.facebook.stetho.Stetho;
@@ -9,9 +11,18 @@ import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.HawkBuilder;
 import com.orhanobut.hawk.LogLevel;
 import com.orm.SugarContext;
-import com.tevinjeffrey.vapor.okcloudapp.DataManager;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+import com.tevinjeffrey.vapor.dagger.VaporAppComponent;
+import com.tevinjeffrey.vapor.events.LoginEvent;
+import com.tevinjeffrey.vapor.events.LogoutEvent;
+import com.tevinjeffrey.vapor.okcloudapp.RefCountManager;
 import com.tevinjeffrey.vapor.ui.DaggerUiComponent;
-import com.tevinjeffrey.vapor.ui.UiComponent;
+import com.tevinjeffrey.vapor.dagger.UiComponent;
+
+import java.io.IOException;
+
+import javax.inject.Inject;
 
 import timber.log.Timber;
 
@@ -19,7 +30,12 @@ public class VaporApp extends Application {
 
     private static String TAG = "VaporApp";
 
-    DataManager dataManager;
+    @Inject
+    Bus bus;
+    @Inject
+    NotificationManager notificationManager;
+    @Inject
+    RefCountManager refCountManager;
 
     VaporAppComponent vaporAppComponent;
     UiComponent uiComponent;
@@ -30,8 +46,7 @@ public class VaporApp extends Application {
         //Bad static initializers.
         SugarContext.init(this);
         Hawk.init(this)
-        .setEncryptionMethod(HawkBuilder.EncryptionMethod.MEDIUM)
-                .setPassword("ASTRONGASSPASS")
+        .setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
                 .setStorage(HawkBuilder.newSqliteStorage(this))
                 .setLogLevel(LogLevel.FULL)
                 .build();
@@ -43,15 +58,34 @@ public class VaporApp extends Application {
                 .vaporAppComponent(vaporAppComponent)
                 .build();
 
+        vaporAppComponent.inject(this);
+
+        registerBus();
 
         initStetho();
 
         if (BuildConfig.DEBUG) {
             //When debugging logs will go through the Android logger
             Timber.plant(new Timber.DebugTree());
+
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectCustomSlowCalls()
+            .detectDiskReads()
+            .detectDiskWrites()
+            .penaltyLog()
+            .build());
+
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+            .detectActivityLeaks()
+            .penaltyLog()
+            .build());
         }
-        dataManager = vaporAppComponent.dataManager();
-        dataManager.syncAllItems();
+
+        Thread.setDefaultUncaughtExceptionHandler(new CrashHandler(this));
+    }
+
+    private void registerBus() {
+        bus.register(this);
     }
 
     private void initStetho() {
@@ -82,6 +116,11 @@ public class VaporApp extends Application {
                 .build();
     }
 
+    public static void recreateVaporComponent(Context context) {
+        ((VaporApp) context.getApplicationContext()).vaporAppComponent =
+                VaporAppComponent.Initializer.init((VaporApp)context.getApplicationContext());
+    }
+
     @Override
     public void onLowMemory() {
         super.onLowMemory();
@@ -98,5 +137,50 @@ public class VaporApp extends Application {
     public void onTerminate() {
         super.onTerminate();
         SugarContext.terminate();
+        bus.unregister(this);
+
+        for (Integer notificationId : refCountManager.getNotificationIds()) {
+            notificationManager.cancel(notificationId);
+            Timber.i("CLEAN UP from onTerminate with id=%s", notificationId);
+        }
+    }
+
+    @Subscribe
+    public void onLogin(LoginEvent event) {
+    }
+
+    @Subscribe
+    public void onLogoutEvent(LogoutEvent event) {
+        VaporApp.recreateVaporComponent(this);
+        VaporApp.recreateUiComponent(this);
+        vaporAppComponent.inject(this);
+        registerBus();
+
+        try {
+            vaporAppComponent.client().getCache().evictAll();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*http://stackoverflow.com/questions/4028742/how-to-clear-a-notification-if-activity-crashes*/
+    public class CrashHandler implements Thread.UncaughtExceptionHandler {
+
+        private Thread.UncaughtExceptionHandler defaultUEH;
+        private NotificationManager notificationManager;
+
+        public CrashHandler(Context context) {
+            this.defaultUEH = Thread.getDefaultUncaughtExceptionHandler();
+            notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+
+        public void uncaughtException(Thread t, Throwable e) {
+            for (Integer notificationId : refCountManager.getNotificationIds()) {
+                notificationManager.cancel(notificationId);
+                Timber.i("CLEAN UP from uncaughtException with id=%s", notificationId);
+            }
+            notificationManager = null;
+            defaultUEH.uncaughtException(t, e);
+        }
     }
 }

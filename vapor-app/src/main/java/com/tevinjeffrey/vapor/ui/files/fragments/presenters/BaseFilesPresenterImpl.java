@@ -1,7 +1,6 @@
 package com.tevinjeffrey.vapor.ui.files.fragments.presenters;
 
 import com.squareup.otto.Bus;
-import com.tevinjeffrey.vapor.okcloudapp.DataCursor;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
@@ -74,7 +73,7 @@ public class BaseFilesPresenterImpl extends BasePresenter<FilesView> implements 
             }
         };
 
-        DataCursor cursor = new DataCursor();
+        DataManager.DataCursor cursor = new DataManager.DataCursor();
         if (useCursor) {
             if (getView() != null) {
                 cursor = getView().getCursor();
@@ -118,6 +117,12 @@ public class BaseFilesPresenterImpl extends BasePresenter<FilesView> implements 
     @Override
     public boolean isLoading() {
         return isLoading;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadData(false, false, false);
     }
 
     @Override

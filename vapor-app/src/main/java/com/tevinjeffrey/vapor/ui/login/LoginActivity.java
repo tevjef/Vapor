@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -196,11 +197,12 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         } else if (t instanceof SocketTimeoutException) {
             message = resources.getString(R.string.timed_out);
         } else {
+            loginWrapperEmail.setErrorEnabled(true);
             loginWrapperPassword.setErrorEnabled(true);
             loginWrapperPassword.setError(getString(R.string.email_password_incorrect));
-            message = getString(R.string.email_password_incorrect);
+            return;
         }
-        //Snackbar.make(root, message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(root, message, Snackbar.LENGTH_LONG).show();
     }
 
     private boolean isSignInFieldValid() {
@@ -229,6 +231,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         }
 
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     @OnClick(R.id.tos)

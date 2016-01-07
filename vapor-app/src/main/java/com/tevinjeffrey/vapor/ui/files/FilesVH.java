@@ -1,17 +1,38 @@
 package com.tevinjeffrey.vapor.ui.files;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
+import android.graphics.drawable.PaintDrawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.BitmapDrawableResource;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
@@ -32,18 +53,16 @@ public class FilesVH extends RecyclerView.ViewHolder {
     final ImageView fileImage;
     final View parent;
     final TextView fileTimeAgo;
-    final MaterialIconView fileLink;
 
     @Inject
     ClipboardManager clipboardManager;
 
-    public FilesVH(View parent, ImageView imageView, TextView fileTitle, TextView fileTimeAgo, MaterialIconView fileLink) {
+    public FilesVH(View parent, ImageView imageView, TextView fileTitle, TextView fileTimeAgo) {
         super(parent);
         this.parent = parent;
         this.fileTitle = fileTitle;
         this.fileImage = imageView;
         this.fileTimeAgo = fileTimeAgo;
-        this.fileLink = fileLink;
         VaporApp.uiComponent(parent.getContext()).inject(this);
     }
 
@@ -51,9 +70,8 @@ public class FilesVH extends RecyclerView.ViewHolder {
         ImageView imageView = ButterKnife.findById(parent, R.id.files_list_image);
         TextView fileTitle = ButterKnife.findById(parent, R.id.files_list_title);
         TextView fileTimeAgo = ButterKnife.findById(parent, R.id.files_list_time_ago);
-        MaterialIconView fileLink = ButterKnife.findById(parent, R.id.files_list_link);
 
-        return new FilesVH(parent, imageView, fileTitle, fileTimeAgo, fileLink);
+        return new FilesVH(parent, imageView, fileTitle, fileTimeAgo);
     }
 
     public void setTitle(CloudAppItem cloudAppItem) {
@@ -64,25 +82,63 @@ public class FilesVH extends RecyclerView.ViewHolder {
         fileTimeAgo.setText(DateUtils.getRelativeTimeSpanString(Long.parseLong(cloudAppItem.getCreatedAt()), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
     }
 
-    public void setLink(final CloudAppItem cloudAppItem) {
-        fileLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipData clip = ClipData.newPlainText("Uploaded item url", cloudAppItem.getUrl());
-                clipboardManager.setPrimaryClip(clip);
-                Toast.makeText(parent.getContext(), "Copied: " + cloudAppItem.getUrl(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     public void setImage(CloudAppItem cloudAppItem) {
         CloudAppItem.ItemType type = cloudAppItem.getItemType();
         Drawable drawable = null;
+
+        final View background = ButterKnife.findById(parent, R.id.background_shade);
+        final TextView itemName = ButterKnife.findById(parent, R.id.files_list_title);
+        final TextView timeSince = ButterKnife.findById(parent, R.id.files_list_time_ago);
+
+        itemName.setTextColor(Color.WHITE);
+        timeSince.setTextColor(Color.WHITE);
+        background.setBackgroundColor(ContextCompat.getColor(background.getContext(), R.color.primary_dark));
+
         if (type == IMAGE) {
             Glide.with(fileImage.getContext().getApplicationContext())
                     .load(cloudAppItem.getThumbnailUrl())
-                    .placeholder(getDrawable(IconValue.FILE_IMAGE))
+                    .asBitmap()
                     .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .listener(new RequestListener<String, Bitmap>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(Palette palette) {
+                                    Palette.Swatch swatch = palette.getDarkVibrantSwatch();
+                                    if (swatch != null) {
+                                        ObjectAnimator.ofArgb(itemName, "textColor", itemName.getCurrentTextColor(), swatch.getBodyTextColor()).setDuration(500).start();
+                                        ObjectAnimator.ofArgb(timeSince, "textColor", timeSince.getCurrentTextColor(), swatch.getTitleTextColor()).setDuration(500).start();
+                                        background.setHasTransientState(true);
+                                        ObjectAnimator animator3 = ObjectAnimator.ofArgb(background, "backgroundColor", ((ColorDrawable)background.getBackground()).getColor(),
+                                                ColorUtils.setAlphaComponent(swatch.getRgb(), 204));
+                                        animator3.addListener(new AnimatorListenerAdapter() {
+                                            @Override
+                                            public void onAnimationStart(Animator animation) {
+                                                super.onAnimationStart(animation);
+                                            }
+
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                                super.onAnimationEnd(animation);
+                                                background.setHasTransientState(false);
+                                            }
+                                        });
+                                        animator3.setDuration(250).start();
+                                    }
+
+                                }
+                            });
+
+                            return false;
+                        }
+                    })
                     .into(fileImage);
             return;
         } else if (type == VIDEO) {
@@ -98,6 +154,7 @@ public class FilesVH extends RecyclerView.ViewHolder {
         } else if (type == UNKNOWN) {
             drawable = getDrawable(IconValue.FILE_CLOUD);
         }
+
         fileImage.setImageDrawable(drawable);
     }
 
@@ -106,12 +163,12 @@ public class FilesVH extends RecyclerView.ViewHolder {
         setImage(item);
         setTitle(item);
         setTimeAgo(item);
-        setLink(item);
     }
 
     public Drawable getDrawable(IconValue value) {
         return MaterialDrawableBuilder.with(parent.getContext().getApplicationContext())
                 .setIcon(value)
+                .setSizeDp(34)
                 .setColor(Color.WHITE)
                 .build();
     }

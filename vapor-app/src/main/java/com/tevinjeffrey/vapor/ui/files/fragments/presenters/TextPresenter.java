@@ -3,6 +3,7 @@ package com.tevinjeffrey.vapor.ui.files.fragments.presenters;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.events.DatabaseUpdateEvent;
+import com.tevinjeffrey.vapor.events.UploadEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 
 import javax.inject.Inject;
@@ -16,9 +17,13 @@ public class TextPresenter extends BaseFilesPresenterImpl {
 
     @Subscribe
     public void dbUpdate(DatabaseUpdateEvent event) {
-        loadData(false, false, false);
+        loadData(false, false, true);
     }
 
+    @Subscribe
+    public void onUploadEvent(UploadEvent event) {
+        loadData(false, true, false);
+    }
     @Override
     public void onPause() {
         super.onPause();

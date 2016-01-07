@@ -53,8 +53,8 @@ public interface CloudAppService {
     Observable<ItemModel> setItemSecurity(@Path("item-id") String itemId, @Body CloudAppJsonItem item);
 
     @Headers("Accept: application/json")
-    @POST("/items/{item-id}")
-    Observable<ItemModel> bookmarkLink(@Path("item-id") String itemId, @Body CloudAppJsonItem item);
+    @POST("/items")
+    Observable<ItemModel> bookmarkLink(@Body CloudAppJsonItem item);
 
     @Headers("Accept: application/json")
     @GET("/account")
@@ -91,5 +91,5 @@ public interface CloudAppService {
     @Multipart
     @Headers("Accept: application/json")
     @POST("http://s3.amazonaws.com/f.cl.ly")
-    Observable<CloudAppItem> uploadFile(@Header("content-length") String length, @PartMap Map<String, RequestBody> parts);
+    Observable<ItemModel> uploadFile(@PartMap Map<String, RequestBody> parts);
 }

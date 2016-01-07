@@ -32,7 +32,7 @@ public class FileUtils {
 
     /** TAG for log messages. */
     static final String TAG = "FileUtils";
-    private static final boolean DEBUG = false; // Set to true to enable logging
+    private static final boolean DEBUG = true; // Set to true to enable logging
 
     public static final String MIME_TYPE_AUDIO = "audio/*";
     public static final String MIME_TYPE_TEXT = "text/*";
@@ -194,7 +194,8 @@ public class FileUtils {
      * @return Whether the Uri authority is Google Photos.
      */
     public static boolean isGooglePhotosUri(Uri uri) {
-        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+        return "com.google.android.apps.photos.content".equals(uri.getAuthority()) ||
+                "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
     }
 
     /**

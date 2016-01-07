@@ -2,7 +2,10 @@ package com.tevinjeffrey.vapor.ui.files;
 
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
@@ -22,10 +25,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,6 +60,7 @@ import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BottomSheetPresenter
 import com.tevinjeffrey.vapor.ui.files.fragments.BottomSheetView;
 import com.tevinjeffrey.vapor.ui.login.LoginActivity;
 import com.tevinjeffrey.vapor.ui.utils.ItemClickListener;
+import com.tevinjeffrey.vapor.utils.ScrimUtil;
 import com.tevinjeffrey.vapor.utils.VaporUtils;
 
 import java.util.ArrayList;
@@ -68,6 +76,8 @@ import icepick.Icicle;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import timber.log.Timber;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static android.support.design.widget.TabLayout.MODE_SCROLLABLE;
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.ALL;
@@ -83,48 +93,37 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
 
     private final int FILE_SELECT_CODE = 42;
 
-    @Inject
-    UserManager userManager;
-    @Inject
-    DataManager dataManager;
-    @Inject
-    Bus bus;
-    @Inject
-    LayoutManager layoutManager;
-    @Inject
-    ClipboardManager clipboardManager;
+    @Inject UserManager userManager;
+    @Inject DataManager dataManager;
+    @Inject Bus bus;
+    @Inject LayoutManager layoutManager;
+    @Inject ClipboardManager clipboardManager;
 
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-    @Bind(R.id.tabs)
-    TabLayout tabs;
-    @Bind(R.id.appbar)
-    AppBarLayout appbar;
-    @Bind(R.id.viewpager)
-    ViewPager viewPager;
-    @Bind(R.id.main_content)
-    CoordinatorLayout mainContent;
-    @Bind(R.id.nav_view)
-    NavigationView navView;
-    @Bind(R.id.drawer_layout)
-    DrawerLayout drawerLayout;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.tabs) TabLayout tabs;
+    @Bind(R.id.appbar) AppBarLayout appbar;
+    @Bind(R.id.viewpager) ViewPager viewPager;
+    @Bind(R.id.main_content) CoordinatorLayout mainContent;
+    @Bind(R.id.nav_view) NavigationView navView;
+    @Bind(R.id.drawer_layout) DrawerLayout drawerLayout;
+    @Bind(R.id.fab) FloatingActionButton mFab;
+    @Icicle LayoutManager.NavContext navContext;
+    @Bind(R.id.bottomsheet) BottomSheetLayout bottomsheet;
+    @Bind(R.id.share_bottomsheet) BottomSheetLayout shareBottomsheet;
+
     TextView mHeaderEmail;
-    @Bind(R.id.fab)
-    FloatingActionButton mFab;
-    @Icicle
-    LayoutManager.NavContext navContext;
-    @Bind(R.id.bottomsheet)
-    BottomSheetLayout bottomsheet;
-    @Bind(R.id.share_bottomsheet)
-    BottomSheetLayout shareBottomsheet;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Icepick.restoreInstanceState(this, savedInstanceState);
         VaporApp.uiComponent(this).inject(this);
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         bus.register(this);
+
+
         if (!userManager.isLoggedIn()) {
+            Timber.d("User not logged in.");
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
@@ -133,8 +132,8 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
             navContext = LayoutManager.NavContext.ALL;
         }
 
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+
+
         View mHeader = LayoutInflater.from(this).inflate(R.layout.nav_header, null);
         mHeaderEmail = ButterKnife.findById(mHeader, R.id.nav_view_email);
         setEmail();
@@ -144,7 +143,6 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         final ActionBar ab = getSupportActionBar();
         ab.setHomeAsUpIndicator(R.drawable.ic_menu);
         ab.setDisplayHomeAsUpEnabled(true);
-        layoutManager.setNavContext(LayoutManager.NavContext.ALL);
         if (navView != null) {
             setupDrawerContent(navView);
             navView.addHeaderView(mHeader);
@@ -159,23 +157,7 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                ActivityCompat.requestPermissions(FilesActivity.this, new String[]{"android.permission.READ_EXTERNAL_STORAGE"}, 42);
-                // ACTION_OPEN_DOCUMENT is the intent to choose a file via the system's file
-                // browser.
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-
-                // Filter to only show results that can be "opened", such as a
-                // file (as opposed to a list of contacts or timezones)
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-                // Filter to show only images, using the image MIME data type.
-                // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
-                // To search for all documents available via installed storage providers,
-                // it would be "*/*".
-                intent.setType("*/*");
-
-                startActivityForResult(intent, FILE_SELECT_CODE);
+                startActivity(new Intent(IntentBridge.FILE_SELECT, null, FilesActivity.this, IntentBridge.class));
             }
         });
 
@@ -186,17 +168,13 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == FILE_SELECT_CODE) {
-            if (resultCode == RESULT_OK) {
-                Intent uploadIntent = new Intent(this, IntentBridge.class);
-                uploadIntent.setData(data.getData());
-                startActivity(uploadIntent);
-            }
-        }
+    public LayoutManager getLayoutManager() {
+        return layoutManager;
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override
@@ -207,7 +185,7 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
 
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setCheckedItem(R.id.nav_all);
-        setToolbarTitle("All Recent Files");
+        setToolbarTitle(layoutManager.getTitle());
         drawerLayout.setScrimColor(ContextCompat.getColor(this, R.color.drawer_scrim));
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -220,23 +198,21 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
                         switch (menuItem.getItemId()) {
                             case R.id.nav_all:
                                 layoutManager.setNavContext(LayoutManager.NavContext.ALL);
-                                setToolbarTitle("All Recent Files");
                                 break;
                             case R.id.nav_favorites:
                                 layoutManager.setNavContext(LayoutManager.NavContext.FAVORITE);
-                                setToolbarTitle("Favorites");
                                 break;
                             case R.id.nav_popular:
                                 layoutManager.setNavContext(LayoutManager.NavContext.POPULAR);
-                                setToolbarTitle("Popular");
                                 break;
                             case R.id.nav_trash:
                                 layoutManager.setNavContext(LayoutManager.NavContext.TRASH);
-                                setToolbarTitle("Trash");
                                 break;
                             default:
                                 throw new RuntimeException("Unknown type");
                         }
+                        setToolbarTitle(layoutManager.getTitle());
+
                         //Smoother animation when closing drawer.
                         if (oldContext != layoutManager.getNavContext()) {
                             Observable.just(new Object()).delay(250, TimeUnit.MILLISECONDS)
@@ -252,6 +228,7 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
                         return true;
                     }
                 });
+
     }
 
     private void setToolbarTitle(CharSequence charSequence) {
@@ -331,6 +308,8 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
             bottomsheet.setPeekSheetTranslation((float) (getResources().getDisplayMetrics().heightPixels * .60));
         }
 
+        Drawable previousImage = ButterKnife.<ImageView>findById(view, R.id.files_list_image).getDrawable();
+
         final TextView bsFileName = ButterKnife.findById(bottomsheet, R.id.bs_file_name);
         TextView bsSizeText = ButterKnife.findById(bottomsheet, R.id.bs_size_text);
         TextView bsCreatedText = ButterKnife.findById(bottomsheet, R.id.bs_created_text);
@@ -340,16 +319,16 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         View renameFile = ButterKnife.findById(bottomsheet, R.id.bs_rename_container);
         View deleteFile = ButterKnife.findById(bottomsheet, R.id.bs_delete_container);
         View expandButton = ButterKnife.findById(bottomsheet, R.id.bs_expand_icon);
+        View scrim = ButterKnife.findById(bottomsheet, R.id.bs_main_scrim);
         if (data.getItemType() != IMAGE) {
             expandButton.setVisibility(View.GONE);
         }
 
+        scrim.setBackground(ScrimUtil.makeCubicGradientScrimDrawable(
+                0xaa000000, 8, Gravity.BOTTOM));
         final TouchImageView mainImage = ButterKnife.findById(bottomsheet, R.id.bs_main_icon);
-        VaporUtils.setTypedImageView(data, mainImage, false, 120);
-
-        final MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .content("Please wait")
-                .progress(true, 0).build();
+        mainImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        VaporUtils.setTypedImageView(data, mainImage, previousImage, false, 120);
 
         bsFileName.setText(data.getName());
         bsSizeText.setText(VaporUtils.humanReadableByteCount(data.getContentLength(), true));
@@ -357,13 +336,18 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         bsViewsText.setText(String.valueOf(data.getViewCounter()));
 
         final BottomSheetPresenterImpl sheetPresenter = new BottomSheetPresenterImpl(new BottomSheetView() {
+
+           /* final MaterialDialog dialog = new MaterialDialog.Builder(this)
+                    .content("Please wait")
+                    .progress(true, 0).build();*/
+
             @Override
             public void showLoading(boolean isLoading) {
-                if (isLoading) {
+                /*if (isLoading) {
                     dialog.show();
                 } else {
                     dialog.dismiss();
-                }
+                }*/
             }
 
             @Override
@@ -503,11 +487,16 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
     @Subscribe
     public void onLogin(LoginEvent event) {
         setEmail();
+
+        if (getIntent().getParcelableExtra(IntentBridge.AWAITING_UPLOAD) != null) {
+            setResult(RESULT_OK, (Intent) getIntent().getParcelableExtra(IntentBridge.AWAITING_UPLOAD));
+            finish();
+        }
     }
 
     @Subscribe
     public void onLogoutEvent(LogoutEvent event) {
-        VaporApp.recreateUiComponent(this);
+
     }
 
 
