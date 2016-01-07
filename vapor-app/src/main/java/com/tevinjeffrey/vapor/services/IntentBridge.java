@@ -71,6 +71,7 @@ public class IntentBridge extends Activity {
             startActivity(intent);
             Toast.makeText(this, "Please enable the required permissions!", Toast.LENGTH_LONG).show();
             finish();
+            return;
         }
 
         Intent incomingIntent = getIntent();

@@ -123,8 +123,6 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
             navContext = LayoutManager.NavContext.ALL;
         }
 
-
-
         View mHeader = LayoutInflater.from(this).inflate(R.layout.nav_header, null);
         mHeaderEmail = ButterKnife.findById(mHeader, R.id.nav_view_email);
         setEmail();

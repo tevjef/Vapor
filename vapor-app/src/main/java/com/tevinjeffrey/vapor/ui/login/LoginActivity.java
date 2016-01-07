@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.BuildConfig;
+import com.tevinjeffrey.vapor.IntroActivity;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.events.LoginEvent;
@@ -184,6 +185,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     public void loginSuccessful(boolean isSuccessful) {
         if (isSuccessful) {
             bus.post(new LoginEvent());
+            Intent intent = new Intent(this, IntroActivity.class);
+            startActivity(intent);
             finish();
         }
     }

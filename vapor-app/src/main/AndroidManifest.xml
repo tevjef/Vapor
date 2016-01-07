@@ -71,6 +71,11 @@
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
+        <activity
+            android:name=".IntroActivity"
+            android:theme="@style/Vapr_Default"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
 
 </manifest>
