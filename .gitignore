@@ -1,11 +1,5 @@
-<<<<<<< HEAD
 .gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
 .DS_Store
-/build
-/captures
 =======
 # Created by https://www.gitignore.io
 
@@ -46,4 +40,6 @@ captures/
 *.alloc
 *.hprof
 *.index
->>>>>>> vapor-mvp-temp
+vapor-mvp-temp
+.idea/misc.xml
+.idea/misc.xml

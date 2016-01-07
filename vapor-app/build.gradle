@@ -37,18 +37,20 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     //Boilerplate reduction
-    compile 'com.jonathanfinerty.once:once:0.3.2'
     apt 'frankiesardo:icepick-processor:3.0.2'
     apt 'com.google.dagger:dagger-compiler:2.0'
     provided 'javax.annotation:jsr250-api:1.0'
-    compile 'com.google.dagger:dagger:2.0'
     //Android
-    compile 'com.nispok:snackbar:2.9.1'
-    compile 'net.steamcrafted:materialiconlib:1.0.3'
-    compile 'com.jakewharton:butterknife:7.0.1'
     compile('com.afollestad.material-dialogs:core:0.8.1.0@aar') {
         transitive = true
     }
+    compile 'com.jonathanfinerty.once:once:0.3.2'
+
+    compile 'com.jonathanfinerty.once:once:0.3.2'
+    compile 'com.google.dagger:dagger:2.0'
+    compile 'com.nispok:snackbar:2.9.1'
+    compile 'net.steamcrafted:materialiconlib:1.0.3'
+    compile 'com.jakewharton:butterknife:7.0.1'
     compile 'joda-time:joda-time:2.8.2'
     compile 'com.flipboard:bottomsheet-core:1.4.2'
     compile 'com.flipboard:bottomsheet-commons:1.4.2'
@@ -56,7 +58,6 @@ dependencies {
     compile 'commons-io:commons-io:2.4'
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'io.realm:realm-android:0.82.1'
-    compile 'com.jonathanfinerty.once:once:0.3.2'
     compile 'com.github.paolorotolo:appintro:3.2.0'
     compile 'frankiesardo:icepick:3.0.2'
     compile 'com.google.code.gson:gson:2.4'
@@ -78,6 +79,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.android.support:support-annotations:23.1.1'
+    compile 'com.android.support:palette-v7:23.1.1'
 
+    compile 'com.commit451:PhotoView:1.2.4'
     compile 'jp.wasabeef:recyclerview-animators:2.1.0'
 }
