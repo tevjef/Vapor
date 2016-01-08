@@ -80,6 +80,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
     compile "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
     compile "com.android.support:palette-v7:${rootProject.ext.supportLibVersion}"
+    compile "com.android.support:percent:${rootProject.ext.supportLibVersion}"
     compile 'com.commit451:PhotoView:1.2.4'
     compile 'jp.wasabeef:recyclerview-animators:2.1.0'
 }
