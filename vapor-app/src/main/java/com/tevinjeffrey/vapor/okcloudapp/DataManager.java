@@ -360,7 +360,7 @@ public class DataManager {
             observable = Observable.defer(new Func0<Observable<List<CloudAppItem>>>() {
                 @Override
                 public Observable<List<CloudAppItem>> call() {
-                    String query = "SELECT * FROM CLOUD_APP_ITEM WHERE DELETED_AT <> -1 ORDER BY ITEM_ID DESC LIMIT ? OFFSET ?";
+                    String query = "SELECT * FROM CLOUD_APP_ITEM WHERE DELETED_AT <> -1 ORDER BY DELETED_AT DESC LIMIT ? OFFSET ?";
                     Timber.d(query.replace("?", "%s"), String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset()));
                     return  Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
                             query, String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset())));
@@ -370,7 +370,7 @@ public class DataManager {
             observable = Observable.defer(new Func0<Observable<List<CloudAppItem>>>() {
                 @Override
                 public Observable<List<CloudAppItem>> call() {
-                    String query = "SELECT * FROM CLOUD_APP_ITEM WHERE ITEM_TYPE = ? AND DELETED_AT <> -1 ORDER BY ITEM_ID, VIEW_COUNTER DESC LIMIT ? OFFSET ?";
+                    String query = "SELECT * FROM CLOUD_APP_ITEM WHERE ITEM_TYPE = ? AND DELETED_AT <> -1 ORDER BY DELETED_AT DESC LIMIT ? OFFSET ?";
                     Timber.d(query.replace("?", "%s"), type.toString().toLowerCase(), String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset()));
                     return Observable.just(SugarRecord.findWithQuery(CloudAppItem.class,
                             query, type.toString().toLowerCase(), String.valueOf(cursor.getLimit()), String.valueOf(cursor.getOffset())));
@@ -436,8 +436,8 @@ public class DataManager {
 
     private Observable<List<CloudAppItem>> getListFromServer(Map<String, String> options) {
         return cloudAppService.listItems(options)
+                .retryWhen(new RxUtils.RetryWithDelay(2, 2000))
                 .onErrorResumeNext(Observable.<List<ItemModel>>empty())
-                .retryWhen(new RxUtils.RetryWithDelay(1, 2000))
                 .subscribeOn(Schedulers.io())
                 .flatMap(new Func1<List<ItemModel>, Observable<List<CloudAppItem>>>() {
                     @Override
