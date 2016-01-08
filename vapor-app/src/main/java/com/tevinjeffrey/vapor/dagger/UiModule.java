@@ -3,8 +3,11 @@ package com.tevinjeffrey.vapor.dagger;
 
 import android.content.Context;
 
+import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.VaporApp;
-import com.tevinjeffrey.vapor.ui.files.LayoutManager;
+import com.tevinjeffrey.vapor.okcloudapp.DataManager;
+import com.tevinjeffrey.vapor.ui.files.FilesActivityPresenter;
+import com.tevinjeffrey.vapor.ui.files.FilesActivityPresenterImpl;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ArchivePresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.AudioPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BookmarkPresenter;
@@ -28,12 +31,6 @@ public class UiModule {
         LoginPresenterImpl loginPresenter = new LoginPresenterImpl();
         VaporApp.uiComponent(context).inject(loginPresenter);
         return loginPresenter;
-    }
-
-    @Provides
-    @SessionScope
-    public LayoutManager providesLayoutManager() {
-        return new LayoutManager();
     }
 
     @Provides
@@ -83,4 +80,11 @@ public class UiModule {
     public UnknownPresenter providesUnknownPresenter() {
         return new UnknownPresenter();
     }
+
+    @Provides
+    @SessionScope
+    public FilesActivityPresenter providesFilesActivityPresenter(DataManager dataManager, Bus bus) {
+        return new FilesActivityPresenterImpl(dataManager, bus);
+    }
+
 }

@@ -4,6 +4,7 @@ import com.tevinjeffrey.vapor.okcloudapp.DigestAuthenticator;
 import com.tevinjeffrey.vapor.services.IntentBridge;
 import com.tevinjeffrey.vapor.services.UploadService;
 import com.tevinjeffrey.vapor.ui.files.FilesActivity;
+import com.tevinjeffrey.vapor.ui.files.FilesActivityPresenter;
 import com.tevinjeffrey.vapor.ui.files.FilesFragmentAdapter;
 import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragment;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ArchivePresenter;
@@ -43,6 +44,7 @@ public interface UiComponent {
     void inject(BookmarkPresenter presenter);
     void inject(UnknownPresenter presenter);
     void inject(BaseFilesPresenterImpl presenter);
+    void inject(FilesActivityPresenter presenter);
 
 
     void inject(LoginPresenterImpl loginPresenter);
@@ -56,4 +58,6 @@ public interface UiComponent {
     AudioPresenter getAudioPresenter();
     BookmarkPresenter getBookmarkPresenter();
     UnknownPresenter getUnknownPresenter();
+    FilesActivityPresenter getFilesActivityPresenter();
+
 }

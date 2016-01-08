@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -41,8 +39,6 @@ import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.customviews.TouchImageView;
 import com.tevinjeffrey.vapor.events.DeleteEvent;
-import com.tevinjeffrey.vapor.events.LoginEvent;
-import com.tevinjeffrey.vapor.events.LogoutEvent;
 import com.tevinjeffrey.vapor.events.RenameEvent;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.UserManager;
@@ -83,12 +79,11 @@ import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.TEXT
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.UNKNOWN;
 import static com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType.VIDEO;
 
-public class FilesActivity extends AppCompatActivity implements ItemClickListener<CloudAppItem, View>, ActivityCompat.OnRequestPermissionsResultCallback {
+public class FilesActivity extends AppCompatActivity implements ItemClickListener<CloudAppItem, View>, FilesActivityView {
 
     @Inject UserManager userManager;
     @Inject DataManager dataManager;
     @Inject Bus bus;
-    @Inject LayoutManager layoutManager;
     @Inject ClipboardManager clipboardManager;
 
     @Bind(R.id.toolbar) Toolbar toolbar;
@@ -99,9 +94,11 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
     @Bind(R.id.nav_view) NavigationView navView;
     @Bind(R.id.drawer_layout) DrawerLayout drawerLayout;
     @Bind(R.id.fab) FloatingActionButton mFab;
-    @Icicle LayoutManager.NavContext navContext;
     @Bind(R.id.bottomsheet) BottomSheetLayout bottomsheet;
     @Bind(R.id.share_bottomsheet) BottomSheetLayout shareBottomsheet;
+
+    @Inject
+    FilesActivityPresenter mPresenter;
 
     TextView mHeaderEmail;
     @Override
@@ -118,14 +115,12 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
+        mPresenter.attachView(this);
 
-        if (navContext == null) {
-            navContext = LayoutManager.NavContext.ALL;
-        }
-
-        View mHeader = LayoutInflater.from(this).inflate(R.layout.nav_header, null);
+        View mHeader = LayoutInflater.from(this).inflate(R.layout.activity_main_nav_header, null);
         mHeaderEmail = ButterKnife.findById(mHeader, R.id.nav_view_email);
-        setEmail();
+        mPresenter.loadEmail();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -153,12 +148,19 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    protected void onResume() {
+        super.onResume();
+        if (mPresenter != null) {
+            mPresenter.onResume();
+        }
     }
 
-    public LayoutManager getLayoutManager() {
-        return layoutManager;
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mPresenter != null) {
+            mPresenter.onPause();
+        }
     }
 
     @Override
@@ -174,7 +176,7 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
 
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setCheckedItem(R.id.nav_all);
-        setToolbarTitle(layoutManager.getTitle());
+        setToolbarTitle(mPresenter.getNavContext().toString());
         drawerLayout.setScrimColor(ContextCompat.getColor(this, R.color.drawer_scrim));
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -182,28 +184,28 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         menuItem.setChecked(true);
                         drawerLayout.closeDrawers();
-                        LayoutManager.NavContext oldContext = layoutManager.getNavContext();
+                        FilesActivityPresenter.NavContext oldContext = mPresenter.getNavContext();
 
                         switch (menuItem.getItemId()) {
                             case R.id.nav_all:
-                                layoutManager.setNavContext(LayoutManager.NavContext.ALL);
+                                mPresenter.setNavContext(FilesActivityPresenter.NavContext.ALL);
                                 break;
                             case R.id.nav_favorites:
-                                layoutManager.setNavContext(LayoutManager.NavContext.FAVORITE);
+                                mPresenter.setNavContext(FilesActivityPresenter.NavContext.FAVORITE);
                                 break;
                             case R.id.nav_popular:
-                                layoutManager.setNavContext(LayoutManager.NavContext.POPULAR);
+                                mPresenter.setNavContext(FilesActivityPresenter.NavContext.POPULAR);
                                 break;
                             case R.id.nav_trash:
-                                layoutManager.setNavContext(LayoutManager.NavContext.TRASH);
+                                mPresenter.setNavContext(FilesActivityPresenter.NavContext.TRASH);
                                 break;
                             default:
                                 throw new RuntimeException("Unknown type");
                         }
-                        setToolbarTitle(layoutManager.getTitle());
+                        setToolbarTitle(mPresenter.getNavContext().toString());
 
                         //Smoother animation when closing drawer.
-                        if (oldContext != layoutManager.getNavContext()) {
+                        if (oldContext != mPresenter.getNavContext()) {
                             Observable.just(new Object()).delay(250, TimeUnit.MILLISECONDS)
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(new Action1<Object>() {
@@ -316,7 +318,6 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         scrim.setBackground(ScrimUtil.makeCubicGradientScrimDrawable(
                 0xaa000000, 8, Gravity.BOTTOM));
         final TouchImageView mainImage = ButterKnife.findById(bottomsheet, R.id.bs_main_icon);
-        mainImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         VaporUtils.setTypedImageView(data, mainImage, previousImage, false, 120);
 
         bsFileName.setText(data.getName());
@@ -325,10 +326,6 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         bsViewsText.setText(String.valueOf(data.getViewCounter()));
 
         final BottomSheetPresenterImpl sheetPresenter = new BottomSheetPresenterImpl(new BottomSheetView() {
-
-           /* final MaterialDialog dialog = new MaterialDialog.Builder(this)
-                    .content("Please wait")
-                    .progress(true, 0).build();*/
 
             @Override
             public void showLoading(boolean isLoading) {
@@ -430,6 +427,10 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         });
     }
 
+    @Override
+    public void setEmailInHeader(String email) {
+        mHeaderEmail.setText(email);
+    }
 
     static class Adapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragments = new ArrayList<>();
@@ -465,28 +466,16 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         }
     }
 
+    public FilesActivityPresenter getPresenter() {
+        return mPresenter;
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (userManager.isLoggedIn()) {
-            Icepick.saveInstanceState(this, outState);
+        if (mPresenter != null) {
+            mPresenter.onSaveInstanceState(outState);
         }
-    }
-
-    @Subscribe
-    public void onLogin(LoginEvent event) {
-        setEmail();
-    }
-
-    @Subscribe
-    public void onLogoutEvent(LogoutEvent event) {
-
-    }
-
-
-    private void setEmail() {
-        if (UserManager.getUserName() != null) {
-            mHeaderEmail.setText(UserManager.getUserName());
-        }
+        Icepick.saveInstanceState(this, outState);
     }
 }

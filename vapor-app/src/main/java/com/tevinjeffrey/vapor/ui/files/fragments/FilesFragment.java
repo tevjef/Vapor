@@ -24,8 +24,8 @@ import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 import com.tevinjeffrey.vapor.ui.base.Presenter;
 import com.tevinjeffrey.vapor.ui.base.View;
+import com.tevinjeffrey.vapor.ui.files.FilesActivityPresenter;
 import com.tevinjeffrey.vapor.ui.files.FilesFragmentAdapter;
-import com.tevinjeffrey.vapor.ui.files.LayoutManager;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ArchivePresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.AudioPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BookmarkPresenter;
@@ -57,20 +57,14 @@ import static android.view.View.VISIBLE;
 
 public class FilesFragment extends MVPFragment implements FilesView, SwipeRefreshLayout.OnRefreshListener {
     private static final String ITEM_TYPE = "ITEM_TYPE";
-    @Bind(R.id.files_recyclerview)
-    RecyclerView mRecyclerView;
-    @Bind(R.id.empty_view)
-    LinearLayout mEmptyView;
-    @Bind(R.id.progressBar)
-    ProgressBar mProgressBar;
-    @Bind(R.id.swipeRefreshLayout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    @Bind(R.id.files_recyclerview) RecyclerView mRecyclerView;
+    @Bind(R.id.empty_view) LinearLayout mEmptyView;
+    @Bind(R.id.progressBar) ProgressBar mProgressBar;
+    @Bind(R.id.swipeRefreshLayout) SwipeRefreshLayout mSwipeRefreshLayout;
 
-    @Inject
-    Bus bus;
+    @Inject Bus bus;
 
-    @Icicle
-    FilesViewState mViewState = new FilesViewState();
+    @Icicle FilesViewState mViewState = new FilesViewState();
 
     @Icicle
     DataManager.DataCursor cursor;
@@ -203,7 +197,8 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
             showLayout(View.LayoutType.LIST);
 
         mViewState.data = mListDataSet;
-        if (getParentActivity().getLayoutManager().getNavContext() != LayoutManager.NavContext.POPULAR) {
+        if (getParentActivity().getPresenter().getNavContext() != FilesActivityPresenter.NavContext.POPULAR ||
+                getParentActivity().getPresenter().getNavContext() != FilesActivityPresenter.NavContext.TRASH) {
             Collections.sort(mListDataSet);
         }
         if (data.size() != 0) {

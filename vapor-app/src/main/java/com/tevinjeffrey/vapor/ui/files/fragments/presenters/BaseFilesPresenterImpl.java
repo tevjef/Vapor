@@ -5,8 +5,7 @@ import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 import com.tevinjeffrey.vapor.ui.base.BasePresenter;
-import com.tevinjeffrey.vapor.ui.files.LayoutManager;
-import com.tevinjeffrey.vapor.ui.files.LayoutManager.NavContext;
+import com.tevinjeffrey.vapor.ui.files.FilesActivityPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.FilesView;
 import com.tevinjeffrey.vapor.utils.RxUtils;
 
@@ -33,7 +32,7 @@ public class BaseFilesPresenterImpl extends BasePresenter<FilesView> implements 
     @Inject
     Bus bus;
     @Inject
-    LayoutManager layoutManager;
+    FilesActivityPresenter layoutManager;
 
     ItemType itemType;
 
@@ -80,16 +79,16 @@ public class BaseFilesPresenterImpl extends BasePresenter<FilesView> implements 
             }
         }
         Observable<List<CloudAppItem>> dataObservable;
-        NavContext navContext = layoutManager.getNavContext();
-        if (navContext == NavContext.ALL) {
+        FilesActivityPresenter.NavContext navContext = layoutManager.getNavContext();
+        if (navContext == FilesActivityPresenter.NavContext.ALL) {
             dataObservable = dataManager.getAllItems(itemType, refreshData, cursor);
-        } else if (navContext == NavContext.POPULAR) {
+        } else if (navContext == FilesActivityPresenter.NavContext.POPULAR) {
             dataObservable = dataManager.getPopularItems(itemType, refreshData, cursor);
 
-        } else if (navContext == NavContext.FAVORITE) {
+        } else if (navContext == FilesActivityPresenter.NavContext.FAVORITE) {
             dataObservable = dataManager.getFavoriteItems(itemType, refreshData, cursor);
 
-        } else if (navContext == NavContext.TRASH) {
+        } else if (navContext == FilesActivityPresenter.NavContext.TRASH) {
             dataObservable = dataManager.getTrashItems(itemType, refreshData, cursor);
             dataManager.purgeDeletedItems();
         } else {

@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="192dp"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/colorPrimaryDark"
-
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <TextView
@@ -19,11 +19,11 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="192dp"
         android:id="@+id/imageView"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/nav_header"
+        android:src="@drawable/files_devices"
         android:scaleType="centerCrop"
         android:alpha=".3" />
 
