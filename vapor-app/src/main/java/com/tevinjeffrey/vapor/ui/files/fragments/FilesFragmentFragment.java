@@ -201,7 +201,7 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
         }
 
         mViewState.data = mListDataSet;
-        if (getParentActivity().getPresenter().getNavContext() != FilesActivityPresenter.NavContext.POPULAR ||
+        if (getParentActivity().getPresenter().getNavContext() != FilesActivityPresenter.NavContext.POPULAR &&
                 getParentActivity().getPresenter().getNavContext() != FilesActivityPresenter.NavContext.TRASH) {
             Collections.sort(mListDataSet);
         }

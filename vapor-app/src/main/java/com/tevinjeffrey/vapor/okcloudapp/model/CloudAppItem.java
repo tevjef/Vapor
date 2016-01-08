@@ -97,7 +97,7 @@ public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem
     }
 
     public boolean isTrashed() {
-        return deletedAt == null;
+        return !deletedAt.equals(String.valueOf(-1));
     }
 
     public String getUrl() {

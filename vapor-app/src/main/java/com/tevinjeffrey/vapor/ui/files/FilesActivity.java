@@ -355,47 +355,56 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         }, data);
         VaporApp.uiComponent(this).inject(sheetPresenter);
 
-        renameFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new MaterialDialog.Builder(FilesActivity.this)
-                        .title("Rename file to")
-                        .inputType(InputType.TYPE_CLASS_TEXT)
-                        .input("New name", data.getName(), new MaterialDialog.InputCallback() {
-                            @Override
-                            public void onInput(MaterialDialog dialog, CharSequence input) {
-                                sheetPresenter.renameFile(input.toString());
-                            }
-                        }).show();
-            }
-        });
+        if (data.isTrashed()) {
+            renameFile.setEnabled(false);
+            deleteFile.setEnabled(false);
+            downloadLink.setEnabled(false);
+            renameFile.setAlpha(.6f);
+            deleteFile.setAlpha(.6f);
+            downloadLink.setAlpha(.6f);
+        } else {
+            renameFile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new MaterialDialog.Builder(FilesActivity.this)
+                            .title("Rename file to")
+                            .inputType(InputType.TYPE_CLASS_TEXT)
+                            .input("New name", data.getName(), new MaterialDialog.InputCallback() {
+                                @Override
+                                public void onInput(MaterialDialog dialog, CharSequence input) {
+                                    sheetPresenter.renameFile(input.toString());
+                                }
+                            }).show();
+                }
+            });
 
-        deleteFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new MaterialDialog.Builder(FilesActivity.this)
-                        .title("Delete")
-                        .content(data.getName())
-                        .positiveText("Yes")
+            deleteFile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new MaterialDialog.Builder(FilesActivity.this)
+                            .title("Delete")
+                            .content(data.getName())
+                            .positiveText("Yes")
 
-                        .negativeText("Cancel")
-                        .callback(new MaterialDialog.ButtonCallback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                super.onPositive(dialog);
-                                sheetPresenter.deleteFile();
-                            }
-                        })
-                        .show();
-            }
-        });
+                            .negativeText("Cancel")
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    super.onPositive(dialog);
+                                    sheetPresenter.deleteFile();
+                                }
+                            })
+                            .show();
+                }
+            });
 
-        downloadLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sheetPresenter.downloadFile();
-            }
-        });
+            downloadLink.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    sheetPresenter.downloadFile();
+                }
+            });
+        }
 
         expandButton.setOnClickListener(new View.OnClickListener() {
             @Override
