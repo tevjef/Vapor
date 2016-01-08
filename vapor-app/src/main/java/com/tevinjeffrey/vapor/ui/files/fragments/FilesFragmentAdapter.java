@@ -156,24 +156,41 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesFragmentAdap
 
                             @Override
                             public boolean onResourceReady(Bitmap resource, String model,
-                                                           Target<Bitmap> target,
+                                                           final Target<Bitmap> target,
                                                            boolean isFromMemoryCache,
                                                            boolean isFirstResource) {
                                 Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
                                     @Override
                                     public void onGenerated(Palette palette) {
+                                        final int ANIMATION_DURATION = 250;
                                         Palette.Swatch swatch = palette.getDarkVibrantSwatch();
                                         if (swatch != null) {
+                                            itemName.setHasTransientState(true);
                                             ObjectAnimator animator = ObjectAnimator.ofInt(itemName,
                                                     "textColor",  itemName.getCurrentTextColor(),
-                                                    swatch.getBodyTextColor()).setDuration(500);
+                                                    swatch.getBodyTextColor()).setDuration(ANIMATION_DURATION);
                                             animator.setEvaluator(new ArgbEvaluator());
+                                            animator.addListener(new AnimatorListenerAdapter() {
+                                                @Override
+                                                public void onAnimationEnd(Animator animation) {
+                                                    super.onAnimationEnd(animation);
+                                                    itemName.setHasTransientState(false);
+                                                }
+                                            });
                                             animator.start();
 
+                                            timeSince.setHasTransientState(true);
                                             ObjectAnimator animator1 = ObjectAnimator.ofInt(timeSince,
                                                     "textColor", timeSince.getCurrentTextColor(),
-                                                    swatch.getTitleTextColor()).setDuration(500);
+                                                    swatch.getTitleTextColor()).setDuration(ANIMATION_DURATION);
                                             animator1.setEvaluator(new ArgbEvaluator());
+                                            animator1.addListener(new AnimatorListenerAdapter() {
+                                                @Override
+                                                public void onAnimationEnd(Animator animation) {
+                                                    super.onAnimationEnd(animation);
+                                                    timeSince.setHasTransientState(false);
+                                                }
+                                            });
                                             animator1.start();
 
                                             background.setHasTransientState(true);
@@ -193,7 +210,7 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesFragmentAdap
                                                     background.setHasTransientState(false);
                                                 }
                                             });
-                                            animator3.setDuration(250).start();
+                                            animator3.setDuration(ANIMATION_DURATION).start();
                                         }
 
                                     }
