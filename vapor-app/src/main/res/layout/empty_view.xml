@@ -10,7 +10,6 @@
     android:id="@+id/empty_view"
     android:visibility="gone"
     tools:visibility="visible"
-    tools:showIn="@layout/fragment_tracked_sections"
     android:gravity="center">
 
 

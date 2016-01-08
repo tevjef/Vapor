@@ -421,19 +421,6 @@ public class DataManager {
                 .toList();
     }
 
-    @NonNull
-    private Observable<CloudAppItem> refreshAfterUpload() {
-        return getListFromServer(makeListParams(1, ItemType.ALL, false, 5))
-                .flatMap(reduceList())
-                .map(saveToDb());
-    }
-
-    private Observable<CloudAppItem> getItemFromServer(long itemId) {
-        return cloudAppService.getItem(String.valueOf(itemId))
-                .map(convertItemModel())
-                .map(saveToDb());
-    }
-
     private Observable<List<CloudAppItem>> getListFromServer(Map<String, String> options) {
         return cloudAppService.listItems(options)
                 .retryWhen(new RxUtils.RetryWithDelay(2, 2000))

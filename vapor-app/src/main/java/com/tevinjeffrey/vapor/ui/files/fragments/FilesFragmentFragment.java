@@ -17,6 +17,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
+import com.tevinjeffrey.vapor.customviews.MarginDecoration;
 import com.tevinjeffrey.vapor.events.DeleteEvent;
 import com.tevinjeffrey.vapor.events.RenameEvent;
 import com.tevinjeffrey.vapor.events.UploadEvent;
@@ -227,16 +228,22 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
             message = t.getMessage();
         }
         mViewState.errorMessage = message;
-        Snackbar.make(getView(), message, Snackbar.LENGTH_INDEFINITE).show();
+        Snackbar.make(getView(), message, Snackbar.LENGTH_INDEFINITE).setDuration(10000)
+                .setAction("Retry", new android.view.View.OnClickListener() {
+            @Override
+            public void onClick(android.view.View v) {
+                showLoading(true);
+            }
+        }).show();
     }
 
     public void initRecyclerView() {
-        GridLayoutManager layoutManager = new GridLayoutManager(getParentActivity(), 2);
+        GridLayoutManager layoutManager = (GridLayoutManager) mRecyclerView.getLayoutManager();
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.setSmoothScrollbarEnabled(true);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
-
+        mRecyclerView.addItemDecoration(new MarginDecoration(getParentActivity()));
         if (mListDataSet == null) {
             mListDataSet = new ArrayList<>(100);
         }
