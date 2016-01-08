@@ -71,15 +71,24 @@ public class OkCloudAppModule {
     public OkHttpClient providesOkHttpClient(Context context) {
         OkHttpClient client = new OkHttpClient();
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         client.interceptors().add(interceptor);
         client.networkInterceptors().add(new StethoInterceptor());
-
-        File httpCacheDir = new File(context.getCacheDir(), context.getString(R.string.app_name));
+        File httpCacheDir = new File(context.getCacheDir() + "/okhttp");
+        httpCacheDir.mkdirs();
+        cleanDir(httpCacheDir);
         long httpCacheSize = 50 * 1024 * 1024; // 50 MiB
         Cache cache = new Cache(httpCacheDir, httpCacheSize);
         client.setCache(cache);
         return client;
+    }
+
+    private static void cleanDir(File dir) {
+        File[] files = dir.listFiles();
+
+        for (File file : files) {
+            file.delete();
+        }
     }
 
     @Provides
