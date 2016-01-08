@@ -19,6 +19,7 @@ import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.events.DeleteEvent;
 import com.tevinjeffrey.vapor.events.RenameEvent;
+import com.tevinjeffrey.vapor.events.UploadEvent;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
@@ -395,4 +396,11 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
         }
     }
 
+    @Subscribe
+    public void onUploadEvent(UploadEvent event){
+        if (mListDataSet != null) {
+            mListDataSet.add(0, event.getItem());
+            mRecyclerView.getAdapter().notifyItemInserted(0);
+        }
+    }
 }

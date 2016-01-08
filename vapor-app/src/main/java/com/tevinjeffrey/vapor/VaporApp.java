@@ -151,16 +151,17 @@ public class VaporApp extends Application {
 
     @Subscribe
     public void onLogoutEvent(LogoutEvent event) {
-        VaporApp.recreateVaporComponent(this);
-        VaporApp.recreateUiComponent(this);
-        vaporAppComponent.inject(this);
-        registerBus();
-
         try {
             vaporAppComponent.client().getCache().evictAll();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        VaporApp.recreateVaporComponent(this);
+        VaporApp.recreateUiComponent(this);
+        vaporAppComponent.inject(this);
+        registerBus();
+
+
     }
 
     /*http://stackoverflow.com/questions/4028742/how-to-clear-a-notification-if-activity-crashes*/
