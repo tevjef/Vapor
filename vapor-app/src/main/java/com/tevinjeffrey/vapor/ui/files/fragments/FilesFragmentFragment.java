@@ -228,7 +228,7 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
             message = t.getMessage();
         }
         mViewState.errorMessage = message;
-        Snackbar.make(getView(), message, Snackbar.LENGTH_INDEFINITE).setDuration(10000)
+        Snackbar.make(getView(), message, Snackbar.LENGTH_INDEFINITE)
                 .setAction("Retry", new android.view.View.OnClickListener() {
             @Override
             public void onClick(android.view.View v) {

@@ -7,12 +7,15 @@ import com.orhanobut.hawk.Hawk;
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.events.LogoutEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.AccountModel;
+import com.tevinjeffrey.vapor.ui.login.LoginException;
 import com.tevinjeffrey.vapor.utils.RxUtils;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
+import retrofit.HttpException;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -45,7 +48,26 @@ public class UserManager {
         digestAuthenticator.setCredentials(new UsernamePasswordCredentials(userName, password));
         
         return cloudAppService.getAccount()
-                .retryWhen(new RxUtils.RetryWithDelay(2, 2000))
+                .onErrorResumeNext(new Func1<Throwable, Observable<? extends AccountModel>>() {
+                    @Override
+                    public Observable<? extends AccountModel> call(Throwable throwable) {
+                        if (throwable instanceof HttpException) {
+                            HttpException e = (HttpException) throwable;
+                            LoginException exception = new LoginException();
+                            if (e.code() > 500) {
+                                exception = new LoginException("Service Unavailable – We’re temporarily offline for maintenance. Please try again later.", e);
+                                exception.setCode(e.code());
+                            } else if (e.code() > 400) {
+                                exception = new LoginException("Digest authentication failed");
+                                exception.setCode(e.code());
+                            }
+                            return Observable.error(exception);
+                        } else {
+                            return Observable.error(throwable);
+                        }
+                    }
+                })
+                .delaySubscription(1000, TimeUnit.MILLISECONDS)
                 .map(new Func1<AccountModel, Boolean>() {
                     @Override
                     public Boolean call(AccountModel accountModel) {

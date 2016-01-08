@@ -39,8 +39,6 @@
         </activity>
         <activity
             android:name=".ui.login.LoginActivity"
-            android:screenOrientation="portrait"
-
             android:label="@string/title_activity_login" >
         </activity>
         <activity
@@ -72,7 +70,7 @@
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name=".IntroActivity"
+            android:name=".ui.IntroActivity"
             android:theme="@style/Vapr_Default"
             android:label="@string/title_activity_settings" >
         </activity>

@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor;
+package com.tevinjeffrey.vapor.ui;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 
 import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
+import com.tevinjeffrey.vapor.R;
 
 import timber.log.Timber;
 
@@ -26,24 +27,6 @@ public class IntroActivity extends AppIntro {
         showSkipButton(false);
         setNavBarColor(R.color.primary_dark);
         askForPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
-        getPager().addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Timber.d("onPageScrolled -- position=%s positionOffset=%s positionsOffsetPixels=%s", position, positionOffset, positionOffsetPixels);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                Timber.d("onPageSelected -- position=%s", position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                Timber.d("onPageScrollStateChanged -- state=%s", state);
-
-            }
-        });
     }
 
     @Override

@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,7 +26,7 @@ import android.widget.RelativeLayout;
 
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.BuildConfig;
-import com.tevinjeffrey.vapor.IntroActivity;
+import com.tevinjeffrey.vapor.ui.IntroActivity;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.events.LoginEvent;
@@ -42,8 +44,6 @@ import timber.log.Timber;
 
 public class LoginActivity extends AppCompatActivity implements LoginView {
 
-    @Bind(R.id.frameLayout)
-    FrameLayout frameLayout;
     @Bind(R.id.login_field_email)
     EditText loginEmail;
     @Bind(R.id.login_wrapper_email)
@@ -178,7 +178,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
                 anim.start();
             }
         }
-
     }
 
     @Override
@@ -200,12 +199,15 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
             message = resources.getString(R.string.no_internet);
         } else if (t instanceof SocketTimeoutException) {
             message = resources.getString(R.string.timed_out);
-        } else {
+        } else if (t instanceof LoginException && ((LoginException) t).getCode() < 500) {
             loginWrapperEmail.setErrorEnabled(true);
+            loginWrapperEmail.setError(" ");
             loginWrapperPassword.setErrorEnabled(true);
             loginWrapperPassword.setError(getString(R.string.email_password_incorrect));
             Timber.e(t, "Error while logging in.");
             return;
+        } else {
+            message = t.getMessage();
         }
         Snackbar.make(root, message, Snackbar.LENGTH_LONG).show();
     }
