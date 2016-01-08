@@ -41,6 +41,7 @@ import com.tevinjeffrey.vapor.ui.utils.EndlessRecyclerOnScrollListener;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -179,9 +180,8 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
             CloudAppItem currentItem = itemIterator.next();
             for (int i = 0; i < mListDataSet.size(); i++) {
                 if (mListDataSet.get(i).equals(currentItem)) {
-                    mListDataSet.remove(i);
-                    mListDataSet.add(i, currentItem);
-                    mRecyclerView.getAdapter().notifyDataSetChanged();
+                    mListDataSet.set(i, currentItem);
+                    mRecyclerView.getAdapter().notifyItemChanged(i);
                     itemIterator.remove();
                     break;
                 }
@@ -203,11 +203,28 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
         mViewState.data = mListDataSet;
         if (getParentActivity().getPresenter().getNavContext() != FilesActivityPresenter.NavContext.POPULAR &&
                 getParentActivity().getPresenter().getNavContext() != FilesActivityPresenter.NavContext.TRASH) {
-            Collections.sort(mListDataSet);
+            if (!isSorted(mListDataSet, false)) {
+                Collections.sort(mListDataSet);
+                mRecyclerView.getAdapter().notifyDataSetChanged();
+            }
         }
         if (data.size() != 0) {
-            mRecyclerView.getAdapter().notifyDataSetChanged();
+            mRecyclerView.getAdapter().notifyItemRangeInserted(mListDataSet.size(), data.size());
         }
+    }
+
+    public static <E extends Comparable<? super E>> boolean isSorted(List<E> list, boolean asc) {
+        if (list.size() == 0) return true;
+        for (int i = 0; i < list.size(); i++) {
+            if (i != list.size() -1) {
+                int comp = list.get(i).compareTo(list.get(i + 1));
+                int to = asc ? -1 : 1;
+                if (comp != to && comp != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
