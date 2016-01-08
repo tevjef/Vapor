@@ -2,6 +2,7 @@ package com.tevinjeffrey.vapor.ui.files.fragments.presenters;
 
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
+import com.tevinjeffrey.vapor.okcloudapp.UserManager;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 import com.tevinjeffrey.vapor.ui.base.BasePresenter;
@@ -29,6 +30,8 @@ public class BaseFilesPresenterImpl extends BasePresenter<FilesFragmentView> imp
 
     @Inject
     DataManager dataManager;
+    @Inject
+    UserManager userManager;
     @Inject
     Bus bus;
     @Inject
@@ -116,6 +119,11 @@ public class BaseFilesPresenterImpl extends BasePresenter<FilesFragmentView> imp
     @Override
     public boolean isLoading() {
         return isLoading;
+    }
+
+    @Override
+    public boolean shouldShowEmpty() {
+        return userManager.isLoggedIn();
     }
 
     @Override

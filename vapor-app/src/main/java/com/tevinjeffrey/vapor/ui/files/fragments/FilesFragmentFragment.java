@@ -21,6 +21,7 @@ import com.tevinjeffrey.vapor.events.DeleteEvent;
 import com.tevinjeffrey.vapor.events.RenameEvent;
 import com.tevinjeffrey.vapor.events.UploadEvent;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
+import com.tevinjeffrey.vapor.okcloudapp.UserManager;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 import com.tevinjeffrey.vapor.ui.base.Presenter;
@@ -191,7 +192,7 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
 
     public void appendData(List<CloudAppItem> data) {
         mListDataSet.addAll(data);
-        if (mListDataSet.size() == 0)
+        if (mListDataSet.size() == 0 && getPresenter().shouldShowEmpty())
             showLayout(View.LayoutType.EMPTY);
 
         if (mListDataSet.size() > 0)
