@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -29,8 +30,6 @@ import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.ui.utils.ItemClickListener;
-
-import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import java.util.List;
 
@@ -137,12 +136,13 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesFragmentAdap
             final View background = ButterKnife.findById(parent, R.id.background_shade);
             final TextView itemName = ButterKnife.findById(parent, R.id.files_list_title);
             final TextView timeSince = ButterKnife.findById(parent, R.id.files_list_time_ago);
+            final Context context = background.getContext();
 
             itemName.setTextColor(Color.WHITE);
             timeSince.setTextColor(Color.WHITE);
             background.setBackgroundColor(ContextCompat.getColor(background.getContext(), R.color.primary_dark));
 
-            if (type == IMAGE) {
+            if (type == IMAGE && cloudAppItem.getThumbnailUrl() != null) {
                 Glide.with(fileImage.getContext().getApplicationContext())
                         .load(cloudAppItem.getThumbnailUrl())
                         .asBitmap()
@@ -220,18 +220,20 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesFragmentAdap
                         })
                         .into(fileImage);
                 return;
+            } else if (type == IMAGE) {
+                drawable = ContextCompat.getDrawable(context, R.drawable.ic_photo);
             } else if (type == VIDEO) {
-                drawable = getDrawable(MaterialDrawableBuilder.IconValue.FILE_VIDEO);
+                drawable = ContextCompat.getDrawable(context, R.drawable.ic_file_video);
             } else if (type == ARCHIVE) {
-                drawable = getDrawable(MaterialDrawableBuilder.IconValue.ZIP_BOX);
+                drawable =  ContextCompat.getDrawable(context, R.drawable.ic_zip_box);
             } else if (type == BOOKMARK) {
-                drawable = getDrawable(MaterialDrawableBuilder.IconValue.BOOKMARK);
+                drawable =  ContextCompat.getDrawable(context, R.drawable.ic_bookmark);
             } else if (type == AUDIO) {
-                drawable = getDrawable(MaterialDrawableBuilder.IconValue.FILE_MUSIC);
+                drawable =  ContextCompat.getDrawable(context, R.drawable.ic_headset_white_34dp);
             } else if (type == TEXT) {
-                drawable = getDrawable(MaterialDrawableBuilder.IconValue.FILE_DOCUMENT);
+                drawable =  ContextCompat.getDrawable(context, R.drawable.ic_file_document);
             } else if (type == UNKNOWN) {
-                drawable = getDrawable(MaterialDrawableBuilder.IconValue.FILE_CLOUD);
+                drawable =  ContextCompat.getDrawable(context, R.drawable.ic_file_cloud);
             }
 
             fileImage.setImageDrawable(drawable);
@@ -242,14 +244,6 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesFragmentAdap
             setImage(item);
             setTitle(item);
             setTimeAgo(item);
-        }
-
-        public Drawable getDrawable(MaterialDrawableBuilder.IconValue value) {
-            return MaterialDrawableBuilder.with(parent.getContext().getApplicationContext())
-                    .setIcon(value)
-                    .setSizeDp(34)
-                    .setColor(Color.WHITE)
-                    .build();
         }
 
         public void setOnClickListener(View.OnClickListener listener) {

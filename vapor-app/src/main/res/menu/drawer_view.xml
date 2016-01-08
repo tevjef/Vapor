@@ -8,15 +8,15 @@
             android:title="All" />
         <item
             android:id="@+id/nav_popular"
-            android:icon="@drawable/ic_whatshot_black_24dp"
+            android:icon="@drawable/ic_whatshot"
             android:title="Popular" />
         <item
             android:id="@+id/nav_favorites"
-            android:icon="@drawable/ic_star_black_24dp"
+            android:icon="@drawable/ic_star"
             android:title="Favorites" />
         <item
             android:id="@+id/nav_trash"
-            android:icon="@drawable/ic_delete_black_24dp"
+            android:icon="@drawable/ic_delete"
             android:title="Trash" />
     </group>
 <!--

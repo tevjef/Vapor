@@ -70,7 +70,7 @@ public class OkCloudAppModule {
     public OkHttpClient providesOkHttpClient(Context context) {
         OkHttpClient client = new OkHttpClient();
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
         client.interceptors().add(interceptor);
         client.networkInterceptors().add(new StethoInterceptor());
         File httpCacheDir = new File(context.getCacheDir() + "/okhttp");

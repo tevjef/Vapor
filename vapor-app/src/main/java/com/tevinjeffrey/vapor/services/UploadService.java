@@ -176,7 +176,7 @@ public class UploadService extends Service {
 
                 final String finalFileName = fileName;
                 final NotificationCompat.Builder uploadNotification = new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_cloud_upload_white_18dp)
+                        .setSmallIcon(R.drawable.ic_cloud_upload)
                         .setContentTitle(fileName)
                         .setContentText("Upload in Progress")
                         .setOngoing(true)
@@ -313,7 +313,7 @@ public class UploadService extends Service {
                         new NotificationCompat.Builder(UploadService.this)
                                 .setContentTitle(title)
                                 .setContentText(subText)
-                                .setSmallIcon(R.drawable.ic_cloud_error)
+                                .setSmallIcon(R.drawable.ic_cloud_fail)
                                 .setOngoing(false)
                                 .setWhen(System.currentTimeMillis())
                                 .setContentIntent(PendingIntent.getActivity(UploadService.this, newNotificationId,
@@ -347,7 +347,7 @@ public class UploadService extends Service {
             NotificationCompat.Builder successNotification =
                     new NotificationCompat.Builder(UploadService.this)
                             .setContentTitle(cloudAppItem.getName())
-                            .setSmallIcon(R.drawable.ic_cloud_done_white_18dp)
+                            .setSmallIcon(R.drawable.ic_cloud_done)
                             .setOngoing(false)
                             // Open browser when user clicks notification
                             .setContentIntent(PendingIntent.getActivity(UploadService.this, 0,

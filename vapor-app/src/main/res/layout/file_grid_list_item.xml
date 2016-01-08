@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="190dp"
@@ -10,49 +9,20 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="130dp"
+        android:id="@+id/image_container"
+        android:background="@color/primary"
         android:orientation="vertical">
 
-        <LinearLayout
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/image_container"
-            android:background="@color/primary"
-            android:gravity="center"
-            android:weightSum="1">
+            android:id="@+id/files_list_image"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="false"
+            android:cropToPadding="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/files_list_image"
-                android:scaleType="centerInside"
-                android:adjustViewBounds="false"
-                android:cropToPadding="false"
-                android:focusable="false"
-                android:focusableInTouchMode="false" />
-
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="left"
-            android:background="?attr/selectableItemBackground"
-            android:id="@+id/files_list_right_container">
-
-            <net.steamcrafted.materialiconlib.MaterialIconView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                app:materialIcon="link"
-                app:materialIconColor="?attr/colorAccent"
-                app:materialIconSize="44dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:visibility="gone"
-                android:id="@+id/files_list_link"/>
-
-
-        </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout

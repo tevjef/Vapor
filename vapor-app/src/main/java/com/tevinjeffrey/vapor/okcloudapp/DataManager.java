@@ -210,7 +210,8 @@ public class DataManager {
 
         return cloudAppService.bookmarkLink(jsonItem)
                 .map(convertItemModel())
-                .map(saveToDb());
+                .map(saveToDb())
+                .retryWhen(new RxUtils.RetryWithDelay(2, 2000));
     }
 
     public Observable<CloudAppItem> upload(final CloudAppRequestBody requestBody) {
