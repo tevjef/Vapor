@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.ui.files.fragments.presenters;
+package com.tevinjeffrey.vapor.ui.files;
 
 import android.app.DownloadManager;
 import android.net.Uri;
@@ -6,7 +6,6 @@ import android.net.Uri;
 import com.tevinjeffrey.vapor.BuildConfig;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
-import com.tevinjeffrey.vapor.ui.files.fragments.BottomSheetView;
 import com.tevinjeffrey.vapor.utils.RxUtils;
 
 import javax.inject.Inject;

@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.ui.files.fragments.presenters;
+package com.tevinjeffrey.vapor.ui.files;
 
 public interface BottomSheetPresenter {
     void downloadFile();

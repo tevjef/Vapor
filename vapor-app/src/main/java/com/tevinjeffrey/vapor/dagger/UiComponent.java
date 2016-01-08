@@ -11,7 +11,7 @@ import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ArchivePresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.AudioPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BaseFilesPresenterImpl;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BookmarkPresenter;
-import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BottomSheetPresenterImpl;
+import com.tevinjeffrey.vapor.ui.files.BottomSheetPresenterImpl;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ImagePresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.RecentPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.TextPresenter;

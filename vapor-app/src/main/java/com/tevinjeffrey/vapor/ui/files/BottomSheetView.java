@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.ui.files.fragments;
+package com.tevinjeffrey.vapor.ui.files;
 
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 
