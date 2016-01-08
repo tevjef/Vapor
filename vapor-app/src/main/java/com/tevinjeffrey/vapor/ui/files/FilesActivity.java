@@ -422,12 +422,14 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         shareLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                shareBottomsheet.showWithSheetView(new IntentPickerSheetView(FilesActivity.this, sendIntent, "Share with...", new IntentPickerSheetView.OnIntentPickedListener() {
+                IntentPickerSheetView intentPickerSheetView = new IntentPickerSheetView(FilesActivity.this, sendIntent, "Share with...", new IntentPickerSheetView.OnIntentPickedListener() {
                     @Override
                     public void onIntentPicked(IntentPickerSheetView.ActivityInfo activityInfo) {
-                        FilesActivity.this.startActivity(activityInfo.getConcreteIntent(new Intent()));
+                        shareBottomsheet.dismissSheet();
+                        FilesActivity.this.startActivity(activityInfo.getConcreteIntent(sendIntent));
                     }
-                }));
+                });
+                shareBottomsheet.showWithSheetView(intentPickerSheetView);
             }
         });
     }
