@@ -227,7 +227,7 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
             message = t.getMessage();
         }
         mViewState.errorMessage = message;
-        Snackbar.make(getView(), message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(getView(), message, Snackbar.LENGTH_INDEFINITE).show();
     }
 
     public void initRecyclerView() {

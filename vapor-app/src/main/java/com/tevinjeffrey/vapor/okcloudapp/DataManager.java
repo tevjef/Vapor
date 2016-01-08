@@ -437,7 +437,6 @@ public class DataManager {
     private Observable<List<CloudAppItem>> getListFromServer(Map<String, String> options) {
         return cloudAppService.listItems(options)
                 .retryWhen(new RxUtils.RetryWithDelay(2, 2000))
-                .onErrorResumeNext(Observable.<List<ItemModel>>empty())
                 .subscribeOn(Schedulers.io())
                 .flatMap(new Func1<List<ItemModel>, Observable<List<CloudAppItem>>>() {
                     @Override
