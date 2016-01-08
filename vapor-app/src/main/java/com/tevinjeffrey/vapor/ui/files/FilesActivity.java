@@ -260,8 +260,7 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
                 startActivity(intent);
                 return true;
             case R.id.action_refresh:
-                //TODO fix this shit
-                //dataManager.getAllItems(ALL, true, 0);
+                mPresenter.refreshClicked();
                 return true;
             case R.id.action_logout:
                 new MaterialDialog.Builder(this)

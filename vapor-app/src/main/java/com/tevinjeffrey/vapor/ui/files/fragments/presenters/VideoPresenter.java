@@ -3,6 +3,7 @@ package com.tevinjeffrey.vapor.ui.files.fragments.presenters;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.events.DatabaseUpdateEvent;
+import com.tevinjeffrey.vapor.events.RefreshEvent;
 import com.tevinjeffrey.vapor.events.UploadEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 
@@ -23,6 +24,11 @@ public class VideoPresenter extends BaseFilesPresenterImpl {
     @Subscribe
     public void onUploadEvent(UploadEvent event) {
         loadData(false, true, false);
+    }
+
+    @Subscribe
+    public void onRefreshEvent(RefreshEvent event) {
+        loadData(true, true, false);
     }
 
     @Override

@@ -6,6 +6,7 @@ public interface FilesActivityPresenter extends Presenter<FilesActivityView> {
     void loadEmail();
     void setNavContext(FilesActivityPresenterImpl.NavContext navContext);
     FilesActivityPresenterImpl.NavContext getNavContext();
+    void refreshClicked();
 
     enum NavContext {
         ALL("All Recent Files"), POPULAR("Popular"), FAVORITE("Favorites"), TRASH("Trash");
