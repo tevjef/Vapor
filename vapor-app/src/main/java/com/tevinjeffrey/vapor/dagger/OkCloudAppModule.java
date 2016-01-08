@@ -11,7 +11,6 @@ import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 import com.squareup.otto.Bus;
-import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.okcloudapp.CloudAppService;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.DigestAuthenticator;

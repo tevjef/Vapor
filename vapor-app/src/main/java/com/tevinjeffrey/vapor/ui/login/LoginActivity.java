@@ -4,8 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,16 +18,15 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.BuildConfig;
-import com.tevinjeffrey.vapor.ui.IntroActivity;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.events.LoginEvent;
+import com.tevinjeffrey.vapor.ui.IntroActivity;
 import com.tevinjeffrey.vapor.utils.VaporUtils;
 
 import java.net.SocketTimeoutException;

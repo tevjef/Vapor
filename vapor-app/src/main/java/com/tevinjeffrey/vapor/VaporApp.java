@@ -16,7 +16,6 @@ import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.dagger.DaggerUiComponent;
 import com.tevinjeffrey.vapor.dagger.UiComponent;
 import com.tevinjeffrey.vapor.dagger.VaporAppComponent;
-import com.tevinjeffrey.vapor.events.LoginEvent;
 import com.tevinjeffrey.vapor.events.LogoutEvent;
 import com.tevinjeffrey.vapor.okcloudapp.RefCountManager;
 

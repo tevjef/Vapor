@@ -1,14 +1,10 @@
 package com.tevinjeffrey.vapor.okcloudapp;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.orhanobut.hawk.Hawk;
 import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.events.LogoutEvent;
 import com.tevinjeffrey.vapor.okcloudapp.model.AccountModel;
 import com.tevinjeffrey.vapor.ui.login.LoginException;
-import com.tevinjeffrey.vapor.utils.RxUtils;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 
