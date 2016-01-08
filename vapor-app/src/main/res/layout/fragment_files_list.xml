@@ -1,8 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp">
 
 <!--    <View
         android:layout_width="match_parent"
@@ -23,6 +24,15 @@
 
     <include layout="@layout/empty_view"/>
 
-    <include layout="@layout/progress_indeterminate"/>
+    <ProgressBar
+        style="?android:attr/progressBarStyleLarge"
+                 android:layout_width="70dp"
+                 android:layout_height="70dp"
+                 android:id="@+id/progressBar"
+                 android:indeterminate="true"
+                 android:indeterminateOnly="true"
+                 android:layout_centerInParent="true"
+                 android:visibility="visible"
+                 tools:visibility="visible"/>
 
 </RelativeLayout>

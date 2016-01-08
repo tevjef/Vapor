@@ -192,11 +192,13 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
 
     public void appendData(List<CloudAppItem> data) {
         mListDataSet.addAll(data);
-        if (mListDataSet.size() == 0 && getPresenter().shouldShowEmpty())
+        if (mListDataSet.size() == 0 && getPresenter().shouldShowEmpty()) {
             showLayout(View.LayoutType.EMPTY);
+        }
 
-        if (mListDataSet.size() > 0)
+        if (mListDataSet.size() > 0) {
             showLayout(View.LayoutType.LIST);
+        }
 
         mViewState.data = mListDataSet;
         if (getParentActivity().getPresenter().getNavContext() != FilesActivityPresenter.NavContext.POPULAR ||
@@ -249,7 +251,9 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
         mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
-                getPresenter().loadData(false, false, true);
+                if(!getPresenter().isLoading()) {
+                    getPresenter().loadData(false, false, true);
+                }
             }
         });
     }
@@ -370,7 +374,9 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
 
     @Override
     public void onRefresh() {
-        getPresenter().loadData(true, true, false);
+        if (!getPresenter().isLoading()) {
+            getPresenter().loadData(true, true, false);
+        }
     }
 
     @Subscribe

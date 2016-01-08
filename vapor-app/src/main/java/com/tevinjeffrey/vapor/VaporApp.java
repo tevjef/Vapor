@@ -24,6 +24,9 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import rx.Single;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class VaporApp extends Application {
@@ -146,11 +149,8 @@ public class VaporApp extends Application {
     }
 
     @Subscribe
-    public void onLogin(LoginEvent event) {
-    }
-
-    @Subscribe
     public void onLogoutEvent(LogoutEvent event) {
+        // Clear the cache of the Http client before we create a new one.
         try {
             vaporAppComponent.client().getCache().evictAll();
         } catch (IOException e) {
@@ -158,6 +158,15 @@ public class VaporApp extends Application {
         }
         VaporApp.recreateVaporComponent(this);
         VaporApp.recreateUiComponent(this);
+        Glide.get(VaporApp.this).clearMemory();
+        Single.just(new Object()).subscribeOn(Schedulers.io()).subscribe(new Action1<Object>() {
+            @Override
+            public void call(Object o) {
+                Glide.get(VaporApp.this).clearDiskCache();
+            }
+        });
+
+
         vaporAppComponent.inject(this);
         registerBus();
 

@@ -51,6 +51,7 @@ public class DataManager {
     private final int SERVER_ITEM_LIMIT = 40;
     private final int MAX_ITEM_LIMIT = 1500;
     private final OkHttpClient client;
+    private boolean isSyncingAllItems;
 
     public DataManager(CloudAppService cloudAppService, UserManager userManager, Bus bus, OkHttpClient client) {
         this.cloudAppService = cloudAppService;
@@ -99,7 +100,14 @@ public class DataManager {
                 .doOnTerminate(new Action0() {
                     @Override
                     public void call() {
+                        isSyncingAllItems = false;
                         bus.post(new DatabaseUpdateEvent());
+                    }
+                })
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        isSyncingAllItems = true;
                     }
                 })
                 .subscribe(new Action1<List<CloudAppItem>>() {
@@ -495,6 +503,10 @@ public class DataManager {
         SugarRecord.deleteInTx(cloudAppItems);
         CloudAppItem.executeQuery("DELETE FROM sqlite_sequence WHERE NAME = 'CLOUD_APP_ITEM'");
         CloudAppItem.executeQuery("VACUUM");
+    }
+
+    public boolean isSyncingAllItems() {
+        return isSyncingAllItems;
     }
 
     public static class DataCursor implements Parcelable {

@@ -21,7 +21,9 @@ public class FilesFragmentViewState extends BaseViewState<FilesFragmentView> {
         if (retainedState) {
             view.showLoading(isRefreshing);
             view.showLayout(layoutType);
-            view.setData(data);
+            if (data.size() != 0) {
+                view.setData(data);
+            }
             if ((layoutType == View.LayoutType.ERROR)
                     && errorMessage != null)
                 view.showError(new Exception(errorMessage));

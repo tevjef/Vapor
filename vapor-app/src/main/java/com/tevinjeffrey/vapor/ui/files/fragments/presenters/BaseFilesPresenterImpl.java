@@ -44,6 +44,7 @@ public class BaseFilesPresenterImpl extends BasePresenter<FilesFragmentView> imp
 
     @Override
     public void loadData(boolean pullToRefresh, boolean refreshData, boolean useCursor) {
+        if (!userManager.isLoggedIn()) return;
         if (getView() != null) getView().showLoading(pullToRefresh);
 
         RxUtils.unsubscribeIfNotNull(mSubscription);
@@ -123,7 +124,7 @@ public class BaseFilesPresenterImpl extends BasePresenter<FilesFragmentView> imp
 
     @Override
     public boolean shouldShowEmpty() {
-        return userManager.isLoggedIn();
+        return userManager.isLoggedIn() && !dataManager.isSyncingAllItems();
     }
 
     @Override
