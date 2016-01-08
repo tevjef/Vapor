@@ -6,7 +6,7 @@ import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 import com.tevinjeffrey.vapor.ui.base.BasePresenter;
 import com.tevinjeffrey.vapor.ui.files.FilesActivityPresenter;
-import com.tevinjeffrey.vapor.ui.files.fragments.FilesView;
+import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragmentView;
 import com.tevinjeffrey.vapor.utils.RxUtils;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
-public class BaseFilesPresenterImpl extends BasePresenter<FilesView> implements FilesPresenter<FilesView> {
+public class BaseFilesPresenterImpl extends BasePresenter<FilesFragmentView> implements FilesPresenter<FilesFragmentView> {
 
     private static final String TAG = BaseFilesPresenterImpl.class.getSimpleName();
 

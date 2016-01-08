@@ -5,8 +5,8 @@ import com.tevinjeffrey.vapor.services.IntentBridge;
 import com.tevinjeffrey.vapor.services.UploadService;
 import com.tevinjeffrey.vapor.ui.files.FilesActivity;
 import com.tevinjeffrey.vapor.ui.files.FilesActivityPresenter;
-import com.tevinjeffrey.vapor.ui.files.FilesFragmentAdapter;
-import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragment;
+import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragmentAdapter;
+import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragmentFragment;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ArchivePresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.AudioPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BaseFilesPresenterImpl;
@@ -49,7 +49,7 @@ public interface UiComponent {
 
     void inject(LoginPresenterImpl loginPresenter);
 
-    void inject(FilesFragment filesFragment);
+    void inject(FilesFragmentFragment filesFragment);
     RecentPresenter getRecentPresenter();
     ImagePresenter getImagePresenter();
     VideoPresenter getVideoPresenter();

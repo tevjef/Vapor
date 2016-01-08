@@ -25,7 +25,6 @@ import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType;
 import com.tevinjeffrey.vapor.ui.base.Presenter;
 import com.tevinjeffrey.vapor.ui.base.View;
 import com.tevinjeffrey.vapor.ui.files.FilesActivityPresenter;
-import com.tevinjeffrey.vapor.ui.files.FilesFragmentAdapter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ArchivePresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.AudioPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BookmarkPresenter;
@@ -55,7 +54,7 @@ import timber.log.Timber;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class FilesFragment extends MVPFragment implements FilesView, SwipeRefreshLayout.OnRefreshListener {
+public class FilesFragmentFragment extends MVPFragment implements FilesFragmentView, SwipeRefreshLayout.OnRefreshListener {
     private static final String ITEM_TYPE = "ITEM_TYPE";
     @Bind(R.id.files_recyclerview) RecyclerView mRecyclerView;
     @Bind(R.id.empty_view) LinearLayout mEmptyView;
@@ -64,7 +63,8 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
 
     @Inject Bus bus;
 
-    @Icicle FilesViewState mViewState = new FilesViewState();
+    @Icicle
+    FilesFragmentViewState mViewState = new FilesFragmentViewState();
 
     @Icicle
     DataManager.DataCursor cursor;
@@ -73,15 +73,15 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
 
     private List<CloudAppItem> mListDataSet;
 
-    public static FilesFragment newInstance(ItemType itemType) {
-        FilesFragment fragment = new FilesFragment();
+    public static FilesFragmentFragment newInstance(ItemType itemType) {
+        FilesFragmentFragment fragment = new FilesFragmentFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(ITEM_TYPE, itemType);
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    public FilesFragment() {
+    public FilesFragmentFragment() {
         // Required empty public constructor
     }
 
@@ -361,7 +361,7 @@ public class FilesFragment extends MVPFragment implements FilesView, SwipeRefres
 
     @Override
     public String toString() {
-        return "FilesFragment{" +
+        return "FilesFragmentFragment{" +
                 "presenter=" + getPresenter().getClass().getSimpleName() +
                 '}';
     }

@@ -1,4 +1,4 @@
-package com.tevinjeffrey.vapor.ui.files;
+package com.tevinjeffrey.vapor.ui.files.fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

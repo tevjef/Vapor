@@ -9,13 +9,13 @@ import com.tevinjeffrey.vapor.ui.base.View;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilesViewState extends BaseViewState<FilesView> {
+public class FilesFragmentViewState extends BaseViewState<FilesFragmentView> {
     public boolean isRefreshing = false;
     public View.LayoutType layoutType = View.LayoutType.LIST;
     public List<CloudAppItem> data = new ArrayList<>(100);
     public String errorMessage;
     @Override
-    public void apply(FilesView view, boolean retainedState) {
+    public void apply(FilesFragmentView view, boolean retainedState) {
         view.initRecyclerView();
         view.initSwipeLayout();
         if (retainedState) {
@@ -29,7 +29,7 @@ public class FilesViewState extends BaseViewState<FilesView> {
         }
     }
 
-    public FilesViewState() {
+    public FilesFragmentViewState() {
     }
 
     @Override
@@ -45,7 +45,7 @@ public class FilesViewState extends BaseViewState<FilesView> {
         dest.writeString(this.errorMessage);
     }
 
-    protected FilesViewState(Parcel in) {
+    protected FilesFragmentViewState(Parcel in) {
         this.isRefreshing = in.readByte() != 0;
         int tmpLayoutType = in.readInt();
         this.layoutType = tmpLayoutType == -1 ? null : View.LayoutType.values()[tmpLayoutType];
@@ -53,13 +53,13 @@ public class FilesViewState extends BaseViewState<FilesView> {
         this.errorMessage = in.readString();
     }
 
-    public static final Creator<FilesViewState> CREATOR = new Creator<FilesViewState>() {
-        public FilesViewState createFromParcel(Parcel source) {
-            return new FilesViewState(source);
+    public static final Creator<FilesFragmentViewState> CREATOR = new Creator<FilesFragmentViewState>() {
+        public FilesFragmentViewState createFromParcel(Parcel source) {
+            return new FilesFragmentViewState(source);
         }
 
-        public FilesViewState[] newArray(int size) {
-            return new FilesViewState[size];
+        public FilesFragmentViewState[] newArray(int size) {
+            return new FilesFragmentViewState[size];
         }
     };
 }

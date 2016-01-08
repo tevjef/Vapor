@@ -6,7 +6,7 @@ import com.tevinjeffrey.vapor.ui.base.View;
 
 import java.util.List;
 
-public interface FilesView extends View {
+public interface FilesFragmentView extends View {
     void showLoading(boolean pullToRefresh);
 
     void setData(List<CloudAppItem> data);
