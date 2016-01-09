@@ -4,10 +4,10 @@
         android:viewportWidth="110.0"
         android:viewportHeight="110.0">
     <path android:fillColor="#CFD8DC" android:pathData="M23.77,66.59l14.31,31.26l71.92,-85.68z"/>
-    <path android:fillColor="@color/accent" android:pathData="M49,50.67l-25.23,15.92l14.31,31.26l21.04,-25.07z"/>
+    <path android:fillColor="#4CAF50" android:pathData="M49,50.67l-25.23,15.92l14.31,31.26l21.04,-25.07z"/>
     <path android:fillColor="#E6EAEE" android:pathData="M34.43,69.62l39.01,11.09l36.56,-68.55z"/>
     <path android:fillColor="#E6EAEE" android:pathData="M0,59.82l23.77,6.77l86.23,-54.43z"/>
-    <path android:fillColor="@color/accent_dark" android:pathData="M38.08,97.84l-3.65,-28.22l22.08,6.27z"/>
-    <path android:fillColor="@color/accent" android:pathData="M0,59.82l49,-9.15l-25.23,15.92z"/>
-    <path android:fillColor="@color/accent" android:pathData="M56.51,52.84l-22.08,16.79l39.01,11.09z"/>
+    <path android:fillColor="#388E3C" android:pathData="M38.08,97.84l-3.65,-28.22l22.08,6.27z"/>
+    <path android:fillColor="#4CAF50" android:pathData="M0,59.82l49,-9.15l-25.23,15.92z"/>
+    <path android:fillColor="#4CAF50" android:pathData="M56.51,52.84l-22.08,16.79l39.01,11.09z"/>
 </vector>

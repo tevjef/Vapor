@@ -19,7 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:columnWidth="190dp"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical"
+            android:scrollbarStyle="outsideOverlay"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

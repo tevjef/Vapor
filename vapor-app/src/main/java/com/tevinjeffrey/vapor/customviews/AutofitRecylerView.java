@@ -50,7 +50,7 @@ public class AutofitRecylerView extends RecyclerView {
     protected void onMeasure(int widthSpec, int heightSpec) {
         super.onMeasure(widthSpec, heightSpec);
         if (columnWidth > 0) {
-            int spanCount = Math.max(1, getMeasuredWidth() / columnWidth);
+            int spanCount = Math.max(2, getMeasuredWidth() / columnWidth);
             manager.setSpanCount(spanCount);
         }
     }

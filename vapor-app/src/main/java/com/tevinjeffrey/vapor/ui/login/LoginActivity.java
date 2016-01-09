@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -62,14 +63,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     @Inject
     Bus bus;
 
-    View root;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         VaporApp.uiComponent(this).inject(this);
-        root = LayoutInflater.from(this).inflate(R.layout.activity_login, null);
-        setContentView(root);
+        setContentView(R.layout.activity_login);
         loginPresenter.attachView(this);
         ButterKnife.bind(this);
         bus.register(this);
@@ -114,6 +112,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     public void onLoginClick(View view) {
         String userEmail = loginEmail.getText().toString();
         String userPass = loginPassword.getText().toString();
+        loginWrapperEmail.setErrorEnabled(false);
+        loginWrapperPassword.setErrorEnabled(false);
 
         if (isSignInFieldValid()) {
             showLoading(true);
@@ -152,6 +152,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
 
                 // start the animation
                 anim.start();
+            } else {
+                ViewCompat.animate(loginFieldContainer).alpha(0).start();
             }
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -173,6 +175,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
                 // make the view visible and start the animation
                 myView.setVisibility(View.VISIBLE);
                 anim.start();
+            } else {
+                ViewCompat.animate(loginFieldContainer).alpha(1).start();
+/*
+                loginFieldContainer.setVisibility(View.VISIBLE);
+*/
             }
         }
     }
@@ -205,7 +212,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
         } else {
             message = t.getMessage();
         }
-        Snackbar.make(root, message, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(this.findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG).show();
     }
 
     private boolean isSignInFieldValid() {

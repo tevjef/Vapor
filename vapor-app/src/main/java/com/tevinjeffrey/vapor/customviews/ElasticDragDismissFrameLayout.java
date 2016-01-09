@@ -53,21 +53,16 @@ public class ElasticDragDismissFrameLayout extends FrameLayout {
     private List<ElasticDragDismissListener> listeners;
 
     public ElasticDragDismissFrameLayout(Context context) {
-        this(context, null, 0, 0);
+        super(context, null);
     }
 
     public ElasticDragDismissFrameLayout(Context context, AttributeSet attrs) {
-        this(context, attrs, 0, 0);
+        super(context, attrs, 0);
     }
 
     public ElasticDragDismissFrameLayout(Context context, AttributeSet attrs,
                                          int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
-    }
-
-    public ElasticDragDismissFrameLayout(Context context, AttributeSet attrs,
-                                         int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+        super(context, attrs, defStyleAttr);
 
         final TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.ElasticDragDismissFrameLayout, 0, 0);
