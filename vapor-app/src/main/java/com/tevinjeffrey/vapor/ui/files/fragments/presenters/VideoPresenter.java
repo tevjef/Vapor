@@ -28,9 +28,10 @@ public class VideoPresenter extends BaseFilesPresenterImpl {
 
     @Subscribe
     public void onRefreshEvent(RefreshEvent event) {
-        loadData(true, true, false);
+        if (getView() != null && getView().isVisibleInPager()) {
+            loadData(true, true, false);
+        }
     }
-
     @Override
     public void onPause() {
         super.onPause();

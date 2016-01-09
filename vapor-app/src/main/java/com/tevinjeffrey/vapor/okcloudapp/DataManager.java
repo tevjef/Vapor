@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import jonathanfinerty.once.Once;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -47,11 +48,12 @@ public class DataManager {
     private final CloudAppService cloudAppService;
     private final Bus bus;
     private final UserManager userManager;
-
     private final int SERVER_ITEM_LIMIT = 40;
     private final int MAX_ITEM_LIMIT = 1500;
     private final OkHttpClient client;
     private boolean isSyncingAllItems;
+
+    public final static String SYNC_ALL_ITEMS = DataManager.class.getPackage().getName() + ".SYNC_ALL_ITEMS";
 
     public DataManager(CloudAppService cloudAppService, UserManager userManager, Bus bus, OkHttpClient client) {
         this.cloudAppService = cloudAppService;
@@ -61,79 +63,83 @@ public class DataManager {
         bus.register(this);
     }
 
-    public void syncAllItems() {
-        cloudAppService.getAccountStats()
-                .flatMap(new Func1<AccountStatsModel, Observable<List<CloudAppItem>>>() {
-                    @Override
-                    public Observable<List<CloudAppItem>> call(final AccountStatsModel accountStatsModel) {
-                        return Observable.create(new Observable.OnSubscribe<Integer>() {
-                            @Override
-                            public void call(Subscriber<? super Integer> subscriber) {
-                                if (!subscriber.isUnsubscribed()) {
-                                    for (int i = 1; i <= Math.ceil((double)accountStatsModel.getItems() / (double) SERVER_ITEM_LIMIT) + 1
-                                            && i < Math.ceil(MAX_ITEM_LIMIT / SERVER_ITEM_LIMIT); i++) {
-                                        subscriber.onNext(i);
+    public void syncAllItems(final boolean notify) {
+        if (!isSyncingAllItems) {
+            cloudAppService.getAccountStats()
+                    .flatMap(new Func1<AccountStatsModel, Observable<List<CloudAppItem>>>() {
+                        @Override
+                        public Observable<List<CloudAppItem>> call(final AccountStatsModel accountStatsModel) {
+                            return Observable.create(new Observable.OnSubscribe<Integer>() {
+                                @Override
+                                public void call(Subscriber<? super Integer> subscriber) {
+                                    if (!subscriber.isUnsubscribed()) {
+                                        for (int i = 1; i <= Math.ceil((double) accountStatsModel.getItems() / (double) SERVER_ITEM_LIMIT) + 1
+                                                && i < Math.ceil(MAX_ITEM_LIMIT / SERVER_ITEM_LIMIT); i++) {
+                                            subscriber.onNext(i);
+                                        }
+                                        subscriber.onCompleted();
                                     }
-                                    subscriber.onCompleted();
                                 }
-                            }
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .flatMap(new Func1<Integer, Observable<List<CloudAppItem>>>() {
-                            @Override
-                            public Observable<List<CloudAppItem>> call(Integer integer) {
-                                return getListFromServer(makeListParams(integer, ItemType.ALL, false, SERVER_ITEM_LIMIT));
-                            }
-                        }).subscribeOn(Schedulers.io())
-                        .flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
-                            @Override
-                            public Observable<List<CloudAppItem>> call(List<CloudAppItem> cloudAppItems) {
-                                SugarRecord.updateInTx(cloudAppItems);
-                                return Observable.just(cloudAppItems);
-                            }
-                        });
+                            })
+                                    .subscribeOn(Schedulers.io())
+                                    .flatMap(new Func1<Integer, Observable<List<CloudAppItem>>>() {
+                                        @Override
+                                        public Observable<List<CloudAppItem>> call(Integer integer) {
+                                            return getListFromServer(makeListParams(integer, ItemType.ALL, false, SERVER_ITEM_LIMIT));
+                                        }
+                                    }).subscribeOn(Schedulers.io())
+                                    .flatMap(new Func1<List<CloudAppItem>, Observable<List<CloudAppItem>>>() {
+                                        @Override
+                                        public Observable<List<CloudAppItem>> call(List<CloudAppItem> cloudAppItems) {
+                                            SugarRecord.updateInTx(cloudAppItems);
+                                            return Observable.just(cloudAppItems);
+                                        }
+                                    });
 
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnTerminate(new Action0() {
-                    @Override
-                    public void call() {
-                        isSyncingAllItems = false;
-                        bus.post(new DatabaseUpdateEvent());
-                    }
-                })
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        isSyncingAllItems = true;
-                    }
-                })
-                .subscribe(new Action1<List<CloudAppItem>>() {
-                    @Override
-                    public void call(List<CloudAppItem> cloudAppItems) {
-                        Timber.i("Synced all items. Size: %s", cloudAppItems.size());
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Timber.e(throwable, "Error syncing all items");
-                    }
-                });
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnTerminate(new Action0() {
+                        @Override
+                        public void call() {
+                            isSyncingAllItems = false;
+                            if (notify) {
+                                bus.post(new DatabaseUpdateEvent());
+                            }
+                        }
+                    })
+                    .doOnSubscribe(new Action0() {
+                        @Override
+                        public void call() {
+                            isSyncingAllItems = true;
+                        }
+                    })
+                    .subscribe(new Action1<List<CloudAppItem>>() {
+                        @Override
+                        public void call(List<CloudAppItem> cloudAppItems) {
+                            Timber.i("Synced all items. Size: %s", cloudAppItems.size());
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Timber.e(throwable, "Error syncing all items");
+                        }
+                    });
 
-                getTrashItems(ItemType.ALL, true, new DataCursor())
-                        .subscribe(new Action1<List<CloudAppItem>>() {
-                            @Override
-                            public void call(List<CloudAppItem> cloudAppItems) {
-                                Timber.i("Synced all deleted items. Size: %s", cloudAppItems.size());
-                            }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                Timber.e(throwable, "Error syncing all deleted items");
-                            }
-                        });
+            getTrashItems(ItemType.ALL, true, new DataCursor())
+                    .subscribe(new Action1<List<CloudAppItem>>() {
+                        @Override
+                        public void call(List<CloudAppItem> cloudAppItems) {
+                            Timber.i("Synced all deleted items. Size: %s", cloudAppItems.size());
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Timber.e(throwable, "Error syncing all deleted items");
+                        }
+                    });
+        }
     }
 
     @NonNull
@@ -475,19 +481,10 @@ public class DataManager {
     }
 
     @Subscribe
-    public void onLoginEvent(LoginEvent event) {
-        syncAllItems();
-    }
-
-    @Subscribe
-    public void onLaunchEvent(AppLaunchEvent event) {
-        syncAllItems();
-    }
-
-    @Subscribe
     public void onLogoutEvent(LogoutEvent event) {
         List<CloudAppItem> cloudAppItems = SugarRecord.listAll(CloudAppItem.class);
         SugarRecord.deleteInTx(cloudAppItems);
+        Once.clearAll();
         CloudAppItem.executeQuery("DELETE FROM sqlite_sequence WHERE NAME = 'CLOUD_APP_ITEM'");
         CloudAppItem.executeQuery("VACUUM");
     }

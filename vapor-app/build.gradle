@@ -45,7 +45,7 @@ dependencies {
     compile('com.afollestad.material-dialogs:core:0.8.1.0@aar') {
         transitive = true
     }
-    compile 'com.jonathanfinerty.once:once:0.3.2'
+    compile 'com.jonathanfinerty.once:once:0.4.2'
     compile 'com.google.dagger:dagger:2.0'
     compile 'com.nispok:snackbar:2.9.1'
     compile 'net.steamcrafted:materialiconlib:1.0.3'

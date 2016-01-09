@@ -142,6 +142,7 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
             }
         });
 
+        mPresenter.onActivityCreated(savedInstanceState);
     }
 
     @Override

@@ -68,10 +68,6 @@ public abstract class MVPFragment extends Fragment implements View {
         return (FilesActivity) getActivity();
     }
 
-    private Presenter getPresenter() {
-        return mPresenter;
-    }
-
     @Override
     public String toString() {
         return this.getClass().getSimpleName();

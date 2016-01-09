@@ -180,7 +180,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     @Override
     public void loginSuccessful(boolean isSuccessful) {
         if (isSuccessful) {
-            bus.post(new LoginEvent());
             Intent intent = new Intent(this, IntroActivity.class);
             startActivity(intent);
             finish();

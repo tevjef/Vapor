@@ -75,6 +75,7 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
     private ItemType mItemType;
 
     private List<CloudAppItem> mListDataSet;
+    private boolean isViewShown;
 
     public static FilesFragmentFragment newInstance(ItemType itemType) {
         FilesFragmentFragment fragment = new FilesFragmentFragment();
@@ -180,8 +181,11 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
             CloudAppItem currentItem = itemIterator.next();
             for (int i = 0; i < mListDataSet.size(); i++) {
                 if (mListDataSet.get(i).equals(currentItem)) {
-                    mListDataSet.set(i, currentItem);
-                    mRecyclerView.getAdapter().notifyItemChanged(i);
+                    // Only updated items that have changed
+                    if (mListDataSet.get(i).hash() != currentItem.hash()) {
+                        mListDataSet.set(i, currentItem);
+                        mRecyclerView.getAdapter().notifyItemChanged(i);
+                    }
                     itemIterator.remove();
                     break;
                 }
@@ -211,6 +215,11 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
         if (data.size() != 0) {
             mRecyclerView.getAdapter().notifyItemRangeInserted(mListDataSet.size(), data.size());
         }
+    }
+
+    @Override
+    public boolean isVisibleInPager() {
+        return isViewShown;
     }
 
     public static <E extends Comparable<? super E>> boolean isSorted(List<E> list, boolean asc) {
@@ -424,6 +433,12 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
                 }
             }
         }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        isViewShown = getView() != null && isVisibleToUser;
     }
 
     @Subscribe

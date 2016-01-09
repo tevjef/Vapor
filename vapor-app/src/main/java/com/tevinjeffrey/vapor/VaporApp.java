@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import jonathanfinerty.once.Once;
 import rx.Single;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -47,6 +48,7 @@ public class VaporApp extends Application {
         super.onCreate();
         //Bad static initializers.
         SugarContext.init(this);
+        Once.initialise(this);
         Hawk.init(this)
         .setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
                 .setStorage(HawkBuilder.newSqliteStorage(this))

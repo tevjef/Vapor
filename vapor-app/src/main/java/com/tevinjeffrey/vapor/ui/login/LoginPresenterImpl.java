@@ -1,5 +1,8 @@
 package com.tevinjeffrey.vapor.ui.login;
 
+import com.squareup.otto.Bus;
+import com.tevinjeffrey.vapor.events.LoginEvent;
+import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.okcloudapp.UserManager;
 import com.tevinjeffrey.vapor.ui.base.BasePresenter;
 
@@ -12,6 +15,10 @@ public class LoginPresenterImpl extends BasePresenter<LoginView> implements Logi
 
     @Inject
     UserManager userManager;
+    @Inject
+    Bus bus;
+    @Inject
+    DataManager dataManager;
 
     @Override
     public void tryLogin(String userName, String password) {
@@ -35,6 +42,8 @@ public class LoginPresenterImpl extends BasePresenter<LoginView> implements Logi
                     public void onNext(Boolean isLoggedIn) {
                         if (userManager.isLoggedIn()) {
                             if (getView() != null) {
+                                bus.post(new LoginEvent());
+                                dataManager.syncAllItems(true);
                                 getView().loginSuccessful(true);
                             }
                         }

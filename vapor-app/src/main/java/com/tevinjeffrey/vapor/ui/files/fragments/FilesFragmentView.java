@@ -13,6 +13,8 @@ public interface FilesFragmentView extends View {
 
     void appendData(List<CloudAppItem> data);
 
+    boolean isVisibleInPager();
+
     void showError(Throwable e);
 
     void showLayout(LayoutType type);

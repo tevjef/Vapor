@@ -238,9 +238,11 @@ public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem
 
     }
 
-    @Override
-    public int hashCode() {
-        return (int) (itemId ^ (itemId >>> 32));
+    public int hash() {
+        int result = href.hashCode();
+        result = 31 * result + createdAt.hashCode();
+        result = 31 * result + updatedAt.hashCode();
+        return result;
     }
 
     @Override
