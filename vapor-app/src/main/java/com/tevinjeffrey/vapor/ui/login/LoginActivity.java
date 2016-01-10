@@ -188,6 +188,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     public void loginSuccessful(boolean isSuccessful) {
         if (isSuccessful) {
             Intent intent = new Intent(this, IntroActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
             finish();
         }

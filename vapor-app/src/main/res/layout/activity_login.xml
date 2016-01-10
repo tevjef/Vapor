@@ -1,124 +1,108 @@
-<FrameLayout
+<android.support.percent.PercentRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary"
+    android:padding="@dimen/activity_horizontal_margin"
     android:theme="@style/Vapr_Login"
     tools:context="com.tevinjeffrey.vapor.ui.login.LoginActivity">
 
     <RelativeLayout
-        android:padding="24dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        app:layout_heightPercent="50%"
+        app:layout_widthPercent="100%">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_centerInParent="true"
-            android:layout_alignParentTop="true"
-            android:id="@+id/frameLayout">
+            android:src="@drawable/ic_logo"/>
+    </RelativeLayout>
 
-            <ImageView
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:src="@drawable/home"/>
-        </FrameLayout>
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:paddingStart="@dimen/login_field_margin"
+        android:paddingEnd="@dimen/login_field_margin"
+        app:layout_heightPercent="50%"
+        app:layout_widthPercent="100%">
 
         <RelativeLayout
+            android:id="@+id/login_field_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/frameLayout"
-            android:paddingLeft="36dp"
-            android:paddingRight="36dp">
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true">
 
-
-            <RelativeLayout
-                android:id="@+id/login_field_container"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/login_wrapper_email"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/login_wrapper_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="85dp"
-                    android:layout_centerHorizontal="true"
-                    android:theme="@style/EditTextTheme"
-                    >
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textEmailAddress"
-                        android:ems="10"
-                        android:id="@+id/login_field_email"
-                        android:hint="E-mail Address"
-                        android:textColorHint="@color/primary_light"
-                        android:textColor="@android:color/white" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/login_wrapper_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="85dp"
-                    android:layout_below="@+id/login_wrapper_email"
-                    android:layout_centerHorizontal="true"
-                    android:theme="@style/EditTextTheme">
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:ems="10"
-                        android:id="@+id/login_field_password"
-                        android:hint="Password"
-                        android:textColorHint="@color/primary_light"
-                        android:textColor="@android:color/white" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <Button
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:theme="@style/EditTextTheme"
+                >
+                <EditText
+                    android:id="@+id/login_field_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Login"
-                    android:id="@+id/login_button"
-                    android:layout_below="@+id/login_wrapper_password"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="8dp"
-                    style="@style/LoginButtonStyle"
-                    android:layout_alignParentEnd="true" />
-            </RelativeLayout>
+                    android:ems="10"
+                    android:hint="E-mail Address"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@color/primary_light" />
 
-            <ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
-                         xmlns:tools="http://schemas.android.com/tools"
-                         style="?android:attr/progressBarStyleLarge"
-                         android:layout_width="70dp"
-                         android:layout_height="70dp"
-                         android:id="@+id/progressBar"
-                         android:indeterminate="true"
-                         android:indeterminateOnly="true"
-                         android:layout_centerInParent="true"
-                         android:visibility="gone"
-                         tools:visibility="visible"
-                         tools:showIn="@layout/activity_login" />
+            </android.support.design.widget.TextInputLayout>
 
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/login_wrapper_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/login_wrapper_email"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:theme="@style/EditTextTheme">
+                <EditText
+                    android:id="@+id/login_field_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@color/primary_light" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/login_button"
+                style="@style/LoginButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/login_wrapper_password"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="8dp"
+                android:text="Login" />
         </RelativeLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/tos"
-            android:id="@+id/tos"
-            android:textColor="@android:color/white"
-            android:textSize="10dp"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:onClick="tosDialog"
-            android:visibility="visible"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true" />
+        <include layout="@layout/progress_indeterminate" />
 
     </RelativeLayout>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:onClick="tosDialog"
+        android:text="@string/tos"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@android:color/white"
+        android:textSize="10sp"
+        android:visibility="visible" />
+
+</android.support.percent.PercentRelativeLayout>
