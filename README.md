@@ -14,6 +14,7 @@ Vapor follows a Model-View-Presenter (MVP) architectural pattern and borrows som
 - Android SDK Tools (Gradle 1.5+)
 - Android SDK Build tools 23.0.2
 - Android Support Repository
+- MinSdkVersion 16
 
 ## Libraries
 
@@ -26,7 +27,6 @@ The libraries and tools used include:
 - [Dagger 2](http://google.github.io/dagger/)
 - [Butterknife](https://github.com/JakeWharton/butterknife)
 - [Timber](https://github.com/JakeWharton/timber)
-- [Picasso](http://square.github.io/picasso/)
 - [Otto](http://square.github.io/otto/) 
 - [Glide](https://github.com/bumptech/glide)
 - [Once](https://github.com/jonfinerty/Once)
