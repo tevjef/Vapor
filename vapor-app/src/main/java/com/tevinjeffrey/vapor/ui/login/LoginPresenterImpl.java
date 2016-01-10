@@ -44,7 +44,7 @@ public class LoginPresenterImpl extends BasePresenter<LoginView> implements Logi
                             if (getView() != null) {
                                 bus.post(new LoginEvent());
                                 dataManager.syncAllItems(true);
-                                getView().loginSuccessful(true);
+                                getView().loginSuccessful();
                             }
                         }
                     }

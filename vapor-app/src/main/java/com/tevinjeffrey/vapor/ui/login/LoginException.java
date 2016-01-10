@@ -1,7 +1,7 @@
 package com.tevinjeffrey.vapor.ui.login;
 
 public class LoginException extends Exception {
-    int code;
+    private int code;
     public LoginException() {
     }
 

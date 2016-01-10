@@ -58,7 +58,7 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesFragmentAdap
 
     @Override
     public FilesVH onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        final View parent = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.file_grid_list_item, viewGroup, false);
+        final View parent = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_files_grid_list_item, viewGroup, false);
         final FilesVH filesVH = FilesVH.newInstance(parent);
         filesVH.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,7 +229,7 @@ public class FilesFragmentAdapter extends RecyclerView.Adapter<FilesFragmentAdap
             } else if (type == BOOKMARK) {
                 drawable =  ContextCompat.getDrawable(context, R.drawable.ic_bookmark);
             } else if (type == AUDIO) {
-                drawable =  ContextCompat.getDrawable(context, R.drawable.ic_headset_white_34dp);
+                drawable =  ContextCompat.getDrawable(context, R.drawable.ic_headset);
             } else if (type == TEXT) {
                 drawable =  ContextCompat.getDrawable(context, R.drawable.ic_file_document);
             } else if (type == UNKNOWN) {

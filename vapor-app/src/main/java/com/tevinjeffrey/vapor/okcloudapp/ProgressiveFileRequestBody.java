@@ -12,9 +12,9 @@ import okio.BufferedSink;
 
 public class ProgressiveFileRequestBody extends CloudAppRequestBody {
 
-    public static final int DEFAULT_BUFFER_SIZE = 4096;
+    private static final int DEFAULT_BUFFER_SIZE = 4096;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
     private final File file;
 
     public ProgressiveFileRequestBody(final File file, ProgressListener listener) {
@@ -50,7 +50,7 @@ public class ProgressiveFileRequestBody extends CloudAppRequestBody {
         }
     }
 
-    public static String getMimeType(String url) {
+    private static String getMimeType(String url) {
         String type = null;
         String extension = MimeTypeMap.getFileExtensionFromUrl(url);
         if (extension != null) {

@@ -96,6 +96,8 @@ public class BottomSheetPresenterImpl implements BottomSheetPresenter {
             getView().showLoading(true);
         }
 
+        RxUtils.unsubscribeIfNotNull(mDeleteSubscription);
+
         mDeleteSubscription = dataManager.deleteCloudItem(mCloudAppItem)
                 .compose(new RxUtils.AndroidSchedulerTransformer<CloudAppItem>())
                 .doOnTerminate(new Action0() {

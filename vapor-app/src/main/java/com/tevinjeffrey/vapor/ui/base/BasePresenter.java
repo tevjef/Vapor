@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 
-//Responsible for attaching and detaching the view to the presentor
+//Responsible for attaching and detaching the view to the presenter
 public abstract class BasePresenter<V extends View> implements Presenter<V> {
 
     @Nullable

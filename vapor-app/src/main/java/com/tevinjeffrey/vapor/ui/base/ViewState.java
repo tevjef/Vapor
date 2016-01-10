@@ -4,7 +4,7 @@ import android.os.Parcelable;
 
 /**
 An interface that defines a class that interacts with a view to restore it's state.
-Viewstate holds the data and gets parceles it into a bundle whenever the the state is saved
+ViewState holds the data and gets parcels it into a bundle whenever the the state is saved
  and needs to be restored.
  */
 public interface ViewState<V extends View> extends Parcelable {

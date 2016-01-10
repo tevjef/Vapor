@@ -12,7 +12,6 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +25,6 @@ import com.squareup.otto.Bus;
 import com.tevinjeffrey.vapor.BuildConfig;
 import com.tevinjeffrey.vapor.R;
 import com.tevinjeffrey.vapor.VaporApp;
-import com.tevinjeffrey.vapor.events.LoginEvent;
 import com.tevinjeffrey.vapor.ui.IntroActivity;
 import com.tevinjeffrey.vapor.utils.VaporUtils;
 
@@ -185,13 +183,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView {
     }
 
     @Override
-    public void loginSuccessful(boolean isSuccessful) {
-        if (isSuccessful) {
-            Intent intent = new Intent(this, IntroActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-            finish();
-        }
+    public void loginSuccessful() {
+        Intent intent = new Intent(this, IntroActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 
     @Override

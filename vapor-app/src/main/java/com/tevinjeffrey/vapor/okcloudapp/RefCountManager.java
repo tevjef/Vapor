@@ -3,7 +3,6 @@ package com.tevinjeffrey.vapor.okcloudapp;
 import android.content.Context;
 import android.net.Uri;
 
-import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 import com.tevinjeffrey.vapor.events.UploadEvent;
 import com.tevinjeffrey.vapor.events.UploadFailedEvent;
@@ -22,15 +21,12 @@ import timber.log.Timber;
 
 public class RefCountManager {
 
-    private final Bus bus;
     private final Context context;
-    List<Uri> uris = new ArrayList<>();
-    List<Integer> notificationIds = new ArrayList<>();
+    private final List<Uri> uris = new ArrayList<>();
+    private final List<Integer> notificationIds = new ArrayList<>();
 
-    public RefCountManager(Context context, Bus bus) {
+    public RefCountManager(Context context) {
         this.context = context;
-        this.bus = bus;
-        bus.register(this);
     }
 
     public void addNotificationId(int startId) {
@@ -107,7 +103,7 @@ public class RefCountManager {
     }
 
     @Subscribe
-    public void onUplaodFailed(UploadFailedEvent uploadEvent) {
+    public void onUploadFailed(UploadFailedEvent uploadEvent) {
         if (uploadEvent.getUri() != null) {
             cleanUpUri(uploadEvent.getUri());
         }

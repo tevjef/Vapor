@@ -118,8 +118,8 @@ public class BaseFilesPresenterImpl extends BasePresenter<FilesFragmentView> imp
     }
 
     @Override
-    public boolean isLoading() {
-        return isLoading;
+    public boolean isNotLoading() {
+        return !isLoading;
     }
 
     @Override

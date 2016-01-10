@@ -16,8 +16,8 @@ import jonathanfinerty.once.Once;
 
 public class FilesActivityPresenterImpl extends BasePresenter<FilesActivityView> implements FilesActivityPresenter {
 
-    Bus bus;
-    DataManager dataManager;
+    private final Bus bus;
+    private final DataManager dataManager;
     NavContext navContext = NavContext.ALL;
 
     public FilesActivityPresenterImpl(DataManager dataManager, Bus bus) {

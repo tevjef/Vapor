@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -18,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/bs_main_icon"
-            android:layout_centerInParent="true" />
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/content_desc_file_image_preview"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -27,17 +27,16 @@
             android:id="@+id/bs_main_scrim"
             android:padding="16dp">
 
-            <net.steamcrafted.materialiconlib.MaterialIconView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:id="@+id/bs_expand_icon"
-                app:materialIcon="arrow_expand"
-                app:materialIconColor="@android:color/white"
-                app:materialIconSize="24dp"
-                />
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_fullscreen"
+                android:contentDescription="@string/content_desc_enter_fullscreen"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -48,8 +47,10 @@
                 android:layout_alignParentBottom="true"
                 tools:text="Long ass file name.zip Long ass file name.zip Long ass file name.zip"
                 android:layout_alignParentStart="true"
-                android:paddingEnd="40dp"
-                android:maxLines="2" />
+                android:layout_marginEnd="40dp"
+                android:maxLines="2"
+                android:layout_alignParentLeft="true"
+                android:layout_marginRight="40dp"/>
 
         </RelativeLayout>
 
@@ -61,25 +62,24 @@
         android:layout_height="wrap_content"
         android:weightSum="4"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:baselineAligned="false">
 
         <RelativeLayout
             android:id="@+id/bs_download_link_container"
             style="@style/BottomSheetItemContainer"
             android:layout_weight="1">
 
-            <net.steamcrafted.materialiconlib.MaterialIconView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:materialIcon="download"
-                app:materialIconColor="?attr/colorPrimary"
-                app:materialIconSize="24dp"
                 android:id="@+id/bs_download_link_icon"
                 android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true" />
-
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_file_download_primary"
+                android:contentDescription="@string/content_desc_download_file"/>
             <TextView
-                android:text="Download"
+                android:text="@string/download"
                 android:id="@+id/bs_download_link_title"
                 style="@style/PrimaryText"
                 android:layout_below="@+id/bs_download_link_icon"
@@ -92,18 +92,17 @@
             style="@style/BottomSheetItemContainer"
             android:layout_weight="1">
 
-            <net.steamcrafted.materialiconlib.MaterialIconView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:materialIcon="share_variant"
-                app:materialIconColor="?attr/colorPrimary"
-                app:materialIconSize="24dp"
                 android:id="@+id/bs_share_link_icon"
                 android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_share_primary"
+                android:contentDescription="@string/content_desc_share_link_to_file"/>
 
             <TextView
-                android:text="Share Link"
+                android:text="@string/share_link"
                 android:layout_below="@+id/bs_share_link_icon"
                 android:id="@+id/bs_share_link_title"
                 android:layout_centerHorizontal="true"
@@ -116,18 +115,17 @@
             style="@style/BottomSheetItemContainer"
             android:layout_weight="1">
 
-            <net.steamcrafted.materialiconlib.MaterialIconView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:materialIcon="rename_box"
-                app:materialIconColor="?attr/colorPrimary"
-                app:materialIconSize="24dp"
                 android:id="@+id/bs_rename_icon"
                 android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_edit_primary"
+                android:contentDescription="@string/content_desc_rename_file"/>
 
             <TextView
-                android:text="Rename"
+                android:text="@string/rename"
                 android:layout_below="@+id/bs_rename_icon"
                 android:id="@+id/bs_rename_title"
                 android:layout_centerHorizontal="true"
@@ -140,18 +138,17 @@
             style="@style/BottomSheetItemContainer"
             android:layout_weight="1">
 
-            <net.steamcrafted.materialiconlib.MaterialIconView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:materialIcon="delete"
-                app:materialIconColor="?attr/colorPrimary"
-                app:materialIconSize="24dp"
                 android:id="@+id/bs_delete_icon"
                 android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_delete"
+                android:contentDescription="@string/content_dec_delete_file"/>
 
             <TextView
-                android:text="Remove"
+                android:text="@string/remove"
                 android:layout_below="@+id/bs_delete_icon"
                 android:id="@+id/bs_delete_title"
                 android:layout_centerHorizontal="true"
@@ -177,16 +174,18 @@
         android:paddingBottom="8dp">
 
         <TextView
-            android:text="Size"
+            android:text="@string/size"
             android:id="@+id/bs_size_title"
             style="@style/PrimaryText"
-            android:layout_marginStart="16dp"/>
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"/>
 
         <TextView
-            android:text="2.6MB"
+            tools:text="2.6MB"
             android:id="@+id/bs_size_text"
             style="@style/SecondaryText"
-            android:layout_marginStart="72dp"/>
+            android:layout_marginStart="72dp"
+            android:layout_marginLeft="72dp"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -196,16 +195,18 @@
         android:paddingBottom="8dp">
 
         <TextView
-            android:text="Created"
+            android:text="@string/created"
             android:id="@+id/bs_created_title"
             style="@style/PrimaryText"
-            android:layout_marginStart="16dp"/>
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"/>
 
         <TextView
-            android:text="September 16th 1994"
+            tools:text="September 16th 1994"
             android:id="@+id/bs_created_text"
             style="@style/SecondaryText"
-            android:layout_marginStart="72dp"/>
+            android:layout_marginStart="72dp"
+            android:layout_marginLeft="72dp"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -215,18 +216,18 @@
         android:paddingBottom="8dp">
 
         <TextView
-            android:text="Views"
+            android:text="@string/views"
             android:id="@+id/bs_views_title"
             style="@style/PrimaryText"
-            android:layout_marginStart="16dp"/>
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"/>
 
         <TextView
-            android:text="image/png 2.6MB"
+            tools:text="image/png 2.6MB"
             android:id="@+id/bs_views_text"
             style="@style/SecondaryText"
-            android:layout_marginStart="72dp"/>
+            android:layout_marginStart="72dp"
+            android:layout_marginLeft="72dp"/>
     </RelativeLayout>
-
-
 
 </LinearLayout>

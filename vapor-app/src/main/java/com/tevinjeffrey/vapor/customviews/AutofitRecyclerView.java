@@ -7,24 +7,24 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
 /*https://github.com/chiuki/android-recyclerview/blob/master/app/src/main/java/com/sqisland/android/recyclerview/AutofitRecyclerView.java*/
-public class AutofitRecylerView extends RecyclerView {
+public class AutofitRecyclerView extends RecyclerView {
     private GridLayoutManager manager;
     private int columnWidth = -1;
 
 
-    public AutofitRecylerView(Context context) {
+    public AutofitRecyclerView(Context context) {
         super(context);
         init(context, null);
     }
 
 
-    public AutofitRecylerView(Context context, AttributeSet attrs) {
+    public AutofitRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
 
-    public AutofitRecylerView(Context context, AttributeSet attrs, int defStyle) {
+    public AutofitRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context, attrs);
     }

@@ -177,8 +177,7 @@ public class IntentBridge extends Activity {
             try {
                 is = this.getContentResolver().openInputStream(uri);
                 Bitmap bmp = BitmapFactory.decodeStream(is);
-                Uri tempFileUri = writeToTempImageAndGetPathUri(bmp);
-                return tempFileUri;
+                return writeToTempImageAndGetPathUri(bmp);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }finally {

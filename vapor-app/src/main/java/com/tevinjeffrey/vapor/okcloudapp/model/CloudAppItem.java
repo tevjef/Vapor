@@ -169,9 +169,7 @@ public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem
 
     public String getFormattedCreatedAt(Context context)  {
 
-        String date = formatDateTime(context, Long.parseLong(createdAt), FORMAT_SHOW_TIME|FORMAT_SHOW_YEAR|FORMAT_SHOW_DATE);
-
-        return date;
+        return formatDateTime(context, Long.parseLong(createdAt), FORMAT_SHOW_TIME|FORMAT_SHOW_YEAR|FORMAT_SHOW_DATE);
     }
 
     

@@ -6,7 +6,7 @@ public interface LoginView extends View {
 
     void showLoading(boolean pullToRefresh);
 
-    void loginSuccessful(boolean isSuccessful);
+    void loginSuccessful();
 
     void showError(Throwable e);
 }

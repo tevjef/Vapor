@@ -12,9 +12,9 @@ import okio.BufferedSink;
 
 public class ProgressiveStringRequestBody extends CloudAppRequestBody {
 
-    public static final int DEFAULT_BUFFER_SIZE = 4096;
+    private static final int DEFAULT_BUFFER_SIZE = 4096;
 
-    private ProgressListener listener;
+    private final ProgressListener listener;
     private final InputStream inputStream;
     private final byte[] bytes;
     private final String name;

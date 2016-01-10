@@ -12,7 +12,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Vapr_Default"
+        android:theme="@style/Vapor"
         tools:replace="android:icon,android:label" >
         <meta-data
             android:name="DATABASE"
@@ -29,7 +29,7 @@
 
         <activity
             android:name=".ui.files.FilesActivity"
-            android:theme="@style/Vapor_FilesActivity"
+            android:theme="@style/Vapor.FilesActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,6 +39,7 @@
         </activity>
         <activity
             android:name=".ui.login.LoginActivity"
+            android:theme="@style/Vapor.Login"
             android:label="@string/title_activity_login" >
         </activity>
         <activity
@@ -64,7 +65,7 @@
             android:name=".ui.ImageActivity"
             android:immersive="true"
             android:label="@string/title_activity_image"
-            android:theme="@style/Vapr_Fullscreen" >
+            android:theme="@style/Vapor.Fullscreen" >
         </activity>
         <activity
             android:name=".ui.SettingsActivity"
@@ -72,7 +73,7 @@
         </activity>
         <activity
             android:name=".ui.IntroActivity"
-            android:theme="@style/Vapr_Default"
+            android:theme="@style/Vapor"
             android:label="@string/title_activity_settings" >
         </activity>
     </application>

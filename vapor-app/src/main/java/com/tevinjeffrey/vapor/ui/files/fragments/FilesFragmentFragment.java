@@ -41,7 +41,6 @@ import com.tevinjeffrey.vapor.ui.utils.EndlessRecyclerOnScrollListener;
 
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -126,7 +125,7 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
             cursor = new DataManager.DataCursor(getPresenter().getClass().getSimpleName());
         }
         mPresenter.attachView(this);
-        if (!getPresenter().isLoading()) {
+        if (getPresenter().isNotLoading()) {
             getPresenter().loadData(true, false, true);
         }
     }
@@ -283,7 +282,7 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
         mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int currentPage) {
-                if(!getPresenter().isLoading()) {
+                if(getPresenter().isNotLoading()) {
                     getPresenter().loadData(false, false, true);
                 }
             }
@@ -406,7 +405,7 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
 
     @Override
     public void onRefresh() {
-        if (!getPresenter().isLoading()) {
+        if (getPresenter().isNotLoading()) {
             getPresenter().loadData(true, true, false);
         }
     }

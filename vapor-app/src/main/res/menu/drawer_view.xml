@@ -5,19 +5,19 @@
         <item
             android:id="@+id/nav_all"
             android:icon="@drawable/ic_dashboard"
-            android:title="All" />
+            android:title="@string/all" />
         <item
             android:id="@+id/nav_popular"
             android:icon="@drawable/ic_whatshot"
-            android:title="Popular" />
+            android:title="@string/popular" />
         <item
             android:id="@+id/nav_favorites"
             android:icon="@drawable/ic_star"
-            android:title="Favorites" />
+            android:title="@string/favorites" />
         <item
             android:id="@+id/nav_trash"
             android:icon="@drawable/ic_delete"
-            android:title="Trash" />
+            android:title="@string/trash" />
     </group>
 <!--
     <item android:title="Sub items">

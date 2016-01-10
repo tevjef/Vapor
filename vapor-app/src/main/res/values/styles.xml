@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="Vapr_Default" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Vapor" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowNoTitle">true</item>
         <!--We will be using the toolbar so no need to show ActionBar-->
         <item name="windowActionBar">false</item>
@@ -24,8 +24,7 @@
         <item name="android:windowBackground">@color/window_background</item>
     </style>
 
-    <!-- Base application theme. -->
-    <style name="Vapor_FilesActivity" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Vapor.FilesActivity">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="colorPrimary">@color/primary</item>
@@ -40,8 +39,8 @@
         <item name="android:navigationBarColor">@color/primary_dark</item>
         <item name="android:windowBackground">@color/window_background</item>
     </style>
-    <!-- Base application theme. -->
-    <style name="Vapr_Fullscreen" parent="Theme.AppCompat.Light.DarkActionBar">
+
+    <style name="Vapor.Fullscreen">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:fitsSystemWindows">true</item>
@@ -55,11 +54,11 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowBackground">@color/window_background</item>
+        <item name="android:windowBackground">@android:color/black</item>
     </style>
 
 
-    <style name="Vapr_Login" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Vapor.Login">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="colorPrimary">@color/primary</item>
@@ -76,7 +75,7 @@
         <item name="android:textColorPrimary">@color/primary_text</item>
         <item name="android:textColorSecondary">@color/secondary_text</item>
 
-        <item name="android:windowBackground">@color/window_background</item>
+        <item name="android:windowBackground">@color/primary</item>
         <item name="android:buttonStyle">@style/LoginButtonStyle</item>
     </style>
 

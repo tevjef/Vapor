@@ -162,11 +162,6 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         bus.unregister(this);
@@ -290,7 +285,7 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         bottomsheet.setPeekOnDismiss(true);
 
         if (!bottomsheet.isSheetShowing()) {
-            bottomsheet.showWithSheetView(LayoutInflater.from(this).inflate(R.layout.file_info, bottomsheet, false));
+            bottomsheet.showWithSheetView(LayoutInflater.from(this).inflate(R.layout.fragment_files_info, bottomsheet, false));
             bottomsheet.setFocusableInTouchMode(true);
             bottomsheet.requestFocus();
             bottomsheet.setPeekSheetTranslation((float) (getResources().getDisplayMetrics().heightPixels * .60));
@@ -315,7 +310,7 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
         scrim.setBackground(ScrimUtil.makeCubicGradientScrimDrawable(
                 0xaa000000, 8, Gravity.BOTTOM));
         final TouchImageView mainImage = ButterKnife.findById(bottomsheet, R.id.bs_main_icon);
-        VaporUtils.setTypedImageView(data, mainImage, previousImage, false, 120);
+        VaporUtils.setTypedImageView(data, mainImage, previousImage, false);
 
         bsFileName.setText(data.getName());
         bsSizeText.setText(VaporUtils.humanReadableByteCount(data.getContentLength(), true));

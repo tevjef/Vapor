@@ -15,7 +15,7 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class VaporModule {
+class VaporModule {
     private final VaporApp applicationContext;
 
     public VaporModule(Context applicationContext) {

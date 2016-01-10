@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 
 public class UploadEvent {
-    Uri uri;
-    CloudAppItem item;
+    private Uri uri;
+    private CloudAppItem item;
 
     public UploadEvent(Uri uri, CloudAppItem item) {
         this.uri = uri;

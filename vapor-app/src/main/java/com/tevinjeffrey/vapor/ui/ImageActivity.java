@@ -14,7 +14,6 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.tevinjeffrey.vapor.R;
 
-import net.steamcrafted.materialiconlib.MaterialDrawableBuilder;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -39,10 +38,6 @@ public class ImageActivity extends Activity {
         final MaterialDialog progress = new MaterialDialog.Builder(this).content("Please wait...").progress(true, 0).show();
 
         Glide.with(getApplicationContext()).load(getIntent().getData())
-                .placeholder(MaterialDrawableBuilder.with(this)
-                        .setIcon(MaterialDrawableBuilder.IconValue.FILE_IMAGE)
-                        .setColor(android.R.color.white)
-                        .build())
                 .listener(new RequestListener<Uri, GlideDrawable>() {
                     @Override
                     public boolean onException(Exception e, Uri model, Target<GlideDrawable> target, boolean isFirstResource) {

@@ -8,10 +8,10 @@ import com.tevinjeffrey.vapor.utils.VaporUtils;
 import rx.functions.Action1;
 
 public class ProgressNotification implements Action1<Long> {
-    Long fileSize;
-    NotificationCompat.Builder builder;
-    NotificationManager notificationManager;
-    int notificationId;
+    private final Long fileSize;
+    private final NotificationCompat.Builder builder;
+    private final NotificationManager notificationManager;
+    private final int notificationId;
 
     public ProgressNotification(Long fileSize, NotificationCompat.Builder builder, NotificationManager notificationManager, int notificationId) {
         this.fileSize = fileSize;

@@ -12,9 +12,7 @@ import icepick.Icepick;
 
 public abstract class MVPFragment extends Fragment implements View {
 
-    public boolean mIsInitialLoad = true;
-
-    public Presenter<View> mPresenter;
+    Presenter<View> mPresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,7 +26,6 @@ public abstract class MVPFragment extends Fragment implements View {
         if (mPresenter != null) {
             mPresenter.onResume();
         }
-        mIsInitialLoad = false;
     }
 
     @Override
@@ -64,7 +61,7 @@ public abstract class MVPFragment extends Fragment implements View {
     }
 
 
-    public FilesActivity getParentActivity() {
+    FilesActivity getParentActivity() {
         return (FilesActivity) getActivity();
     }
 

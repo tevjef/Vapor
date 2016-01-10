@@ -8,7 +8,6 @@ import com.tevinjeffrey.vapor.ui.login.LoginException;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import retrofit.HttpException;
@@ -36,7 +35,7 @@ public class UserManager {
         return Hawk.get(IS_LOGGED_IN, false);
     }
 
-    public void setLoggedIn(boolean bool) {
+    private void setLoggedIn(boolean bool) {
         Hawk.put(IS_LOGGED_IN, bool);
     }
 
@@ -67,7 +66,7 @@ public class UserManager {
                 .map(new Func1<AccountModel, Boolean>() {
                     @Override
                     public Boolean call(AccountModel accountModel) {
-                        if (accountModel != null && Objects.equals(accountModel.getEmail(), userName)) {
+                        if (accountModel != null && accountModel.getEmail().equals(userName)) {
                             putPassword(password);
                             putUserName(userName);
                             setLoggedIn(true);

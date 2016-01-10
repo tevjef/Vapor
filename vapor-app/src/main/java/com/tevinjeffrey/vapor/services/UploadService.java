@@ -73,7 +73,7 @@ public class UploadService extends Service {
     @Inject
     Bus bus;
 
-    HashMap<Integer, Subscription> subscriptionHashMap = new HashMap<>();
+    final HashMap<Integer, Subscription> subscriptionHashMap = new HashMap<>();
 
     @Override
     public int onStartCommand(final Intent intent, int flags, final int startId) {
@@ -279,9 +279,9 @@ public class UploadService extends Service {
 
     private class UploadObserver implements Observer<CloudAppItem> {
         int notificationId;
-        int newNotificationId;
-        String fileName;
-        Uri fileUri;
+        final int newNotificationId;
+        final String fileName;
+        final Uri fileUri;
 
         public UploadObserver(int notificationId, String fileName, Uri fileUri) {
             this.newNotificationId = notificationId / 2;

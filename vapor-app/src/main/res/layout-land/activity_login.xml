@@ -4,9 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary"
     android:padding="@dimen/activity_horizontal_margin"
-    android:theme="@style/Vapr_Login"
+    android:theme="@style/Vapor.Login"
     tools:context="com.tevinjeffrey.vapor.ui.login.LoginActivity">
 
     <RelativeLayout
@@ -14,19 +13,24 @@
         android:layout_centerVertical="true"
         android:paddingStart="@dimen/login_field_margin"
         android:paddingEnd="@dimen/login_field_margin"
-        app:layout_widthPercent="50%">
+        app:layout_widthPercent="50%"
+        android:layout_alignParentLeft="true">
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
-            android:src="@drawable/ic_logo"/>
+            android:src="@drawable/ic_logo"
+            android:contentDescription="@string/content_desc_logo"/>
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_alignParentEnd="true"
         android:paddingStart="@dimen/login_field_margin"
         android:paddingEnd="@dimen/login_field_margin"
-        app:layout_widthPercent="50%">
+        android:paddingLeft="@dimen/login_field_margin"
+        android:paddingRight="@dimen/login_field_margin"
+        app:layout_widthPercent="50%"
+        android:layout_alignParentRight="true">
 
         <RelativeLayout
             android:id="@+id/login_field_container"
@@ -47,7 +51,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="E-mail Address"
+                    android:hint="@string/e_mail_address"
                     android:inputType="textEmailAddress"
                     android:textColor="@android:color/white"
                     android:textColorHint="@color/primary_light" />
@@ -67,7 +71,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:hint="Password"
+                    android:hint="@string/password"
                     android:inputType="textPassword"
                     android:textColor="@android:color/white"
                     android:textColorHint="@color/primary_light" />
@@ -83,11 +87,21 @@
                 android:layout_below="@+id/login_wrapper_password"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
-                android:text="Login" />
+                android:text="@string/login"
+                android:layout_alignParentRight="true"/>
         </RelativeLayout>
 
-        <include layout="@layout/progress_indeterminate" />
-
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/progressBar"
+            android:indeterminate="true"
+            android:indeterminateOnly="true"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:showIn="@layout/activity_login" />
     </RelativeLayout>
 
     <TextView

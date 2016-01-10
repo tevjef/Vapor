@@ -27,9 +27,33 @@
     <string name="action_logout">Logout</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="logout">Logout</string>
-    <string name="yes">Ok</string>
+    <string name="yes">OK</string>
     <string name="no">Cancel</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="settings">Settings</string>
+    <string name="e_mail_address">E-mail Address</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="download">Download</string>
+    <string name="share_link">Share Link</string>
+    <string name="rename">Rename</string>
+    <string name="remove">Remove</string>
+    <string name="size">Size</string>
+    <string name="created">Created</string>
+    <string name="views">Views</string>
+    <string name="all">All Recent Files</string>
+    <string name="popular">Popular</string>
+    <string name="favorites">Favorites</string>
+    <string name="trash">Trash</string>
+    <string name="content_desc_rename_file">Rename File</string>
+    <string name="content_dec_delete_file">Delete File</string>
+    <string name="content_desc_share_link_to_file">Share link to file</string>
+    <string name="content_desc_download_file">Download file</string>
+    <string name="content_desc_file_image_preview">File image preview</string>
+    <string name="content_desc_logo">Logo</string>
+    <string name="content_desc_no_files_found">No file found</string>
+    <string name="content_desc_header_image">Header image</string>
+    <string name="content_desc_enter_fullscreen">Enter Fullscreen</string>
+    <string name="content_desc_full_image">Full image</string>
 </resources>
 

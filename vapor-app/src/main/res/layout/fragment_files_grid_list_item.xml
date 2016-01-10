@@ -25,18 +25,18 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@color/primary_dark"
-        android:id="@+id/background_shade"
-        android:padding="10dp">
-
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:orientation="vertical"
-            android:layout_centerVertical="true">
+            android:id="@+id/background_shade"
+            android:background="@color/primary_dark"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:gravity="center_vertical"
+            >
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,8 +55,6 @@
                 android:textColor="@android:color/white"
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
-
-    </RelativeLayout>
 
 </LinearLayout>
 

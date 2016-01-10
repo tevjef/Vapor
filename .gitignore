@@ -1,6 +1,4 @@
 .gradle
-.DS_Store
-=======
 # Created by https://www.gitignore.io
 
 ### Android ###
@@ -12,8 +10,6 @@
 # Java class files
 # Generated files
 gen/
-*.bin
-*.lock
 # Gradle files
 build/
 
@@ -29,14 +25,5 @@ build/
 *.txt
 *.properties
 
-*.bin
-*.lock
-.gradle/2.2.1/taskArtifacts/cache.properties.lock
-app/crashlytics.properties
-
 captures/
 *.psd
-*.ai
-*.alloc
-*.hprof
-*.index

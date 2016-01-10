@@ -9,8 +9,7 @@ import com.tevinjeffrey.vapor.R;
 
 /*https://github.com/chiuki/android-recyclerview/blob/master/app/src/main/java/com/sqisland/android/recyclerview/MarginDecoration.java*/
 public class MarginDecoration extends RecyclerView.ItemDecoration {
-    private int margin;
-
+    private final int margin;
 
     public MarginDecoration(Context context) {
         margin = context.getResources().getDimensionPixelSize(R.dimen.item_margin);

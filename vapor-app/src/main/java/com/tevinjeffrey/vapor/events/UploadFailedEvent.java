@@ -3,7 +3,7 @@ package com.tevinjeffrey.vapor.events;
 import android.net.Uri;
 
 public class UploadFailedEvent {
-    Uri uri;
+    private final Uri uri;
 
     public UploadFailedEvent(Uri uri) {
         this.uri = uri;

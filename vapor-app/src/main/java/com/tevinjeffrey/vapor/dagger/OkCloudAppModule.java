@@ -33,7 +33,7 @@ import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 
 @Module
-public class OkCloudAppModule {
+class OkCloudAppModule {
 
     @Provides
     @Singleton
@@ -123,6 +123,8 @@ public class OkCloudAppModule {
     @Provides
     @Singleton
     public RefCountManager providePersistentManager(Context context, Bus bus) {
-        return new RefCountManager(context, bus);
+        RefCountManager refCountManager = new RefCountManager(context);
+        bus.register(refCountManager);
+        return refCountManager;
     }
 }

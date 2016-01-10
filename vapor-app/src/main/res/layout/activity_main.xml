@@ -10,7 +10,7 @@
     android:clipToPadding="false"
     android:theme="@style/DrawerTheme">
 
-    <include layout="@layout/include_files_activity"/>
+    <include layout="@layout/activity_main_content"/>
 
     <com.flipboard.bottomsheet.BottomSheetLayout
         android:id="@+id/bottomsheet"
