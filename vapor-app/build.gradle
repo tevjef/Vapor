@@ -60,7 +60,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.okhttp:logging-interceptor:2.6.0'
-    compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'com.github.satyan:sugar:1.5@aar'
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'io.reactivex:rxandroid:0.25.0'
