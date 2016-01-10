@@ -15,23 +15,19 @@ buildscript {
 
 
 Properties signingProperties = new Properties()
-File propertiesFile = new File('signing.properties')
+File propertiesFile = new File('local.properties')
 propertiesFile.withInputStream {
     signingProperties.load(it)
 }
-Properties secretProperties = new Properties()
-propertiesFile = file('secret.properties')
-propertiesFile.withInputStream {
-    secretProperties.load(it)
-}
+
 ext {
     keyAlias = signingProperties.keyAlias
     keyPassword = signingProperties.keyPassword
     storePassword = signingProperties.storePassword
     storeFile = signingProperties.storeFile
 
-    email = secretProperties.email
-    password = secretProperties.password
+    email = signingProperties.email
+    password = signingProperties.password
     supportLibVersion = '23.1.1'
 }
 
