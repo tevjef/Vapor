@@ -13,7 +13,6 @@ import com.tevinjeffrey.vapor.events.DatabaseUpdateEvent
 import com.tevinjeffrey.vapor.events.LogoutEvent
 import com.tevinjeffrey.vapor.okcloudapp.exceptions.FileToLargeException
 import com.tevinjeffrey.vapor.okcloudapp.exceptions.UploadLimitException
-import com.tevinjeffrey.vapor.okcloudapp.model.AccountStatsModel
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem.ItemType
 import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppJsonItem
@@ -29,11 +28,7 @@ import java.util.LinkedHashMap
 
 import jonathanfinerty.once.Once
 import rx.Observable
-import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
-import rx.functions.Action0
-import rx.functions.Action1
-import rx.functions.Func0
 import rx.functions.Func1
 import rx.schedulers.Schedulers
 import timber.log.Timber
@@ -50,28 +45,40 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
 
     fun syncAllItems(notify: Boolean) {
         if (!isSyncingAllItems) {
-            cloudAppService.accountStats.flatMap { accountStatsModel ->
+            cloudAppService.getAccountStats().flatMap { accountStatsModel ->
                 Observable.create(Observable.OnSubscribe<kotlin.Int> { subscriber ->
                     if (!subscriber.isUnsubscribed) {
                         var i = 1
-                        while (i <= Math.ceil(accountStatsModel.items.toDouble() / SERVER_ITEM_LIMIT.toDouble()) + 1 && i < Math.ceil((MAX_ITEM_LIMIT / SERVER_ITEM_LIMIT).toDouble())) {
+                        while (i <= Math.ceil(accountStatsModel.items.toDouble() / SERVER_ITEM_LIMIT.toDouble()) + 1
+                                && i < Math.ceil((MAX_ITEM_LIMIT / SERVER_ITEM_LIMIT).toDouble())) {
                             subscriber.onNext(i)
                             i++
                         }
                         subscriber.onCompleted()
                     }
-                }).subscribeOn(Schedulers.io()).flatMap { integer -> getListFromServer(makeListParams(integer!!, ItemType.ALL, false, SERVER_ITEM_LIMIT)) }.subscribeOn(Schedulers.io()).flatMap { cloudAppItems ->
+                })
+                .flatMap { integer -> getListFromServer(makeListParams(integer, ItemType.ALL, false, SERVER_ITEM_LIMIT)) }
+                .subscribeOn(Schedulers.io())
+                .flatMap { cloudAppItems ->
                     SugarRecord.updateInTx(cloudAppItems)
                     Observable.just(cloudAppItems)
                 }
-            }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnTerminate {
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnTerminate {
                 isSyncingAllItems = false
                 if (notify) {
                     bus.post(DatabaseUpdateEvent())
                 }
-            }.doOnSubscribe { isSyncingAllItems = true }.subscribe({ cloudAppItems -> Timber.i("Synced all items. Size: %s", cloudAppItems.size) }) { throwable -> Timber.e(throwable, "Error syncing all items") }
+            }
+            .doOnSubscribe { isSyncingAllItems = true }
+            .subscribe({ cloudAppItems -> Timber.i("Synced all items. Size: %s", cloudAppItems.size) },
+                    { throwable -> Timber.e(throwable, "Error syncing all items") })
 
-            getTrashItems(ItemType.ALL, true, DataCursor()).subscribe({ cloudAppItems -> Timber.i("Synced all deleted items. Size: %s", cloudAppItems.size) }) { throwable -> Timber.e(throwable, "Error syncing all deleted items") }
+            getTrashItems(ItemType.ALL, true, DataCursor())
+                .subscribe({ cloudAppItems -> Timber.i("Synced all deleted items. Size: %s", cloudAppItems.size) },
+                        { throwable -> Timber.e(throwable, "Error syncing all deleted items") })
         }
     }
 
@@ -96,11 +103,14 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
         val expired = DateTime.now().minusDays(7).millis
         Observable.just(SugarRecord.findWithQuery<CloudAppItem>(CloudAppItem::class.java,
                 "DELETE FROM CLOUD_APP_ITEM WHERE deleted_at <> -1 AND deleted_at < ?",
-                expired.toString())).subscribe({ cloudAppItems -> Timber.i("Deleting items: %s", cloudAppItems.size) }) { throwable -> Timber.e(throwable, "Error deleting stale items.") }
+                expired.toString())).subscribe({ cloudAppItems -> Timber.i("Deleting items: %s", cloudAppItems.size) },
+                { throwable -> Timber.e(throwable, "Error deleting stale items.") })
     }
 
     fun deleteCloudItem(cloudAppItem: CloudAppItem): Observable<CloudAppItem> {
-        return cloudAppService.deleteItem(cloudAppItem.itemId.toString()).map(convertItemModel()).doOnNext { deleteLocalItem(cloudAppItem) }
+        return cloudAppService.deleteItem(cloudAppItem.itemId.toString())
+                .map(convertItemModel())
+                .doOnNext{ deleteLocalItem(cloudAppItem) }
     }
 
     fun renameCloudItem(cloudAppItem: CloudAppItem, newName: String): Observable<CloudAppItem> {
@@ -115,18 +125,25 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
         jsonItem.item.name = name
         jsonItem.item.redirectUrl = url
 
-        return cloudAppService.bookmarkLink(jsonItem).map(convertItemModel()).map(saveToDb()).retryWhen(RxUtils.RetryWithDelay(2, 2000))
+        return cloudAppService.bookmarkLink(jsonItem)
+                .map(convertItemModel())
+                .map(saveToDb())
+                .retryWhen(RxUtils.RetryWithDelay(2, 2000))
     }
 
     fun upload(requestBody: CloudAppRequestBody): Observable<CloudAppItem> {
-        return cloudAppService.newUpload(makeQueryMap(requestBody.fileName, requestBody.contentLength().toString())).flatMap(Func1<com.tevinjeffrey.vapor.okcloudapp.model.UploadModel, rx.Observable<com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem>> { uploadModel ->
+        return cloudAppService.newUpload(makeQueryMap(requestBody.fileName, requestBody.contentLength().toString()))
+                .flatMap(Func1<UploadModel, rx.Observable<CloudAppItem>> { uploadModel ->
             if (uploadModel.params == null) {
                 return@Func1 Observable.error<CloudAppItem>(UploadLimitException("Daily upload limit reached"))
             }
             if (requestBody.contentLength() > uploadModel.max_upload_size) {
                 return@Func1 Observable.error<CloudAppItem>(FileToLargeException("File too large for you current plan"))
             }
-            cloudAppService.uploadFile(makeMultipartParams(uploadModel, requestBody)).map(convertItemModel()).map(saveToDb()).retryWhen(RxUtils.RetryWithDelay(4, 2000))
+            cloudAppService.uploadFile(makeMultipartParams(uploadModel, requestBody))
+                    .map(convertItemModel())
+                    .map(saveToDb())
+                    .retryWhen(RxUtils.RetryWithDelay(4, 2000))
         })
     }
 
@@ -183,7 +200,7 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
         if (refresh) {
             return refreshPage(1, false).flatMap { observable }
         }
-        return observable.doOnNext { cloudAppItems -> cursor.offset = cursor.offset + cloudAppItems.size }
+        return observable.doOnNext { cloudAppItems -> cursor.offset += cloudAppItems.size }
     }
 
     fun getFavoriteItems(type: ItemType, refresh: Boolean, cursor: DataCursor): Observable<List<CloudAppItem>> {
@@ -194,7 +211,7 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
 
         if (type == ItemType.ALL) {
             observable = Observable.defer {
-                val query = "SELECT * FROM CLOUD_APP_ITEM WHERE FAVORITE = 1 AND deleted_at = -1 ORDER BY ITEM_ID DESC LIMIT ? OFFSET ?"
+                val query = "SELECT * FROM CLOUD_APP_ITEM WHERE IS_FAVORITE = 1 AND deleted_at = -1 ORDER BY ITEM_ID DESC LIMIT ? OFFSET ?"
                 Timber.d(query.replace("?", "%s"), cursor.limit.toString(), cursor.offset.toString())
                 Observable.just(SugarRecord.findWithQuery<CloudAppItem>(CloudAppItem::class.java,
                         query, cursor.limit.toString(), cursor.offset.toString()))
@@ -210,7 +227,7 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
         if (refresh) {
             return refreshPage(1, false).flatMap { observable }
         }
-        return observable.doOnNext { cloudAppItems -> cursor.offset = cursor.offset + cloudAppItems.size }
+        return observable.doOnNext { cloudAppItems -> cursor.offset += cloudAppItems.size }
     }
 
     fun getTrashItems(type: ItemType, refresh: Boolean, cursor: DataCursor): Observable<List<CloudAppItem>> {
@@ -236,7 +253,7 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
         if (refresh) {
             return refreshPage(1, true).flatMap { observable }
         }
-        return observable.doOnNext { cloudAppItems -> cursor.offset = cursor.offset + cloudAppItems.size }
+        return observable.doOnNext { cloudAppItems -> cursor.offset += cloudAppItems.size }
     }
 
     fun getAllItems(type: ItemType, refresh: Boolean, cursor: DataCursor): Observable<List<CloudAppItem>> {
@@ -247,15 +264,21 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
         if (refresh) {
             return refreshPage(1, false).flatMap { observable }
         }
-        return observable.doOnNext { cloudAppItems -> cursor.offset = cursor.offset + cloudAppItems.size }
+        return observable.doOnNext { cloudAppItems -> cursor.offset += cloudAppItems.size }
     }
 
     private fun refreshPage(page: Int, deleted: Boolean): Observable<List<CloudAppItem>> {
-        return getListFromServer(makeListParams(page, ItemType.ALL, deleted, SERVER_ITEM_LIMIT)).flatMap(reduceList()).map(saveToDb()).toList()
+        return getListFromServer(makeListParams(page, ItemType.ALL, deleted, SERVER_ITEM_LIMIT))
+                .flatMap(reduceList())
+                .map(saveToDb())
+                .toList()
     }
 
     private fun getListFromServer(options: Map<String, String>): Observable<List<CloudAppItem>> {
-        return cloudAppService.listItems(options).retryWhen(RxUtils.RetryWithDelay(2, 2000)).subscribeOn(Schedulers.io()).flatMap { itemModels -> Observable.from(itemModels).map(convertItemModel()).toList() }
+        return cloudAppService.listItems(options)
+                .retryWhen(RxUtils.RetryWithDelay(2, 2000))
+                .subscribeOn(Schedulers.io())
+                .flatMap { itemModels -> Observable.from(itemModels).map(convertItemModel()).toList() }
     }
 
     private fun convertItemModel(): Func1<ItemModel, CloudAppItem> {
@@ -296,16 +319,16 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
         val cloudAppItems = SugarRecord.listAll<CloudAppItem>(CloudAppItem::class.java)
         SugarRecord.deleteInTx(cloudAppItems)
         Once.clearAll()
-        CloudAppItem.executeQuery("DELETE FROM sqlite_sequence WHERE NAME = 'CLOUD_APP_ITEM'")
-        CloudAppItem.executeQuery("VACUUM")
+        SugarRecord.executeQuery("DELETE FROM sqlite_sequence WHERE NAME = 'CLOUD_APP_ITEM'")
+        SugarRecord.executeQuery("VACUUM")
     }
 
     class DataCursor : Parcelable {
         val limit = 100
         var offset = 0
-            set(offset) {
+            set(value) {
                 Timber.i("%s Cursor was %s now %s", owner, this.offset, offset)
-                this.offset = offset
+                field = value
             }
         internal var owner = "Dummy"
 

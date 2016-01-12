@@ -4,10 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class UploadModel {
 
-    private Long uploads_remaining;
-    private Long max_upload_size;
-    private String url;
-    private Parameters params;
+    Long uploads_remaining;
+    Long max_upload_size;
+    String url;
+    Parameters params;
 
     public Long getUploads_remaining() {
         return uploads_remaining;

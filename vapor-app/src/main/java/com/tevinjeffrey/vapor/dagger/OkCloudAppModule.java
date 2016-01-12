@@ -50,13 +50,10 @@ class OkCloudAppModule {
     @Provides
     @Nullable
     public Credentials providesCredentials() {
-        String email = UserManager.getUserName();
-        String pass = UserManager.getPassword();
+        String email = UserManager.Companion.getUserName();
+        String pass = UserManager.Companion.getPassword();
 
-        if (email != null & pass != null && !TextUtils.isEmpty(email))
-            return new UsernamePasswordCredentials(email, pass);
-        else
-            return null;
+        return new UsernamePasswordCredentials(email, pass);
     }
 
     @Provides

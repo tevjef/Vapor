@@ -15,7 +15,6 @@ import static android.text.format.DateUtils.FORMAT_SHOW_DATE;
 import static android.text.format.DateUtils.FORMAT_SHOW_TIME;
 import static android.text.format.DateUtils.FORMAT_SHOW_YEAR;
 import static android.text.format.DateUtils.formatDateTime;
-import static com.tevinjeffrey.vapor.okcloudapp.utils.CloudAppUtils.formatDate;
 
 public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem>,Parcelable {
 
@@ -60,10 +59,10 @@ public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem
         this.favorite = itemModel.favorite;
         this.ownerId = itemModel.ownerId;
         this.contentLength = itemModel.contentLength;
-        this.createdAt = String.valueOf(formatDate(itemModel.createdAt));
-        this.updatedAt = String.valueOf(formatDate(itemModel.updatedAt));
-        this.deletedAt = String.valueOf(formatDate(itemModel.deletedAt));
-        this.lastViewedAt = String.valueOf(formatDate(itemModel.lastViewedAt));
+        this.createdAt = String.valueOf(CloudAppUtils.INSTANCE.formatDate(itemModel.createdAt));
+        this.updatedAt = String.valueOf(CloudAppUtils.INSTANCE.formatDate(itemModel.updatedAt));
+        this.deletedAt = String.valueOf(CloudAppUtils.INSTANCE.formatDate(itemModel.deletedAt));
+        this.lastViewedAt = String.valueOf(CloudAppUtils.INSTANCE.formatDate(itemModel.lastViewedAt));
     }
 
     public CloudAppItem() {
@@ -81,17 +80,17 @@ public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem
         return href;
     }
 
-    
+
     public String getName() {
         return name;
     }
 
-    
+
     public boolean isPrivate() {
         return isPrivate;
     }
 
-    
+
     public boolean isSubscribed() {
         return isSubscribed;
     }
@@ -104,12 +103,12 @@ public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem
         return url == null? remoteUrl : url;
     }
 
-    
+
     public String getContentUrl() {
         return contentUrl;
     }
 
-    
+
     public ItemType getItemType() {
         try {
             return ItemType.valueOf(itemType.toUpperCase());
@@ -118,47 +117,47 @@ public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem
         }
     }
 
-    
+
     public long getViewCounter() {
         return viewCounter;
     }
 
-    
+
     public String getIcon() {
         return icon;
     }
 
-    
+
     public String getRemoteUrl() {
         return remoteUrl;
     }
 
-    
+
     public String getSource() {
         return source;
     }
 
-    
+
     public String getCreatedAt() {
         return createdAt;
     }
 
-    
+
     public String getUpdatedAt() {
         return updatedAt;
     }
 
-    
+
     public String getDeletedAt() {
         return deletedAt;
     }
 
-    
+
     public String getLastViewedAt() {
         return lastViewedAt;
     }
 
-    
+
     public String getThumbnailUrl() {
         return thumbnailUrl;
     }
@@ -172,7 +171,7 @@ public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem
         return formatDateTime(context, Long.parseLong(createdAt), FORMAT_SHOW_TIME|FORMAT_SHOW_YEAR|FORMAT_SHOW_DATE);
     }
 
-    
+
     public String getFormattedUpdatedAt()  {
         try {
             return updatedAt ==null?null:DateFormat.getDateInstance()
@@ -183,7 +182,7 @@ public class CloudAppItem extends SugarRecord implements Comparable<CloudAppItem
         return null;
     }
 
-    
+
     public String getFormattedDeletedAt() {
         try {
             return deletedAt ==null?null:DateFormat.getDateInstance()

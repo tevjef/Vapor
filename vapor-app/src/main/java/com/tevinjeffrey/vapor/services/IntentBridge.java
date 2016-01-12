@@ -97,7 +97,7 @@ public class IntentBridge extends Activity {
         // regular audio, video and other binaries. Text files could be a URL or a UTF-8 string.
         String type = incomingIntent.getType();
         if (type == null) {
-            type = FileUtils.getMimeType(this, incomingIntent.getData());
+            type = FileUtils.INSTANCE.getMimeType(this, incomingIntent.getData());
         }
         if (type.equals("text/plain")) {
             outgoingIntent.putExtra(FILE_TYPE, FILE_TEXT);
@@ -124,7 +124,7 @@ public class IntentBridge extends Activity {
             // retrieve the URI for that location. We pass the uri to the UploadService, which will
             // alert use when the file a this URI has been successfully uploaded. After the upload
             // complete's we delete the file.
-            if (FileUtils.isGooglePhotosUri(fileUri)) {
+            if (FileUtils.INSTANCE.isGooglePhotosUri(fileUri)) {
                 Observable.defer(new Func0<Observable<Uri>>() {
                     @Override
                     public Observable<Uri> call() {
@@ -145,7 +145,7 @@ public class IntentBridge extends Activity {
                         });
             // Check to see if the is local to the device as some apps may attempt to serve a file
             // that's on a remote server.
-            } else if (FileUtils.isLocal(fileUri.toString())) {
+            } else if (FileUtils.INSTANCE.isLocal(fileUri.toString())) {
                 outgoingIntent.setData(fileUri)
                     .putExtra(Intent.EXTRA_STREAM, fileUri);
                 startService(outgoingIntent);

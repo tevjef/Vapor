@@ -21,7 +21,6 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class ImageActivity extends Activity {
 
-
     @Bind(R.id.imageView)
     ImageView imageView;
     PhotoViewAttacher mAttacher;

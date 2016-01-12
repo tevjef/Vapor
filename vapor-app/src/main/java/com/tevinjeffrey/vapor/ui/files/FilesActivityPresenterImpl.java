@@ -28,7 +28,7 @@ public class FilesActivityPresenterImpl extends BasePresenter<FilesActivityView>
     @Override
     public void loadEmail() {
         if (getView() != null) {
-            getView().setEmailInHeader(UserManager.getUserName());
+            getView().setEmailInHeader(UserManager.Companion.getUserName());
         }
     }
 
