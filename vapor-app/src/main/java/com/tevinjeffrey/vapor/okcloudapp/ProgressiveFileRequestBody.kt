@@ -1,8 +1,7 @@
 package com.tevinjeffrey.vapor.okcloudapp
 
-import android.webkit.MimeTypeMap
-
 import com.squareup.okhttp.MediaType
+import com.tevinjeffrey.vapor.okcloudapp.utils.FileUtils
 
 import java.io.File
 import java.io.FileInputStream
@@ -11,6 +10,9 @@ import java.io.IOException
 import okio.BufferedSink
 
 class ProgressiveFileRequestBody(private val file: File, private val listener: ProgressListener) : CloudAppRequestBody() {
+
+    private val DEFAULT_BUFFER_SIZE = 4096
+
     override val fileName: String
         get() = file.name
 
@@ -19,7 +21,7 @@ class ProgressiveFileRequestBody(private val file: File, private val listener: P
     }
 
     override fun contentType(): MediaType {
-        return MediaType.parse(getMimeType(file.absolutePath))
+        return MediaType.parse(FileUtils.getMimeType(file.absolutePath))
     }
 
     @Throws(IOException::class)
@@ -29,32 +31,15 @@ class ProgressiveFileRequestBody(private val file: File, private val listener: P
         val `in` = FileInputStream(file)
         var total: Long = 0
         try {
-            var read: Int = 0
-            while (read != -1) {
-                read = `in`.read(buffer)
+            var read = `in`.read(buffer)
+            while (read != -1) { // Arg!! Kotlin doesn't allow assignment expressions  while ((read = in.read()) != -1)
                 this.listener.onProgress(total, fileLength)
                 total += read.toLong()
                 sink.write(buffer, 0, read)
+                read = `in`.read(buffer)
             }
         } finally {
             `in`.close()
-        }
-    }
-
-    companion object {
-
-        private val DEFAULT_BUFFER_SIZE = 4096
-
-        private fun getMimeType(url: String): String {
-            var type: String? = null
-            val extension = MimeTypeMap.getFileExtensionFromUrl(url)
-            if (extension != null) {
-                type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-            }
-            if (type == null) {
-                return "application/octet-stream"
-            }
-            return type
         }
     }
 }

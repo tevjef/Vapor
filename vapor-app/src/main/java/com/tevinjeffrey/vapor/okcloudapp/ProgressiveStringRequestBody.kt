@@ -11,6 +11,8 @@ import java.nio.charset.Charset
 import okio.BufferedSink
 
 class ProgressiveStringRequestBody(string: String, name: String?, private val listener: ProgressListener) : CloudAppRequestBody() {
+    private val DEFAULT_BUFFER_SIZE = 4096
+
     override val fileName: String
         get() = name
 
@@ -49,10 +51,5 @@ class ProgressiveStringRequestBody(string: String, name: String?, private val li
         } finally {
             inputStream.close()
         }
-    }
-
-    companion object {
-
-        private val DEFAULT_BUFFER_SIZE = 4096
     }
 }

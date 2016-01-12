@@ -115,15 +115,14 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
 
     fun renameCloudItem(cloudAppItem: CloudAppItem, newName: String): Observable<CloudAppItem> {
         val jsonItem = CloudAppJsonItem()
-        jsonItem.item.name = newName
+        jsonItem.item = CloudAppJsonItem.Item(name = newName)
 
         return cloudAppService.renameItem(cloudAppItem.itemId.toString(), jsonItem).map(convertItemModel()).map(saveToDb())
     }
 
     fun bookmarkItem(name: String, url: String): Observable<CloudAppItem> {
         val jsonItem = CloudAppJsonItem()
-        jsonItem.item.name = name
-        jsonItem.item.redirectUrl = url
+        jsonItem.item = CloudAppJsonItem.Item(name = name, redirectUrl = url)
 
         return cloudAppService.bookmarkLink(jsonItem)
                 .map(convertItemModel())
@@ -137,7 +136,7 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
             if (uploadModel.params == null) {
                 return@Func1 Observable.error<CloudAppItem>(UploadLimitException("Daily upload limit reached"))
             }
-            if (requestBody.contentLength() > uploadModel.max_upload_size) {
+            if (requestBody.contentLength() > uploadModel.maxUploadSize) {
                 return@Func1 Observable.error<CloudAppItem>(FileToLargeException("File too large for you current plan"))
             }
             cloudAppService.uploadFile(makeMultipartParams(uploadModel, requestBody))
@@ -300,12 +299,13 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
     private fun makeMultipartParams(uploadModel: UploadModel, body: CloudAppRequestBody): Map<String, RequestBody> {
         val filename = "file\"; filename=\"" + body.fileName
         val params = LinkedHashMap<String, RequestBody>()
-        params.put("AWSAccessKeyId", createStringBody(uploadModel.params.awsAccessKeyId))
-        params.put("key", createStringBody(uploadModel.params.key))
-        params.put("acl", createStringBody(uploadModel.params.acl))
-        params.put("success_action_redirect", createStringBody(uploadModel.params.success_action_redirect))
-        params.put("signature", createStringBody(uploadModel.params.signature))
-        params.put("policy", createStringBody(uploadModel.params.policy))
+        val uploadParams = uploadModel.params
+        params.put("AWSAccessKeyId", createStringBody(uploadParams?.AWSAccessKeyId!!))
+        params.put("key", createStringBody(uploadParams?.key!!))
+        params.put("acl", createStringBody(uploadParams?.acl!!))
+        params.put("success_action_redirect", createStringBody(uploadParams?.successActionRedirect!!))
+        params.put("signature", createStringBody(uploadParams?.signature!!))
+        params.put("policy", createStringBody(uploadParams?.policy!!))
         params.put(filename, body)
         return params
     }

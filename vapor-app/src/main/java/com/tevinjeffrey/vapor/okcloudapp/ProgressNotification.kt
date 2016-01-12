@@ -11,7 +11,7 @@ class ProgressNotification(private val fileSize: Long, private val builder: Noti
 
     override fun call(current: Long?) {
         if (!fileSize.equals(0)) {
-            val ratio = 1 / (fileSize as Double / current!!)
+            val ratio = 1 / (fileSize.toDouble() / current!!)
             val percentage = ratio * 100
             val progress = Math.floor(percentage).toInt()
             builder.setProgress(100, progress, false)
