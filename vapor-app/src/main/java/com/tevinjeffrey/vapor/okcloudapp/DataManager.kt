@@ -367,6 +367,6 @@ class DataManager(private val cloudAppService: CloudAppService, private val user
 
     companion object {
 
-        val SYNC_ALL_ITEMS = DataManager::class.java!!.getPackage().getName() + ".SYNC_ALL_ITEMS"
+        val SYNC_ALL_ITEMS = DataManager::class.java.getPackage().getName() + ".SYNC_ALL_ITEMS"
     }
 }

@@ -53,7 +53,10 @@ class OkCloudAppModule {
         String email = UserManager.Companion.getUserName();
         String pass = UserManager.Companion.getPassword();
 
-        return new UsernamePasswordCredentials(email, pass);
+        if (email != null & pass != null && !TextUtils.isEmpty(email))
+            return new UsernamePasswordCredentials(email, pass);
+        else
+            return null;
     }
 
     @Provides

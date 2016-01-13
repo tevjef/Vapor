@@ -48,11 +48,6 @@ import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
 
-import com.tevinjeffrey.vapor.services.IntentBridge.FILE_BOOKMARK
-import com.tevinjeffrey.vapor.services.IntentBridge.FILE_TEXT
-import com.tevinjeffrey.vapor.services.IntentBridge.FILE_TYPE
-
-
 class UploadService : Service() {
 
     @Inject
@@ -111,7 +106,7 @@ class UploadService : Service() {
             }
 
             ACTION_UPLOAD -> {
-                val fileType = intent.getStringExtra(FILE_TYPE)
+                val fileType = intent.getStringExtra(IntentBridge.FILE_TYPE)
                 val progressSubject = PublishSubject.create<Long>()
                 val listener = NotificationProgress(progressSubject)
                 var fileSize = ""
@@ -121,7 +116,7 @@ class UploadService : Service() {
                 val requestBody: CloudAppRequestBody
 
                 when (fileType) {
-                    FILE_TEXT -> {
+                    IntentBridge.FILE_TEXT -> {
                         // The text is passed into a custom RequestBody. Currently the file name of
                         // UTF8 string is the first 18 characters of the the string itself.
                         // The option remains for the user to provide a name. from pass it and a
@@ -134,7 +129,7 @@ class UploadService : Service() {
                         fileName = requestBody.fileName
                         uploadObservable = dataManager.upload(requestBody)
                     }
-                    FILE_BOOKMARK -> {
+                    IntentBridge.FILE_BOOKMARK -> {
                         // The url is retrieved from EXTRA_TEXT, then the api call is made to create
                         // the necessary file for upload. Currently the bookmark name is the url itself.
                         // The option remains for the user to provide a name.
@@ -327,8 +322,7 @@ class UploadService : Service() {
         }
     }
 
-    private inner class NotificationProgress(private val publishSubject: PublishSubject<Long>) : ProgressListener {
-
+    inner class NotificationProgress(private val publishSubject: PublishSubject<Long>) : ProgressListener {
         override fun onProgress(current: Long, max: Long) {
             publishSubject.onNext(current)
         }

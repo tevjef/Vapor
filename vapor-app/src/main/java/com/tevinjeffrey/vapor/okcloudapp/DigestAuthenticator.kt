@@ -16,8 +16,9 @@ import java.io.IOException
 import java.net.Proxy
 
 import timber.log.Timber
+import javax.inject.Inject
 
-class DigestAuthenticator(private val mDigestScheme: DigestScheme, private var mCredentials: Credentials?) : Authenticator {
+class DigestAuthenticator @Inject constructor(private val mDigestScheme: DigestScheme, private var mCredentials: Credentials?) : Authenticator {
 
     fun setCredentials(mCredentials: Credentials) {
         this.mCredentials = mCredentials

@@ -8,6 +8,7 @@ import com.tevinjeffrey.vapor.VaporApp;
 import com.tevinjeffrey.vapor.okcloudapp.DataManager;
 import com.tevinjeffrey.vapor.ui.files.FilesActivityPresenter;
 import com.tevinjeffrey.vapor.ui.files.FilesActivityPresenterImpl;
+import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragmentView;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.ArchivePresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.AudioPresenter;
 import com.tevinjeffrey.vapor.ui.files.fragments.presenters.BookmarkPresenter;

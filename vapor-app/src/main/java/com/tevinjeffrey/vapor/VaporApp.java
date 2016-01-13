@@ -13,7 +13,6 @@ import com.orhanobut.hawk.LogLevel;
 import com.orm.SugarContext;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-import com.tevinjeffrey.vapor.dagger.DaggerUiComponent;
 import com.tevinjeffrey.vapor.dagger.UiComponent;
 import com.tevinjeffrey.vapor.dagger.VaporAppComponent;
 import com.tevinjeffrey.vapor.events.LogoutEvent;
