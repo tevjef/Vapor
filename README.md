@@ -36,6 +36,7 @@ The libraries and tools used include:
 - [Material Dialogs](https://github.com/afollestad/material-dialogs)
 - [Joda Time Android](https://github.com/dlew/joda-time-android)
 
+#### Kotlin? [Click here](https://github.com/tevjef/Vapor/tree/kotlin)
 
 # Licence
 
