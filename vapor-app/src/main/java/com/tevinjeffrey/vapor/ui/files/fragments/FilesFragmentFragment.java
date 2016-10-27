@@ -50,7 +50,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import icepick.Icicle;
+import icepick.State;
 import timber.log.Timber;
 
 import static android.view.View.GONE;
@@ -65,10 +65,10 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
 
     @Inject Bus bus;
 
-    @Icicle
+    @State
     FilesFragmentViewState mViewState = new FilesFragmentViewState();
 
-    @Icicle
+    @State
     DataManager.DataCursor cursor;
 
     private ItemType mItemType;

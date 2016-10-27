@@ -1,19 +1,21 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.github.ben-manes.versions'
 
 def buildTime = new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"))
 
 android {
     useLibrary 'org.apache.http.legacy'
-    compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    compileSdkVersion 25
+    buildToolsVersion '23.0.3'
     defaultConfig {
         applicationId "com.tevinjeffrey.vapor"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
 
+        vectorDrawables.useSupportLibrary = true
         buildConfigField "String", "PASS", "\"$rootProject.ext.password\""
         buildConfigField "String", "EMAIL", "\"$rootProject.ext.email\""
         buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
@@ -37,39 +39,40 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     //Boilerplate reduction
-    apt 'frankiesardo:icepick-processor:3.0.2'
-    apt 'com.google.dagger:dagger-compiler:2.0'
+    apt 'frankiesardo:icepick-processor:3.2.0'
+    compile 'frankiesardo:icepick:3.2.0'
+
+    apt 'com.google.dagger:dagger-compiler:2.7'
     provided 'javax.annotation:jsr250-api:1.0'
-    compile 'com.google.dagger:dagger:2.0'
+    compile 'com.google.dagger:dagger:2.7'
     //Android
-    compile('com.afollestad.material-dialogs:core:0.8.1.0@aar') {
+    compile('com.afollestad.material-dialogs:core:0.9.0.2@aar') {
         transitive = true
     }
     compile 'com.jonathanfinerty.once:once:0.4.2'
-    compile 'com.google.dagger:dagger:2.0'
+    compile 'com.google.dagger:dagger:2.7'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'joda-time:joda-time:2.8.2'
-    compile 'com.flipboard:bottomsheet-core:1.5.0'
-    compile 'com.flipboard:bottomsheet-commons:1.5.0'
+    compile 'com.flipboard:bottomsheet-core:1.5.2'
+    compile 'com.flipboard:bottomsheet-commons:1.5.2'
     compile 'com.orhanobut:hawk:1.18'
-    compile 'commons-io:commons-io:2.4'
-    compile 'com.github.bumptech.glide:glide:3.6.1'
+    compile 'commons-io:commons-io:2.5'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.github.bumptech.glide:okhttp-integration:1.3.1@aar'
     compile 'com.github.paolorotolo:appintro:3.3.0'
-    compile 'frankiesardo:icepick:3.0.2'
     compile 'com.google.code.gson:gson:2.4'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
-    compile 'com.squareup.okhttp:logging-interceptor:2.6.0'
+    compile 'com.squareup.okhttp:okhttp:2.7.5'
+    compile 'com.squareup.okhttp:logging-interceptor:2.7.5'
     compile 'com.github.satyan:sugar:1.5@aar'
-    compile 'io.reactivex:rxjava:1.1.0'
-    compile 'io.reactivex:rxandroid:0.25.0'
+    compile 'io.reactivex:rxjava:1.2.1'
+    compile 'io.reactivex:rxandroid:1.2.1'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
     compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
     compile 'com.squareup:otto:1.3.8'
-    compile 'com.jakewharton.timber:timber:2.7.1'
-    compile 'com.facebook.stetho:stetho:1.1.1'
-    compile 'com.facebook.stetho:stetho-okhttp:1.1.1'
+    compile 'com.jakewharton.timber:timber:4.3.1'
+    compile 'com.facebook.stetho:stetho:1.4.1'
+    compile 'com.facebook.stetho:stetho-okhttp:1.4.1'
     compile "com.android.support:design:${rootProject.ext.supportLibVersion}"
     compile "com.android.support:support-v4:${rootProject.ext.supportLibVersion}"
     compile "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
@@ -77,6 +80,6 @@ dependencies {
     compile "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
     compile "com.android.support:palette-v7:${rootProject.ext.supportLibVersion}"
     compile "com.android.support:percent:${rootProject.ext.supportLibVersion}"
-    compile 'com.commit451:PhotoView:1.2.4'
+    compile 'com.commit451:PhotoView:1.2.5'
     compile 'jp.wasabeef:recyclerview-animators:2.1.0'
 }
