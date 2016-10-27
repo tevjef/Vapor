@@ -46,7 +46,7 @@ import com.tevinjeffrey.vapor.okcloudapp.model.CloudAppItem;
 import com.tevinjeffrey.vapor.services.IntentBridge;
 import com.tevinjeffrey.vapor.ui.ImageActivity;
 import com.tevinjeffrey.vapor.ui.SettingsActivity;
-import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragmentFragment;
+import com.tevinjeffrey.vapor.ui.files.fragments.FilesFragment;
 import com.tevinjeffrey.vapor.ui.login.LoginActivity;
 import com.tevinjeffrey.vapor.ui.utils.ItemClickListener;
 import com.tevinjeffrey.vapor.utils.ScrimUtil;
@@ -222,14 +222,14 @@ public class FilesActivity extends AppCompatActivity implements ItemClickListene
     private void setupViewPager(ViewPager viewPager) {
         viewPager.setOffscreenPageLimit(5);
         Adapter adapter = new Adapter(getSupportFragmentManager());
-        adapter.addFragment(FilesFragmentFragment.newInstance(ALL), "Recent");
-        adapter.addFragment(FilesFragmentFragment.newInstance(IMAGE), "Images");
-        adapter.addFragment(FilesFragmentFragment.newInstance(VIDEO), "Videos");
-        adapter.addFragment(FilesFragmentFragment.newInstance(ARCHIVE), "Archives");
-        adapter.addFragment(FilesFragmentFragment.newInstance(TEXT), "Text");
-        adapter.addFragment(FilesFragmentFragment.newInstance(AUDIO), "Audio");
-        adapter.addFragment(FilesFragmentFragment.newInstance(BOOKMARK), "Bookmarks");
-        adapter.addFragment(FilesFragmentFragment.newInstance(UNKNOWN), "Unknown");
+        adapter.addFragment(FilesFragment.newInstance(ALL), "Recent");
+        adapter.addFragment(FilesFragment.newInstance(IMAGE), "Images");
+        adapter.addFragment(FilesFragment.newInstance(VIDEO), "Videos");
+        adapter.addFragment(FilesFragment.newInstance(ARCHIVE), "Archives");
+        adapter.addFragment(FilesFragment.newInstance(TEXT), "Text");
+        adapter.addFragment(FilesFragment.newInstance(AUDIO), "Audio");
+        adapter.addFragment(FilesFragment.newInstance(BOOKMARK), "Bookmarks");
+        adapter.addFragment(FilesFragment.newInstance(UNKNOWN), "Unknown");
         viewPager.setAdapter(adapter);
     }
 

@@ -56,7 +56,7 @@ import timber.log.Timber;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class FilesFragmentFragment extends MVPFragment implements FilesFragmentView, SwipeRefreshLayout.OnRefreshListener {
+public class FilesFragment extends MVPFragment implements FilesFragmentView, SwipeRefreshLayout.OnRefreshListener {
     private static final String ITEM_TYPE = "ITEM_TYPE";
     @Bind(R.id.files_recyclerview) RecyclerView mRecyclerView;
     @Bind(R.id.empty_view) LinearLayout mEmptyView;
@@ -76,15 +76,15 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
     private List<CloudAppItem> mListDataSet;
     private boolean isViewShown;
 
-    public static FilesFragmentFragment newInstance(ItemType itemType) {
-        FilesFragmentFragment fragment = new FilesFragmentFragment();
+    public static FilesFragment newInstance(ItemType itemType) {
+        FilesFragment fragment = new FilesFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(ITEM_TYPE, itemType);
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    public FilesFragmentFragment() {
+    public FilesFragment() {
         // Required empty public constructor
     }
 
@@ -398,7 +398,7 @@ public class FilesFragmentFragment extends MVPFragment implements FilesFragmentV
 
     @Override
     public String toString() {
-        return "FilesFragmentFragment{" +
+        return "FilesFragment{" +
                 "presenter=" + getPresenter().getClass().getSimpleName() +
                 '}';
     }
